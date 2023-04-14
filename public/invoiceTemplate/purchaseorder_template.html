@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="https://unpkg.com/jsbarcode@latest/dist/JsBarcode.all.min.js"></script>
+	<link href="css/bootstrap.css" rel="stylesheet" />
+	<style>
+		@page {
+			size: US-Letter;
+			margin: 0 0 35mm 0;
+			background: rgb(255, 255, 255);
+		}
+
+		body {
+			font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
+			padding-left: 0.9rem;
+			padding-right: 0.9rem;
+			font-size: 12px;
+		}
+
+		.bgc-default-tp1 {
+			background-color: rgb(112, 111, 111) !important;
+			color: rgb(255, 255, 255);
+		}
+
+		.main_container {
+			display: flex;
+			max-width: auto;
+			height: 100%;
+			justify-content: center;
+			flex-direction: column;
+			border-radius: 5px;
+			padding-left: 2%;
+			padding-right: 2%;
+			padding-bottom: 0.5rem;
+		}
+
+		.info-factura {
+			display: flex;
+			width: 100%;
+			height: auto;
+		}
+
+		.content-table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		.content-table thead tr {
+			background-color: rgb(112, 111, 111);
+			color: rgb(255, 255, 255);
+			text-align: middle;
+		}
+
+		.content-table tbody tr:nth-of-type(even) {
+			background-color: rgb(243, 243, 243);
+		}
+
+		.th-table {
+			background-color: rgb(112, 111, 111);
+			border: 0.5px solid rgb(112, 111, 111) !important;
+			text-align: end;
+			color: rgb(255, 255, 255);
+			padding-right: 0.5rem;
+			font-weight: bold;
+		}
+
+		.th-valor {
+			text-align: end;
+			padding-right: 0.5rem;
+		}
+
+		.column-cant {
+			width: 10%;
+			text-align: left !important;
+		}
+
+		.column-desc {
+			width: 50%;
+			text-align: left !important;
+		}
+
+		.column-uni {
+			width: 20%;
+			text-align: end !important;
+			padding-right: 0.5rem;
+
+		}
+
+		.column-total {
+			width: 20%;
+			text-align: end !important;
+			padding-right: 0.5rem;
+
+		}
+
+
+		table {
+			width: 100%;
+		}
+
+		.data-box1 {
+			height: 8rem;
+			border-radius: 15px;
+			background-color: rgb(240, 240, 240);
+			padding-top: 0.5rem;
+		}
+
+		.data-box2 {
+			height: 7rem;
+			border-radius: 15px;
+			background-color: rgb(240, 240, 240);
+			padding-top: 0.5rem;
+		}
+
+		.tittle-recept {
+			width: 100%;
+			height: auto;
+			display: block;
+			font-weight: bolder;
+		}
+
+
+
+		.text-secondary-d1 {
+			color: rgb(114, 130, 153) !important;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="main_container">
+		<table>
+			<tbody>
+				<tr>
+					<td style="width: 50% !important;">
+						<div class="data-box1">
+							<table>
+								<tbody>
+									<tr>
+										<div style="text-align: center;">
+											<img src="https://res.cloudinary.com/mag-dev/image/upload/v1678830475/replit/default_pyvhwy.png"
+												width="auto">
+										</div>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+					<td style="width: 50% !important;">
+						<div class="data-box1">
+							<div
+								style="text-align: center; width: 94%; padding-left: 3%; padding-right: 3%; padding-top: 1rem;">
+								<label><strong>ORDEN DE COMPRA</strong></label>
+								<br>
+								<label>{{doc_data.general_data.purchaseorder_id}}</label>
+							</div>
+							<div style="text-align: center; width: 94%; padding-left: 3%; padding-right: 3%;">
+								<label><strong>CENTRO DE COSTO</strong></label>
+								<br>
+								<label>{{doc_data.general_data.cost_center}}</label>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table>
+			<tbody>
+				<tr>
+					<td style="width: 50% !important;">
+						<div class="data-box2">
+							<table>
+								<tbody>
+									<tr>
+										<div class="bgc-default-tp1" style="width: 100%; text-align: center;">
+											DATOS DEL PROVEEDOR:
+										</div>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>RAZÓN SOCIAL:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											{{doc_data.supplier_data.name}}
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>RUC:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											{{doc_data.supplier_data.ruc}}
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>DIRECCIÓN:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											{{doc_data.supplier_data.address}}
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>TELÉFONO:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											{{doc_data.supplier_data.phone}}
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>FECHA:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											{{doc_data.supplier_data.date}}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+					<td style="width: 50% !important;">
+						<div class="data-box2">
+							<table>
+								<tbody>
+									<tr>
+										<div class="bgc-default-tp1" style="width: 100%; text-align: center;">
+											FACTURAR A:
+										</div>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>RAZÓN SOCIAL:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											Importadora Menfri Cia Ltda
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>RUC:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											000000000000000000
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>TELÉFONO:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											(02)-000-000
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>EMAIL:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											menfri@email.com
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%; text-align: left;">
+											<strong>DIRECCIÓN:</strong>
+										</td>
+										<td style="width: 60%; text-align: left;">
+											dirección Menfri
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="secction" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
+			<div class="info-factura">
+				<table class="content-table">
+					<thead>
+						<tr>
+							<th class="column-cant">CANTIDAD</th>
+							<th class="column-desc">DESCRIPCIÓN</th>
+							<th class="column-uni">V. UNITARIO</th>
+							<th class="column-total">V. TOTAL</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							{{#each doc_data.purchaseorder_items}}
+							<td>{{cantidad}}</td>
+							<td>
+								{{description}}
+								<br>
+								{{fechaInstalacion}}
+							</td>
+							<td class="th-valor">${{toFixed precioUnitario}}</td>
+							<td class="th-valor">${{toFixed precioTotalSinImpuesto}}</td>
+							{{/each}}
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td class="th-table">
+								SUBTOTAL 12%</td>
+							<td class="th-valor">${{toFixed doc_data.total_values.subtotal12}}</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td class="th-table">
+								SUBTOTAL 0%</td>
+							<td class="th-valor">${{toFixed doc_data.total_values.subtotal0}}</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td class="th-table">
+								TOTAL DESCUENTO</td>
+							<td class="th-valor">${{toFixed doc_data.total_values.total_descuento}}</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td class="th-table">
+								IVA 12%</td>
+							<td class="th-valor">${{toFixed doc_data.total_values.iva}}</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td class="th-table">
+								VALOR TOTAL</td>
+							<td class="th-valor">${{toFixed doc_data.total_values.valor_total}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="bgc-default-tp1" style="text-align: center; margin-bottom: 0.5rem;">
+			INFORMACIÓN ADICIONAL
+		</div>
+		<div>
+			<strong>
+				DOCUMENTO N°: {{doc_data.additional_info.current_doc}} de
+				{{doc_data.additional_info.total_docs}}
+			</strong>
+		</div>
+		<div>
+			<div>
+				<strong>FORMA DE PAGO:</strong>
+			</div>
+			<div>
+				<ul>
+					<li>Número de cuotas: {{doc_data.additional_info.dues}}</li>
+					<li>Días de crédito: {{doc_data.additional_info.credit_days}}</li>
+					<li>Mes de cuota: {{doc_data.additional_info.currentMonth}}</li>
+				</ul>
+			</div>
+		</div>
+		<div>
+			<div>
+				<strong>REQUISITOS PARA EL PAGO:</strong>
+			</div>
+			<div>
+				<ul>
+					<li>
+						Para evitar devoluciones, el número de orden de compra debe estar en su factura.
+					</li>
+					<li>
+						Su factura debe detallar todos los ítems que contiene esta orden y cuadrar exactamente
+						su valor.
+					</li>
+					{{#if doc_data.additional_info.is_purchase_commision}}
+					<li>
+						Una vez recibida la factura se procederá con la facturación de la comisión de agencia
+						del <strong>{{doc_data.additional_info.purchase_commission}}%.</strong>
+						{{/if}}
+
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div>
+			<div>
+				<strong>ELABORADO POR:</strong> {{doc_data.additional_info.elaborated_by}}
+			</div>
+		</div>
+		<div style="padding-top: 1rem;">
+			<span class="text-secondary-d1">Importadora Menfri</span>
+		</div>
+		<!--
+      <div style="margin-top: 0.5rem; text-align: center;">
+        <img style="max-height: 3rem; margin: 0%;"
+          src="https://d15k2d11r6t6rl.cloudfront.net/public/users/Integrators/BeeProAgency/817693_801621/Captura-removebg-preview.png">
+      </div>
+-->
+</body>
+
+</html>
