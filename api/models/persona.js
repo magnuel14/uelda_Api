@@ -104,6 +104,7 @@ module.exports = function (sequelize, DataTypes) {
         foto: {
             type: DataTypes.STRING(100)
         },
+        //0 activada - 1 desactivada
         estadoCuenta: {
             type: DataTypes.INTEGER
         }

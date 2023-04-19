@@ -1,26 +1,36 @@
-const User = require('../models/persona');
-const jwt= require('jsonwebtoken')
+'use strict';
+const jwt = require('jsonwebtoken');
+const models = require('../models');
+const bcrypt = require('bcryptjs');
+const Persona = models.persona;
+const Cuenta = models.cuenta;
 
-const UserContrl = {};
+let controller = {
+    /** Implementado try cath*/
+    getUsers: async (req, res) => {
+        const users = await Persona.findAll();
+        res.json(users);
+    },
+    singnin: async (req, res) => {
+        try {
+            const { correo, clave } = req.body;
+            const userCuenta = await Cuenta.findOne({ where: { correo: correo } });
+            if (!userCuenta) return res.send('The email does not exists');
+            //console.log(userCuenta);
 
-UserContrl.signup = async (req, res) => {
-    const { email, password } = req.body;
-    const newUser = new User({email, password});
-    await newUser.save();
-    //console.log(newUser);
-    //res.send({ message: 'User create' });
-    const token = jwt.sign({_id: newUser._id},'secretkey');
-    res.json({token});
+            let passwordEncript = userCuenta.clave;
+            console.log(passwordEncript);
+            const passwordValide = await bcrypt.compare(clave, passwordEncript);
+            console.log(passwordValide)
+
+            if (!passwordValide) return res.send('Wrong Password');
+            const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key);
+            res.json({ token, userCuenta });
+
+        } catch (error) {
+            return res.status(500).json({ message: error.message })
+        }
+    }
+    /** fin Implementado try cath*/
 }
-UserContrl.singnin = async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({email:email, password: password});
-    if (!user) return res.send('The email does not exists');
-    if (user.password!==password) return res.send('Wrong Password'); 
-    const token = jwt.sign({_id: user._id},'secretkey');
-    res.json({token});
-    
-}
-
-
-module.exports = UserContrl;
+module.exports = controller;
