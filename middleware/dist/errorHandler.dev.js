@@ -6,14 +6,14 @@ var errorHandler = function errorHandler(error, req, res, next) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          mysqlConnection = require('../api/connection/connection');
-          mailing = require('../helpers/emailTemplates');
+          //mysqlConnection = require('../api/connection/connection');
+          mailing = require('../../helpers/emailTemplates');
           _context.next = 4;
           return regeneratorRuntime.awrap(mailing.sendSystemErrorMail(error.stack));
 
         case 4:
           _context.next = 6;
-          return regeneratorRuntime.awrap(mysqlConnection.query("INSERT INTO `audit-outdoors`.log SET error=?, date = NOW()", error.stack.replaceAll("'", "")));
+          return console.log(error);
 
         case 6:
           return _context.abrupt("return", res.status(400).send(error.message));
