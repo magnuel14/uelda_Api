@@ -6,7 +6,7 @@ const controller = '../controllers/userController';
 const userController = require(controller);
 
 router.get('/get-allUsers', tryCatch(userController.getUsers));
-router.post('/signin',tryCatch(userController.singnin));
+router.post('/signin',userController.singnin);
 
 
 module.exports = router;
