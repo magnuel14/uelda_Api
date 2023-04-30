@@ -87,7 +87,7 @@ mailing.sendOrderDetail = async (idOrder, code) => {
 
       let template = handlebars.compile(html);
       let subjectMail, headerMail, nameMail, mailToSend;
-      const codeF= code;
+      const codeF = code;
       switch (code) {
         case 1: //Vendedor
           //console.log(additionalInfo.idsalesman);
@@ -122,7 +122,7 @@ mailing.sendOrderDetail = async (idOrder, code) => {
           //eddytorresmi@gmail.com , cris.ivancola@gmail.com
           //mailToSend = process.env.DEV_MODE ? 'true' + additionalInfo.email : 'manuelvicente912@gmail.com'
           mailToSend = 'manuelvicente912@gmail.com'
-          mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, subjectMail,codeFlag)
+          mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, subjectMail, codeFlag)
           break;
         case 3:  //Jefes de despacho
           let dispatchers = await mysqlConnection.query(`select name , emailuser from user inner join loguser where loguser.iduser = user.id && loguser.idlog = "1.87.3." && permiso = 1; `);
@@ -137,7 +137,7 @@ mailing.sendOrderDetail = async (idOrder, code) => {
               const flag = dispatchers[i].emailuser;
               //console.log(flag);
               mailToSend = flag;
-              mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, headerMail,codeFlag)
+              mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, headerMail, codeFlag)
             } else {
               //console.log("-->>> No tiene Correo " + dispatchers[i].name)
             }
@@ -174,7 +174,7 @@ mailing.sendOrderDetail = async (idOrder, code) => {
               //console.log(flag);
               mailToSend = flag;
               //console.log("-->>> " + jefesCartera[i].emailuser)
-              mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, headerMail,codeFlag)
+              mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, headerMail, codeFlag)
             } else {
               //console.log("-->>> No tiene Correo " + jefesCartera[i].name)
             }
@@ -199,15 +199,15 @@ function file(path) {
 async function sendMail(mailOptions) {
   try {
     let result = await transporter.sendMail(mailOptions)
-    //console.log('mail sent')
+    console.log('mail sent')
     return 1;
   } catch (error) {
-    //console.log("error al enviar");
+    console.log("error al enviar");
     return 0;
   }
 }
 async function mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, subjectMail, codeFlag) {
-  let htmlCompiled = template({ nameToSend: nameMail, headerMail: headerMail, products: productsArray, order: order, codeFlag:codeFlag, timeStamp: new Date().toLocaleString("es-ES", 'America/Bogota'), additionalInfo: additionalInfo, logo: process.env.LOGO_EMAIL, miniLogo: process.env.MINI_LOGO_EMAIL });
+  let htmlCompiled = template({ nameToSend: nameMail, headerMail: headerMail, products: productsArray, order: order, codeFlag: codeFlag, timeStamp: new Date().toLocaleString("es-ES", 'America/Bogota'), additionalInfo: additionalInfo, logo: process.env.LOGO_EMAIL, miniLogo: process.env.MINI_LOGO_EMAIL });
   let mailOptions = {
     from: '"Menfri Tienda Virtual" <notifiaciones@tecsicom.com>', // sender address
     to: mailToSend,// list of receivers additionalInfo.email + ', cris.ivancola@gmail.com',
@@ -319,9 +319,8 @@ mailing.sendSystemErrorMail = async (data) => {
     let template = handlebars.compile(htmlF)
     let htmlToSent = template(replacements)
     let mailOptions = {
-      from: `"Error Handling - Menfri" <notifiaciones@tecsicom.com>`,
-      // sender address 'cris.ivancola@gmail.com', 'eddytorresmi@gmail.com',
-      to: ['manuelvicente912@gmail.com','manuelvicente67@hotmail.com'],
+      from: `"Error Handling - Menfri" <manuelvicente912@gmail.com>`,
+      to: ['manuelvicente67@hotmail.com'],
       subject: 'System Error Menfri', // Subject line
       text: 'Error Menfri', // plain text body
       html: htmlToSent,
