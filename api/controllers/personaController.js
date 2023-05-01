@@ -11,14 +11,13 @@ const PerfilProfesional = models.perfilProfesional;
 let controller = {
     /** Implementado try cath*/
     /**
-     * createPerson: 
-     * Funcion para crear un nuevo usuario.
+     * createPerson: Funcion para crear un nuevo usuario.
      * @param {*} req 
      * @param {*} res 
      * Recibe una lista de información personal, de indole familiar y direccion de su domicilio
      * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
      * Antes de registrar esta información, se comprueba si ya existe una persona con ese numero de identificación
-     * Enla tabla perfilProfesional, solo se registrará la informacion cuando el usuario no tenga el rol estudiante
+     * En la tabla perfilProfesional, solo se registrará la informacion cuando el usuario no tenga el rol estudiante
      * @returns La información de la persona y su cuenta.
      */
     createPerson: async (req, res) => {
@@ -90,10 +89,15 @@ let controller = {
             return res.json({ message: 'Ya existe un usuario con esta información' });
         }
     },
-
-   
-
-
+    /**
+     * updatePersona: Esta función sirve para editar la información de la persona 
+     * @param {*} req 
+     * @param {*} res 
+     * Recibe la lista de atributos de su modelo descritos en Persona.
+     * Se carga el id de Perosna el cual se usa en la condicion "where" (sql)
+     * Y la udatepersonaData que es la informacin nueva para la Persona
+     * @returns Un mensaje de comprobación de estado de la tarea
+     */
     updatePersona: async (req, res) => {
         const { idP,
             nombre, apellido, nacionalidad, cuidadNaci, provincia, tipoDocId, numeroId,
@@ -116,34 +120,41 @@ let controller = {
         return res.json({ message: 'Se ha actualizado la información de usario' });
     },
 
-    updateCuenta: async (req, res) => {
-        const {
-            idP,
-            tipoDiscapacidad,
-            porcentajeDiscapacidad,
-            nCarnetDiscapacidad,
-            tipoEnfermedadCatastrofica
-        } = req.body
-        const dataInfoMed = {
-            tipoDiscapacidad: tipoDiscapacidad,
-            porcentajeDiscapacidad: porcentajeDiscapacidad,
-            nCarnetDiscapacidad: nCarnetDiscapacidad,
-            tipoEnfermedadCatastrofica: tipoEnfermedadCatastrofica
-        };
-        const infoMedica = await InfoMedica.findOne({ where: { id_persona: idP } });
-        if (!infoMedica) return res.json({ message: 'Ocurrio un error' })
-        await InfoMedica.update(dataInfoMed, { where: { id: infoMedica.id } });
-        return res.json({ message: 'Se ha actualizado la información' });
-    },
-
     /**
-    * Función paraactualizar datos de la información medica 
-    * @param {*} req 
-    * @param {*} res 
-    * Recibe una lista logada al modelo infoMedica
-    * Recibe el id de la persona
-    * @returns Un mensaje de comprobación de estado de la tarea
-    */
+ * updateCuenta: Esta funcion sirve para actulizar los datos de cuenta
+ * @param {*} req 
+ * @param {*} res 
+ * Esta lista se compone idP, correo y clave.
+ * Esta clave es encriptada para enviarla a la BD
+ * Se hace una busqueda en cuenta por id
+ * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
+ * Y la dataCuenta que es la información nueva de cuenta
+ * @returns Un mensaje de comprobación de estado de la tarea
+ */
+    updateCuenta: async (req, res) => {
+        const { idP, correo, clave } = req.body
+        var salt = bcrypt.genSaltSync(10);
+        let password = bcrypt.hashSync(clave, salt);
+        const dataCuenta = {
+            correo: correo,
+            clave: password,
+        };
+        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: idP } });
+        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+        return res.json({ message: 'Se ha actualizado la información de cuenta' });
+    },
+    /**
+   * Función para actualizar datos de la información medica de la personas de UELDA
+   * @param {*} req 
+   * @param {*} res 
+   * Recibe una lista ligada al modelo infoMedica
+   * Recibe el id de la persona
+   * Se hace una busqueda en infoMedica por id
+   * Se carga el id de infoMedica el cual se usa en la condicion "where" (sql)
+   * Y la dataInfoMed que es la información nueva de infoMedica
+   * @returns Un mensaje de comprobación de estado de la tarea
+   */
     updateinfoMedica: async (req, res) => {
         const {
             idP,
@@ -158,55 +169,74 @@ let controller = {
             nCarnetDiscapacidad: nCarnetDiscapacidad,
             tipoEnfermedadCatastrofica: tipoEnfermedadCatastrofica
         };
-        const infoMedica = await InfoMedica.findOne({ where: { id_persona: idP } });
-        if (!infoMedica) return res.json({ message: 'Ocurrio un error' })
-        await InfoMedica.update(dataInfoMed, { where: { id: infoMedica.id } });
+        const updateinfoMedica = await InfoMedica.findOne({ where: { id_persona: idP } });
+        if (!updateinfoMedica) return res.json({ message: 'Ocurrio un error' })
+        await InfoMedica.update(dataInfoMed, { where: { id: updateinfoMedica.id } });
         return res.json({ message: 'Se ha actualizado la información' });
     },
-
+    /**
+     * updatePerfilProfe: Función para actualizar datos del ´Perfil Profesional del personal de UELDA
+     * @param {*} req 
+     * @param {*} res 
+     * Recibe una lista ligada al modelo perfilProfesional
+     * Recibe el id de la persona
+     * Se hace una busqueda en PerfilProfesional por id_persona
+     * Se carga el id de PerfilProfesional el cual se usa en la condicion "where" (sql)
+    * Y la dataPerfilProfe que es la información nueva de PerfilProfesional
+    * @returns Un mensaje de comprobación de estado de la tarea
+     */
     updatePerfilProfe: async (req, res) => {
         const {
             idP,
-            tipoDiscapacidad,
-            porcentajeDiscapacidad,
-            nCarnetDiscapacidad,
-            tipoEnfermedadCatastrofica
+            razonUELDA,
+            fechaInMag,
+            tiempoMagisterio,
+            fechaInULEDA,
+            tiempoUelda,
+            categoría,
+            añosCategoria,
+            relacionLaboral,
         } = req.body
-        const dataInfoMed = {
-            tipoDiscapacidad: tipoDiscapacidad,
-            porcentajeDiscapacidad: porcentajeDiscapacidad,
-            nCarnetDiscapacidad: nCarnetDiscapacidad,
-            tipoEnfermedadCatastrofica: tipoEnfermedadCatastrofica
-        };
-        const infoMedica = await InfoMedica.findOne({ where: { id_persona: idP } });
-        if (!infoMedica) return res.json({ message: 'Ocurrio un error' })
-        await InfoMedica.update(dataInfoMed, { where: { id: infoMedica.id } });
-        return res.json({ message: 'Se ha actualizado la información' });
+        const dataPerfilProfe = {
+            razonUELDA: razonUELDA,
+            fechaInMag: fechaInMag,
+            tiempoMagisterio: tiempoMagisterio,
+            fechaInULEDA: fechaInULEDA,
+            tiempoUelda: tiempoUelda,
+            categoría: categoría,
+            añosCategoria: añosCategoria,
+            relacionLaboral: relacionLaboral
+        }
+        const infoperfilProfesional = await PerfilProfesional.findOne({ where: { id_persona: idP } });
+        if (!infoperfilProfesional) return res.json({ message: 'Ocurrio un error' })
+        await PerfilProfesional.update(dataPerfilProfe, { where: { id: infoperfilProfesional.id } });
+        return res.json({ message: 'Se ha actualizado la información de su perfil profesional' });
     }
+    /**Fin funciones validadas */
 }
 
 module.exports = controller;
 //revisar optimizar flujo entre usuarios
 
- /**
-     * Funcion para guardar datos sobre informacion medica del usuario
-     * @param {*} req 
-     * @param {*} res 
-     * Recibe una lista de datos relacionaos con su modelo
-     * @returns Un mensaje sobre el estado de la tarea.
-     */
-    /** 
-    infoMedica: async (idP, res) => {
-        const dataInfoMed = {
-            id_persona: idP,
-            tipoDiscapacidad: "Ninguna",
-            porcentajeDiscapacidad: "0%",
-            nCarnetDiscapacidad: "N/A",
-            tipoEnfermedadCatastrofica: "Ninguna"
-        };
-        //const persona = await Persona.findOne({ where: { id: idP } });
-        //return res.json({persona });
-        const newInfoMedica = await InfoMedica.create(dataInfoMed);
-        return res.json({ message: 'Se ha ingresado la información', newInfoMedica });
-    },
+/**
+    * Funcion para guardar datos sobre informacion medica del usuario
+    * @param {*} req 
+    * @param {*} res 
+    * Recibe una lista de datos relacionaos con su modelo
+    * @returns Un mensaje sobre el estado de la tarea.
     */
+/**
+infoMedica: async (idP, res) => {
+    const dataInfoMed = {
+        id_persona: idP,
+        tipoDiscapacidad: "Ninguna",
+        porcentajeDiscapacidad: "0%",
+        nCarnetDiscapacidad: "N/A",
+        tipoEnfermedadCatastrofica: "Ninguna"
+    };
+    //const persona = await Persona.findOne({ where: { id: idP } });
+    //return res.json({persona });
+    const newInfoMedica = await InfoMedica.create(dataInfoMed);
+    return res.json({ message: 'Se ha ingresado la información', newInfoMedica });
+},
+*/

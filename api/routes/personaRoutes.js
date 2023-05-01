@@ -4,10 +4,14 @@ const router = express.Router();
 
 const userController = require('../controllers/personaController');
 
-router.post('/registrar',tryCatch(userController.createPerson));
+router.post('/registrar_persona',tryCatch(userController.createPerson));
 //router.post('/regis_infoMec',tryCatch(userController.infoMedica));
-router.post('/update_infoMec',userController.updateinfoMedica);
-router.post('/update_infoPersona',userController.updatePersona);
+router.post('/update_infoMec',tryCatch(userController.updateinfoMedica));
+router.post('/update_infoPersona',tryCatch(userController.updatePersona));
+router.post('/update_infoCuenta',tryCatch(userController.updateCuenta));
+router.post('/update_infoPPro',tryCatch(userController.updatePerfilProfe));
+
+
 
 
 
