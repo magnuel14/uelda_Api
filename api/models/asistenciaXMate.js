@@ -2,7 +2,7 @@ module.exports = function (sequelize, DataTypes) {
     var materia = require('./materia');
     var Materia = new materia(sequelize, DataTypes);
     var AsistenciaXMate = sequelize.define('asistenciaXMate', {
-        //las asistencias por materia en eucacion basica superior y bachillerato
+        //las asistencias por materia en educacion basica superior y bachillerato
         id: {
             autoIncrement: true,
             primaryKey: true,

@@ -12,33 +12,39 @@ let controller = {
         const users = await Persona.findAll();
         res.json(users);
     },
+    /**
+     * Funcion para ingresar al sistema
+     * @param {*} req 
+     * @param {*} res 
+     * Recibe el correro, clave del usuario
+     * checkedT esta es la comporbacion del usuario si desa ser recordado.
+     * @returns Un token de sesión e información del usuario
+     */
     singnin: async (req, res) => {
-        try {
-            const { correo, clave, checkedT } = req.body;
-            //busca que el correro sea valido
-            const userCuenta = await Cuenta.findOne({ where: { correo: correo } });
-            if (!userCuenta) return res.send('The email does not exists');
-            //console.log(userCuenta);
-            let passwordEncript = userCuenta.clave;
-            //console.log(passwordEncript);
-            const passwordValide = await bcrypt.compare(clave, passwordEncript);
-            //console.log(passwordValide)
-            if (!passwordValide) return res.send('Wrong Password');
-            const persona = await Persona.findOne({ where: { id: userCuenta.id_persona } })
-            const rol = await Rol.findOne({ where: { id: persona.id_rol } })
-            if (!checkedT) {
-                const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '8h' });
-                res.json({ token, persona, rol });
-                console.log('8 horas')
-            } else {
-                const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '30d' });
-                res.json({ token, persona, rol });
-                console.log('30 dias')
-            }
-        } catch (error) {
-            return res.status(500).json({ message: error.message })
+        const { correo, clave, checkedT } = req.body;
+        //busca que el correro sea valido
+        const userCuenta = await Cuenta.findOne({ where: { correo: correo } });
+        if (!userCuenta) return res.json({ message: 'No existe una cuenta ligada a ese correro', flag: 1 });
+        if (userCuenta.estado != 0) return res.json(
+            { message: 'La cuenta esta inactiva, comuniquese con la UELDA', flag: 1 });
+        //console.log(userCuenta);
+        let passwordEncript = userCuenta.clave;
+        //console.log(passwordEncript);
+        const passwordValide = await bcrypt.compare(clave, passwordEncript);
+        //console.log(passwordValide)
+        if (!passwordValide) return res.json({ message: 'Contraseña equivocada', flag: 1 });
+        const persona = await Persona.findOne({ where: { id: userCuenta.id_persona } })
+        const rol = await Rol.findOne({ where: { id: persona.id_rol } })
+        if (!checkedT) {
+            const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '8h' });
+            res.json({ token, persona, rol });
+            console.log('8 horas')
+        } else {
+            const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '30d' });
+            res.json({ token, persona, rol });
+            console.log('30 dias')
         }
     }
-    /** fin Implementado try cath*/
 }
+/** fin Implementado try cath*/
 module.exports = controller;

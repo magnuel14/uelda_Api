@@ -13,9 +13,7 @@ module.exports = function (sequelize, DataTypes) {
         clave: {
             type: DataTypes.STRING
         },
-        token: {
-            type: DataTypes.TEXT
-        },
+        //0 activada - 1 desactivada
         estado: {
             type: DataTypes.INTEGER,
         }

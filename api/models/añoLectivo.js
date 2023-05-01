@@ -19,6 +19,7 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         // fecha de fin del ciclo escolar 
+        // dd-mm-año
         fechaFin: {
             type: DataTypes.STRING(50)
         },

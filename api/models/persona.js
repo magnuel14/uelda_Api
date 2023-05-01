@@ -103,10 +103,6 @@ module.exports = function (sequelize, DataTypes) {
         },
         foto: {
             type: DataTypes.STRING(100)
-        },
-        //0 activada - 1 desactivada
-        estadoCuenta: {
-            type: DataTypes.INTEGER
         }
     }, {
         freezeTableName: true,
@@ -139,6 +135,9 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'id_persona'
         });
         models.persona.hasMany(models.postAcademico, {
+            foreignKey: 'id_persona'
+        }); 
+        models.persona.hasMany(models.asistencia, {
             foreignKey: 'id_persona'
         }); 
     };

@@ -20,7 +20,7 @@ module.exports = function (sequelize, DataTypes) {
         url_archivo: {
             type: DataTypes.STRING(255)
         },
-        //si estaen 0 el contenido estara disponible - si esta en 1 el contenido estaba oculto.
+        //si esta en 0 el contenido estara disponible - si esta en 1 el contenido estaba oculto.
         visibilidad: {
             type: DataTypes.INTEGER,
         }

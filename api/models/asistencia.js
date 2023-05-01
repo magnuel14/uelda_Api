@@ -1,9 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
-    var curso = require('./curso');
-    var Curso = new curso(sequelize, DataTypes);
-    var AsistenciaXDia = sequelize.define('asistenciaXDia', {
-        //las asistencias por dia en educacion basica e inicial, debio a que un solo profesor da 
-        //clases duarante todo el dia academico
+    var perosna = require('./persona');
+    var Persona = new perosna(sequelize, DataTypes);
+    var Asistencia = sequelize.define('asistencia', {
+        //Asistencia para la planta docente y admistrativa del plantel
         id: {
             autoIncrement: true,
             primaryKey: true,
@@ -25,8 +24,8 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    AsistenciaXDia.belongsTo(Curso, {
-        foreignKey: 'id_curso'
+    Asistencia.belongsTo(Persona, {
+        foreignKey: 'id_persona'
     });
-    return AsistenciaXDia;
+    return Asistencia;
 };

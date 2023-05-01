@@ -41,8 +41,8 @@ try {
     console.error('Unable to connect to the server ', error);
 }
 //rol de usuarios
-require('./api/controllers/dataRol/insert_rol');
 */
+//require('./api/controllers/dataRol/insert_rol');
 
 //routes
 app.use('/uelda/user', require('./api/routes/userRoutes'))
