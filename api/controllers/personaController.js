@@ -32,11 +32,8 @@ let controller = {
         //Preguntar que datos se debe validar
         //Correropersonal para crear cuenta.
         const {
-            nombre, apellido, nacionalidad, cuidadNaci, provincia, tipoDocId, numeroId,
-            fechaNaci, edad, correoPersonal, correroInstitucional, celular, telefono,
-            estadoCivil, etnia, nCarFamilia, nCarEdu, parroquia, barrio, refeCasa,
-            idenCasa, callePrin, calleSecond, codigoUnicLuz, estadoPadres, listaHogar,
-            foto, id_rol
+            nombre, apellido, tipoDocId, numeroId,
+            correoPersonal, id_rol
         } = req.body
 
         const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
@@ -45,15 +42,10 @@ let controller = {
         if (cedulaValida.flag == 3) {
             if (!searchPersona) {
                 const personaData = {
-                    nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-                    provincia: provincia, tipoDocId: tipoDocId, numeroId: numeroId, fechaNaci: fechaNaci,
-                    edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
-                    celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
-                    nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia, barrio: barrio,
-                    refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin, calleSecond: calleSecond,
-                    codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
-                    foto: foto,
-                    id_rol: id_rol
+                    nombre: nombre, apellido: apellido,
+                    tipoDocId: tipoDocId, numeroId: numeroId,
+                    id_rol: id_rol,
+                    correoPersonal: correoPersonal,
                 }
                 const persona = await Persona.create(personaData);
                 const newPersona = await Persona.findOne({ where: { numeroId: numeroId } });
@@ -114,12 +106,14 @@ let controller = {
      * @returns Un mensaje de comprobación de estado de la tarea
      */
     updatePersona: async (req, res) => {
-        const { externalId,
+        const {
+            externalId,
             nombre, apellido, nacionalidad, cuidadNaci, provincia, tipoDocId, numeroId,
             fechaNaci, edad, correoPersonal, correroInstitucional, celular, telefono,
             estadoCivil, etnia, nCarFamilia, nCarEdu, parroquia, barrio, refeCasa,
-            idenCasa, callePrin, calleSecond, codigoUnicLuz, estadoPadres, listaHogar,
-            foto } = req.body;
+            idenCasa, callePrin, calleSecond, codigoUnicLuz, estadoPadres, listaHogar, estadoAc,
+            foto
+        } = req.body;
 
         const udatepersonaData = {
             nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
@@ -129,7 +123,7 @@ let controller = {
             nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia, barrio: barrio,
             refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin, calleSecond: calleSecond,
             codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
-            foto: foto
+            estadoAc: estadoAc, foto: foto
         };
         await Persona.update(udatepersonaData, { where: { external_id: externalId } });
         return res.json({ message: 'Se ha actualizado la información de usario' });
