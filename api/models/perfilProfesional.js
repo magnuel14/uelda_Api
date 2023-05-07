@@ -29,16 +29,20 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         //Categoría
-         categoría: {
+        categoría: {
             type: DataTypes.STRING(50)
         },
         //Años en esta categoría
-        añosCategoria: {
+        aniosCategoria: {
             type: DataTypes.STRING(50)
         },
         //Relación laboral
         relacionLaboral: {
             type: DataTypes.STRING(50)
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,

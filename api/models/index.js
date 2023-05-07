@@ -13,7 +13,7 @@ fs
         return (file.indexOf(".") !== 0) && (file !== "index.js");
     })
     .forEach(function (file) {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
+        var model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
         db[model.name] = model;
     });
 

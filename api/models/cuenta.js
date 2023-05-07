@@ -16,6 +16,10 @@ module.exports = function (sequelize, DataTypes) {
         //0 activada - 1 desactivada
         estado: {
             type: DataTypes.INTEGER,
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,

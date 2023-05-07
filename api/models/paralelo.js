@@ -12,6 +12,10 @@ module.exports = function (sequelize, DataTypes) {
         titulo: {
             type: DataTypes.STRING(50)
         },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        }
     }, {
         freezeTableName: true,
         createdAt: 'fecha_registro',
@@ -23,5 +27,13 @@ module.exports = function (sequelize, DataTypes) {
     Paralelo.belongsTo(Curso, {
         foreignKey: 'id_curso'
     });
+    Paralelo.associate = function (models) {
+        models.paralelo.hasMany(models.materia, {
+            foreignKey: 'id_paralelo'
+        });
+        models.paralelo.hasMany(models.asistenciaXDia, {
+            foreignKey: 'id_paralelo'
+        });
+    };
     return Paralelo;
 };

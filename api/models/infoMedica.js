@@ -23,6 +23,10 @@ module.exports = function (sequelize, DataTypes) {
         tipoEnfermedadCatastrofica: {
             type: DataTypes.STRING(50)
         },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        }
     }, {
         freezeTableName: true,
         createdAt: 'fecha_registro',

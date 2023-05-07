@@ -21,6 +21,10 @@ module.exports = function (sequelize, DataTypes) {
         //si esta en 0 el estudiante esta aprobado - si esta en 1 no ha sido aprobado
         aprobado:{
             type: DataTypes.INTEGER
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,

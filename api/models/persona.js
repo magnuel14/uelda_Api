@@ -25,7 +25,9 @@ module.exports = function (sequelize, DataTypes) {
         },
         //tipo documento identifcacion
         tipoDocId: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.ENUM({
+                values: ['cedula', 'pasaporte']
+            })
         },
         //numero de identificacion
         numeroId: {
@@ -102,7 +104,17 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         foto: {
-            type: DataTypes.STRING(100)
+            type: DataTypes.TEXT
+        },
+        //estado del estuidante
+        //matriculado ,retirado, graduados
+        //     0     -     1   -   2       
+        estadoAc: {
+            type: DataTypes.INTEGER,
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,
@@ -136,10 +148,10 @@ module.exports = function (sequelize, DataTypes) {
         });
         models.persona.hasMany(models.postAcademico, {
             foreignKey: 'id_persona'
-        }); 
+        });
         models.persona.hasMany(models.asistencia, {
             foreignKey: 'id_persona'
-        }); 
+        });
     };
     return Persona;
 };

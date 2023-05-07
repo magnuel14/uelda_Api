@@ -28,7 +28,6 @@ app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: './uploads'
 }));
-/** 
 //sincronizacion dde los modelos de la bd
 try {
     // basede dtatos 
@@ -41,7 +40,6 @@ try {
     console.error('Unable to connect to the server ', error);
 }
 //rol de usuarios
-*/
 //require('./api/controllers/dataRol/insert_rol');
 
 //routes

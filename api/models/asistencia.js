@@ -2,7 +2,7 @@ module.exports = function (sequelize, DataTypes) {
     var perosna = require('./persona');
     var Persona = new perosna(sequelize, DataTypes);
     var Asistencia = sequelize.define('asistencia', {
-        //Asistencia para la planta docente y admistrativa del plantel
+        //Asistencia para la planta docente y admistrativos del plantel
         id: {
             autoIncrement: true,
             primaryKey: true,
@@ -17,8 +17,12 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         observacion: {
-            type: DataTypes.STRING(255)
+            type: DataTypes.TEXT
         },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        }
     }, {
         freezeTableName: true,
         createdAt: 'fecha_registro',

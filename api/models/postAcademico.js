@@ -18,11 +18,15 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.TEXT
         },
         url_archivo: {
-            type: DataTypes.STRING(255)
+            type: DataTypes.TEXT
         },
         //si esta en 0 el contenido estara disponible - si esta en 1 el contenido estaba oculto.
         visibilidad: {
             type: DataTypes.INTEGER,
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,

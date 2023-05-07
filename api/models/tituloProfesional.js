@@ -15,7 +15,12 @@ module.exports = function (sequelize, DataTypes) {
         especialidad: {
             type: DataTypes.STRING(50)
         },
-    }, {freezeTableName: true,
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        }
+    }, {
+        freezeTableName: true,
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
