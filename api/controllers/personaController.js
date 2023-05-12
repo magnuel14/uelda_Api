@@ -97,6 +97,17 @@ let controller = {
         }
     },
     /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getPersonByEx: async (req, res) => {
+        const { externalId } = req.params;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        return res.json({ infoPersona });
+    },
+    /**
      * updatePersona: Esta función sirve para editar la información de la persona 
      * @param {*} req 
      * @param {*} res 
@@ -125,6 +136,7 @@ let controller = {
             codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
             estadoAc: estadoAc, foto: foto
         };
+        console.log('datos: ', udatepersonaData)
         await Persona.update(udatepersonaData, { where: { external_id: externalId } });
         return res.json({ message: 'Se ha actualizado la información de usario' });
     },
@@ -178,6 +190,18 @@ let controller = {
         });
     },
     /**
+    * 
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+    getInfoMedicByEx: async (req, res) => {
+        const { externalId } = req.params;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const infoMedic = await InfoMedica.findOne({ where: { id_persona: infoPersona.id } });
+        return res.json({ infoMedic });
+    },
+    /**
    * updateinfoMedica: Función para actualizar datos de la información medica de la personas de UELDA
    * @param {*} req 
    * @param {*} res 
@@ -208,6 +232,18 @@ let controller = {
         await InfoMedica.update(dataInfoMed, { where: { id: updateinfoMedica.id } });
         return res.json({ message: 'Se ha actualizado la información' });
     },
+      /**
+    * 
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+      getInfoProByEx: async (req, res) => {
+        const { externalId } = req.params;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const infoPro = await PerfilProfesional.findOne({ where: { id_persona: infoPersona.id } });
+        return res.json({ infoPro });
+    },
     /**
      * updatePerfilProfe: Función para actualizar datos del ´Perfil Profesional del personal de UELDA
      * @param {*} req 
@@ -228,7 +264,7 @@ let controller = {
             fechaInULEDA,
             tiempoUelda,
             categoría,
-            añosCategoria,
+            aniosCategoria,
             relacionLaboral,
         } = req.body
         const dataPerfilProfe = {
@@ -238,7 +274,7 @@ let controller = {
             fechaInULEDA: fechaInULEDA,
             tiempoUelda: tiempoUelda,
             categoría: categoría,
-            añosCategoria: añosCategoria,
+            aniosCategoria: aniosCategoria,
             relacionLaboral: relacionLaboral
         }
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
