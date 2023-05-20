@@ -1,6 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
     var rol = require('../models/rol');
     var Rol = new rol(sequelize, DataTypes);
+    var paralelo = require('../models/paralelo');
+    var Paralelo = new paralelo(sequelize, DataTypes);
     var Persona = sequelize.define('persona', {
         id: {
             autoIncrement: true,
@@ -54,9 +56,20 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         estadoCivil: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.ENUM({
+                values: [
+                    'casado',
+                    'union libre',
+                    'viudo',
+                    'divorciado',
+                    'soltero'
+                ]
+            })
         },
         etnia: {
+            type: DataTypes.STRING(50)
+        },
+        tipoGenero: {
             type: DataTypes.STRING(50)
         },
         //numero de cargas familiares
@@ -124,6 +137,9 @@ module.exports = function (sequelize, DataTypes) {
     Persona.belongsTo(Rol, {
         foreignKey: 'id_rol'
     });
+    Persona.belongsTo(Paralelo, {
+        foreignKey: 'id_paralelo'
+    });
     Persona.associate = function (models) {
         models.persona.hasOne(models.cuenta, {
             foreignKey: 'id_persona'
@@ -132,9 +148,6 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'id_persona'
         });
         models.persona.hasMany(models.perfilProfesional, {
-            foreignKey: 'id_persona'
-        });
-        models.persona.hasMany(models.paralelo, {
             foreignKey: 'id_persona'
         });
         models.persona.hasMany(models.infoMedica, {
@@ -150,6 +163,9 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'id_persona'
         });
         models.persona.hasMany(models.asistencia, {
+            foreignKey: 'id_persona'
+        });
+        models.persona.hasOne(models.infoDocente, {
             foreignKey: 'id_persona'
         });
     };
