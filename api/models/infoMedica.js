@@ -7,7 +7,13 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //Tipo de discapacidad 
+        //Discapacidad 0 = si, 1 = no 
+        discapacidad: {
+            type: DataTypes.INTEGER
+        },
+        //Tipo de discapacidad: 
+        //discapacidad = 0 se activa esta casilla
+        //discapacidad = 1  esta casilla permamece desactivada
         tipoDiscapacidad: {
             type: DataTypes.STRING(50)
         },
@@ -19,7 +25,13 @@ module.exports = function (sequelize, DataTypes) {
         nCarnetDiscapacidad: {
             type: DataTypes.STRING(50)
         },
-        //Tipo de enfermedad catastrófica
+        //enfermedadCatastrofica 0 = si, 1 = no 
+        enfermedadCatastrofica: {
+            type: DataTypes.INTEGER
+        },
+        //Tipo de enfermedad catastrófica:
+        //enfermedadCatastrofica = 0 se activa esta casilla
+        //enfermedadCatastrofica = 1  esta casilla permamece desactivada
         tipoEnfermedadCatastrofica: {
             type: DataTypes.STRING(50)
         },

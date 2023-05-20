@@ -55,7 +55,9 @@ try {
 
 //routes
 app.use('/uelda/user', require('./api/routes/userRoutes'))
-app.use('/uelda/persona', require('./api/routes/personaRoutes'))
+app.use('/uelda/personal', require('./api/routes/personalRoutes'))
+app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
+
 
 //middleware
 app.use(errorHandler);

@@ -8,12 +8,20 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //escriba en numero el nivel de su titulo
-        nivelTitulo: {
+        nivelEducacion: {
             type: DataTypes.STRING(50)
         },
-        especialidad: {
-            type: DataTypes.STRING(50)
+        tercerNivel: {
+            type: DataTypes.STRING(100)
+        },
+        tercerEspecialidad: {
+            type: DataTypes.STRING(100)
+        },
+        cuartoNivel: {
+            type: DataTypes.STRING(100)
+        },
+        cuartoEspecialidad: {
+            type: DataTypes.STRING(100)
         },
         external_id: {
             type: DataTypes.UUID,

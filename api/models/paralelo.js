@@ -1,6 +1,4 @@
 module.exports = function (sequelize, DataTypes) {
-    var persona = require('./persona');
-    var Persona = new persona(sequelize, DataTypes);
     var curso = require('./curso');
     var Curso = new curso(sequelize, DataTypes);
     var Paralelo = sequelize.define('paralelo', {
@@ -21,13 +19,13 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    Paralelo.belongsTo(Persona, {
-        foreignKey: 'id_persona'
-    });
     Paralelo.belongsTo(Curso, {
         foreignKey: 'id_curso'
     });
     Paralelo.associate = function (models) {
+        models.paralelo.hasMany(models.persona, {
+            foreignKey: 'id_paralelo'
+        });
         models.paralelo.hasMany(models.materia, {
             foreignKey: 'id_paralelo'
         });
