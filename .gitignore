@@ -3,3 +3,4 @@ node_modules
 .vscode
 .env copy
 azure-pipelines.yml
+config.json
