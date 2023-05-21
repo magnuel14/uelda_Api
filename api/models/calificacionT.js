@@ -1,28 +1,26 @@
+//Calificación por Trimestre
 module.exports = function (sequelize, DataTypes) {
     var materia = require('./materia');
     var Materia = new materia(sequelize, DataTypes);
-    var AsistenciaXMate = sequelize.define('asistenciaXMate', {
-        //las asistencias por materia en educacion basica superior y bachillerato
+    var CalificacionT = sequelize.define('calificacionT', {
         id: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //numero de horas 
-        //llenar de forma grupal o de forma individual
-        horasClase: {
+        //primer parcial primer quimestre
+        primerTrimestre: {
             type: DataTypes.STRING(50)
         },
-        // o si asiste, 1 si falta
-        asistencia: {
+        segundoTrimestre: {
+            type: DataTypes.STRING(50)
+        },
+       tercerTrimestre: {
+            type: DataTypes.STRING(50)
+        },
+        //si esta en 0 el estudiante esta aprobado - si esta en 1 no ha sido aprobado
+        aprobado:{
             type: DataTypes.INTEGER
-        },
-        //llenar de forma grupal
-        fechaRegistro: {
-            type: DataTypes.STRING(50)
-        },
-        observacion: {
-            type: DataTypes.STRING(255)
         },
         external_id: {
             type: DataTypes.UUID,
@@ -33,8 +31,15 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    AsistenciaXMate.belongsTo(Materia, {
+    CalificacionT.belongsTo(Materia, {
         foreignKey: 'id_materia'
     });
-    return AsistenciaXMate;
+    return CalificacionT;
 };
+//timestrs
+/**
+ - esta tabla se va actualizar cuando se presenten
+ - los lineamientos sobre la forma de calificacion 
+ - de los trimestrs
+ * crear una tabla de calificaciones por timestre
+ */

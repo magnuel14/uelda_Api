@@ -1,9 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
-    var paralelo = require('./paralelo');
-    var Paralelo = new paralelo(sequelize, DataTypes);
-    var AsistenciaXDia = sequelize.define('asistenciaXDia', {
-        //las asistencias por dia en educacion basica e inicial, debio a que un solo profesor da 
-        //clases duarante todo el dia academico
+    var perosna = require('./persona');
+    var Persona = new perosna(sequelize, DataTypes);
+    var Asistencia = sequelize.define('asistencia', {
+        //Asistencia para la planta docente y admistrativos del plantel
         id: {
             autoIncrement: true,
             primaryKey: true,
@@ -18,7 +17,7 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         observacion: {
-            type: DataTypes.STRING(255)
+            type: DataTypes.TEXT
         },
         external_id: {
             type: DataTypes.UUID,
@@ -29,8 +28,8 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    AsistenciaXDia.belongsTo(Paralelo, {
-        foreignKey: 'id_paralelo'
+    Asistencia.belongsTo(Persona, {
+        foreignKey: 'id_persona'
     });
-    return AsistenciaXDia;
+    return Asistencia;
 };

@@ -10,7 +10,13 @@ module.exports = function (sequelize, DataTypes) {
         },
         //Razón de llegar a la unidad
         razonUELDA: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.ENUM({
+                values: [
+                    'Cectorización',
+                    'Bienestar Social',
+                    'Concurso'
+                ]
+            })
         },
         //Fecha de ingreso al magisterio
         fechaInMag: {
@@ -29,16 +35,26 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         //Categoría
-         categoría: {
+        categoria: {
             type: DataTypes.STRING(50)
         },
         //Años en esta categoría
-        añosCategoria: {
+        aniosCategoria: {
             type: DataTypes.STRING(50)
         },
         //Relación laboral
         relacionLaboral: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.ENUM({
+                values: [
+                    'Nombramiento Permanente',
+                    'Nombramiento Provisional',
+                    'Contrato'
+                ]
+            })
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,

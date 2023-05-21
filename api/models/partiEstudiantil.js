@@ -7,12 +7,12 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //1ro 80 horas
+        //1ro 80 horas -2do 120 horas
         numHoras: {
             type: DataTypes.STRING(50)
         },
-        //calificacion 1ro
-        calificacion1: {
+        //calificacion 
+        calificacion: {
             type: DataTypes.STRING(50)
         },
         //aprobado
@@ -23,6 +23,10 @@ module.exports = function (sequelize, DataTypes) {
         observacion: {
             type: DataTypes.STRING(250)
         },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        }
     }, {
         freezeTableName: true,
         createdAt: 'fecha_registro',

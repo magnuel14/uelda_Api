@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-    var añoLectivo = require('./añoLectivo');
-    var AñoLectivo = new añoLectivo(sequelize, DataTypes);
+    var anioLectivo = require('./anioLectivo');
+    var AnioLectivo = new anioLectivo(sequelize, DataTypes);
     var Curso = sequelize.define('curso', {
         id: {
             autoIncrement: true,
@@ -10,22 +10,20 @@ module.exports = function (sequelize, DataTypes) {
         nivelAcaemico: {
             type: DataTypes.STRING(50)
         },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        }
     }, {
         freezeTableName: true,
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    Curso.belongsTo(AñoLectivo, {
-        foreignKey: 'id_añoLectivo'
+    Curso.belongsTo(AnioLectivo, {
+        foreignKey: 'id_anioLectivo'
     });
     Curso.associate = function (models) {
-        models.curso.hasMany(models.materia, {
-            foreignKey: 'id_curso'
-        });
         models.curso.hasMany(models.paralelo, {
-            foreignKey: 'id_curso'
-        });
-        models.curso.hasMany(models.asistenciaXDia, {
             foreignKey: 'id_curso'
         });
     };

@@ -2,11 +2,11 @@ const express = require('express');
 const { tryCatch } = require('../../utils/tryCatch');
 const router = express.Router();
 
-const controller = '../controllers/userController';
-const userController = require(controller);
+const userController = require('../controllers/userController');
 
 router.get('/get-allUsers', tryCatch(userController.getUsers));
-router.post('/signin',userController.singnin);
+//inicar sesión
+router.post('/signin', (userController.singnin));
 
 
 module.exports = router;

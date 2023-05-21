@@ -19,7 +19,9 @@ module.exports = function (sequelize, DataTypes) {
         },
         //tipó de documento de identificacion
         tipoDocId: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.ENUM({
+                values: ['cedula', 'pasaporte']
+            })
         },
         //numero de identificacion
         numeroId: {
@@ -56,11 +58,13 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER
         },
         //autorizacion de retirar la carpeta del estudiante, solo un repsentante
+        //0 autorizado - 1 no autorizado
         autorizacionRetirarDoc: {
             type: DataTypes.INTEGER
         },
-        foto: {
-            type: DataTypes.STRING(100)
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {freezeTableName: true,
         createdAt: 'fecha_registro',

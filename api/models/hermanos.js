@@ -7,17 +7,12 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        nombre: {
-            type: DataTypes.STRING(50)
+        id_hermano: {
+            type: DataTypes.INTEGER
         },
-        apellido: {
-            type: DataTypes.STRING(50)
-        },
-        tipoDocIdentificacion: {
-            type: DataTypes.STRING(50)
-        },
-        numeroIdentificacion: {
-            type: DataTypes.STRING(10)
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,

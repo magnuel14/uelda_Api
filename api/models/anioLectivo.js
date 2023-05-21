@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var AñoLectivo = sequelize.define('añoLectivo', {
+    var AnioLectivo = sequelize.define('anioLectivo', {
         id: {
             autoIncrement: true,
             primaryKey: true,
@@ -19,12 +19,17 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         // fecha de fin del ciclo escolar 
+        // dd-mm-año
         fechaFin: {
             type: DataTypes.STRING(50)
         },
         //presencial - distancia - virtual
         modalidad: {
             type: DataTypes.STRING(50)
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         // se istancia falso las estampas de tiempo debido a que no
@@ -33,11 +38,11 @@ module.exports = function (sequelize, DataTypes) {
         freezeTableName: true
     });
 
-    AñoLectivo.associate = function (models) {
+    AnioLectivo.associate = function (models) {
         models.rol.hasMany(models.curso, {
-            foreignKey: 'id_añoLectivo'
+            foreignKey: 'id_anioLectivo'
         });
     };
 
-    return AñoLectivo;
+    return AnioLectivo;
 };

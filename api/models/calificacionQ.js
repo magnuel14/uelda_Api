@@ -1,7 +1,8 @@
+//Calificación por Quimestre
 module.exports = function (sequelize, DataTypes) {
     var materia = require('./materia');
     var Materia = new materia(sequelize, DataTypes);
-    var Calificacion = sequelize.define('calificacion', {
+    var CalificacionQ = sequelize.define('calificacionQ', {
         id: {
             autoIncrement: true,
             primaryKey: true,
@@ -50,7 +51,7 @@ module.exports = function (sequelize, DataTypes) {
         supletorio: {
             type: DataTypes.STRING(50)
         },
-        supletoriodos: {
+        remeial: {
             type: DataTypes.STRING(50)
         },
         gracia: {
@@ -59,16 +60,20 @@ module.exports = function (sequelize, DataTypes) {
         //si esta en 0 el estudiante esta aprobado - si esta en 1 no ha sido aprobado
         aprobado:{
             type: DataTypes.INTEGER
+        },
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    Calificacion.belongsTo(Materia, {
+    CalificacionQ.belongsTo(Materia, {
         foreignKey: 'id_materia'
     });
-    return Calificacion;
+    return CalificacionQ;
 };
 //quimestre
 /**

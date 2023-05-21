@@ -21,6 +21,15 @@ app.use(session({
 }));
 app.use(flash());
 app.use(cors());
+// Configurar cabeceras y CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
+});
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -40,13 +49,15 @@ try {
 } catch (error) {
     console.error('Unable to connect to the server ', error);
 }
-//rol de usuarios
-require('./api/controllers/dataRol/insert_rol');
 */
+//rol de usuarios
+//require('./api/controllers/dataRol/insert_rol');
 
 //routes
 app.use('/uelda/user', require('./api/routes/userRoutes'))
-app.use('/uelda/persona', require('./api/routes/personaRoutes'))
+app.use('/uelda/personal', require('./api/routes/personalRoutes'))
+app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
+
 
 //middleware
 app.use(errorHandler);
