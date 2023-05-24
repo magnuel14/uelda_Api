@@ -15,7 +15,7 @@ const Rol = models.rol;
 
 let controller = {
     /** Implementado try cath*/
-    /**getEstudiantes: Funcion get para obtener lalista de usuarios con rol estudiante
+    /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
      * @param {*} req 
      * @param {*} res 
      * @returns Una lista en formato json de los estuidantes registrados
@@ -34,8 +34,6 @@ let controller = {
      * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
      * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero 
      * de identificación
-     * En la tabla perfilProfesional, solo se registrará la informacion cuando el usuario no tenga 
-     * el rol estudiante
      * @returns La información de la persona y su cuenta.
      */
     createEstudiante: async (req, res) => {
@@ -146,10 +144,10 @@ let controller = {
         }
     },
     /**
-     * 
-     * @param {*} req 
+     * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
+     * @param {*} req externalId
      * @param {*} res 
-     * @returns 
+     * @returns Una lista en formato json de la información del estudiante en caso que exista
      */
     getEstudianteByEx: async (req, res) => {
         const { externalId } = req.params;
@@ -157,42 +155,47 @@ let controller = {
         return res.json({ infoEstudiante });
     },
     /**
-     * updatePersona: Esta función sirve para editar la información de la persona 
+     * updateEstudiante: Esta función sirve para editar la información del estudiante
      * @param {*} req 
      * @param {*} res 
-     * Recibe la lista de atributos de su modelo descritos en Persona.
-     * Se carga el id de Perosna el cual se usa en la condicion "where" (sql)
-     * Y la udatepersonaData que es la informacin nueva para la Persona
-     * @returns Un mensaje de comprobación de estado de la tarea
+     * Recibe la lista de atributos segun su modelo descritos en Persona, pero con la restricción
+     * de que hay que diferenciar campos para el personal y para el estudiante como:
+     *  estadoPadres, listaHogar, estadoAc.
+     * Se carga el externalId del Estudiante el cual se usa en la condicion "where" (sql)
+     * Y la upateEstudianteData que es la informacin nueva para el Estudiante
+     * @returns Un mensaje de comprobación del estado de la tarea
      */
     updateEstudiante: async (req, res) => {
         const {
             externalId,
-            nombre, apellido, nacionalidad, cuidadNaci, provincia,
-            fechaNaci, edad, correoPersonal, correroInstitucional, celular, telefono,
-            estadoCivil, etnia, tipoGenero, parroquia, barrio, refeCasa,
-            idenCasa, callePrin, calleSecond, codigoUnicLuz, estadoPadres, listaHogar, estadoAc
+            nombre, apellido, nacionalidad, cuidadNaci, provincia, fechaNaci,
+            edad, correoPersonal, celular, telefono,
+            etnia, tipoGenero,
+            parroquia, barrio, refeCasa, idenCasa, callePrin, calleSecond, codigoUnicLuz,
+            estadoPadres, listaHogar,
+            estadoAc
         } = req.body;
-
-        const udatepersonaData = {
+        const upateEstudianteData = {
             nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-            provincia: provincia, fechaNaci: fechaNaci,
-            edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
-            celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
-            tipoGenero: tipoGenero, parroquia: parroquia,
-            barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
-            calleSecond: calleSecond, codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres,
-            listaHogar: listaHogar,
+            provincia: provincia, fechaNaci: fechaNaci, edad: edad, correoPersonal: correoPersonal,
+            celular: celular, telefono: telefono,
+            etnia: etnia, tipoGenero: tipoGenero,
+            parroquia: parroquia, barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
+            calleSecond: calleSecond,
+            codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
             estadoAc: estadoAc
         };
-        //console.log('datos: ', udatepersonaData)
-        await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-        return res.json({ message: 'Se ha actualizado la información de usario' });
+        //console.log('datos: ', upateEstudianteData)
+        await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+        return res.json({ message: 'Se ha actualizado la información del estudiante' });
     },
     /**
-     * 
-     * @param {*} req 
+     * getRepresentanteByEx: Función para obtener el o los representantes registrados del estudiante según su 
+     * externalId
+     * Se hace una busqueda del estudiante, el externalId se lo emplea en la condicion "where" (sql)
+     * @param {*} req externalId
      * @param {*} res 
+     * @returns Una lista en formato json del o los representantes registrados
      */
     getRepresentanteByEx: async (req, res) => {
         const { externalId } = req.params;
@@ -201,9 +204,16 @@ let controller = {
         return res.json({ infoRepresentante });
     },
     /**
-     * 
+     *createRepresentante: Función para crear un representante 
+     *Se recibe una lista de atributos especificados en el modelo de representante
+     *Se comprueba si ya existe un representante segun su numero de DNI
+     *Se comprueba si ya existe un representante con autorizacionRetirarDoc = 0,
+     *Esto debido a que solo un representante debe tener esta autorización
+     *Se coprueba si el docuemnto DNI es pasaporte o cedula
+     *En caso de ser cedula e la valida
      * @param {*} req 
      * @param {*} res 
+     * @returns Un mensaje del estado de la tarea
      */
     createRepresentante: async (req, res) => {
         const {
@@ -215,7 +225,6 @@ let controller = {
         } = req.body;
         const searchRepresentante = await Representante.findOne({ where: { numeroId: numeroId } })
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-
         const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
         let contadorCero = 0;
         //console.log(infoRepresentantes)
@@ -296,15 +305,20 @@ let controller = {
                     }
                 }
             }
-
         } else {
             return res.json({ message: 'Ya existe un representante con información' });
         }
     },
     /**
-     * 
+     *updateRepresentante: Función para actulizar datos de un representante 
+     *Se recibe una lista de atributos especificados en el modelo de representante
+     *a excepción de tipo tipoDocId, numeroId.
+     *Se comprueba si ya existe un representante segun su numero de DNI
+     *Se comprueba si ya existe un representante con autorizacionRetirarDoc = 0,
+     *Esto debido a que solo un representante debe tener esta autorización
      * @param {*} req 
      * @param {*} res 
+     * @returns Un mensaje del estado de la tarea
      */
     updateRepresentante: async (req, res) => {
         const {
@@ -325,7 +339,6 @@ let controller = {
         }
         const searchRepresentante = await Representante.findOne({ where: { numeroId: numeroId } })
         if (searchRepresentante) {
-
             if (contadorCero === 1) {
                 if (autorizacionRetirarDoc == 0) {
                     return res.json({ message: 'Ya existe un representante con autorizacion de retirar la carpeta del estudiante' });
@@ -347,13 +360,36 @@ let controller = {
             return res.json({ message: 'No existe un respresentante con esa información' });
         }
     },
+    /**
+    *deleteRepresentante: Función para eliminar al representante 
+    *Se recibe el externalId del estudiante y el numeroId del representante
+    *Se comprueba si existe un representante segun su numero de DNI
+    *Se comprueba si almenos hay un representante registrado
+    *En caso de que solo exista un representante registrado no se puede elimnar a dicho representante
+    * @param {*} req 
+    * @param {*} res 
+    * @returns Un mensaje del estado de la tarea
+    */
     deleteRepresentante: async (req, res) => {
         const {
+            externalId,
             numeroId
         } = req.body;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
+        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
+        const searchRepresentante = await Representante.findOne({ where: { numeroId: numeroId } });
+        if (searchRepresentante) {
+            //console.log(infoRepresentantes)
+            if (infoRepresentantes.length == 1) {
+                return res.json({ message: 'No se puede eliminar, el estudiante debe tener almenos 1 representante registrado.' });
+            } else {
+                const deleteRepresentante = await Representante.destroy({ where: { numeroId: numeroId } });
+                return res.json({ message: 'Se ha eliminado a su representante', deleteRepresentante });
+            }
+        } else {
+            return res.json({ message: 'No existe un representante con esa infórmación' });
+        }
 
-        const deleteRepresentante = await Representante.destroy({ where: { numeroId: numeroId } });
-        return res.json({ message: 'Se ha eliminado a su representante', deleteRepresentante });
     }
     /**Fin funciones validadas */
 }
