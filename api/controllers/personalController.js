@@ -144,7 +144,7 @@ let controller = {
     updatePersona: async (req, res) => {
         const {
             externalId,
-            nombre, apellido, nacionalidad, cuidadNaci, provincia, tipoDocId, numeroId,
+            nombre, apellido, nacionalidad, cuidadNaci, provincia,
             fechaNaci, edad, correoPersonal, correroInstitucional, celular, telefono,
             estadoCivil, etnia, tipoGenero, nCarFamilia, nCarEdu, parroquia, barrio, refeCasa,
             idenCasa, callePrin, calleSecond
@@ -152,7 +152,7 @@ let controller = {
 
         const udatepersonaData = {
             nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-            provincia: provincia, tipoDocId: tipoDocId, numeroId: numeroId, fechaNaci: fechaNaci,
+            provincia: provincia, fechaNaci: fechaNaci,
             edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
             celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
             tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
@@ -164,16 +164,16 @@ let controller = {
         return res.json({ message: 'Se ha actualizado la información de usario' });
     },
     /**
- * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
- * @param {*} req 
- * @param {*} res 
- * Esta lista se compone idP, correo y clave.
- * Se hace una busqueda en cuenta por id
- * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
- * Y la dataCuenta que es la información nueva de cuenta
- * Esta clave es encriptada para enviarla a la BD
- * @returns Un mensaje de comprobación de estado de la tarea
- */
+     * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
+     * @param {*} req 
+     * @param {*} res 
+     * Esta lista se compone idP, correo y clave.
+     * Se hace una busqueda en cuenta por id
+     * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
+     * Y la dataCuenta que es la información nueva de cuenta
+     * Esta clave es encriptada para enviarla a la BD
+     * @returns Un mensaje de comprobación de estado de la tarea
+     */
     updateCuenta: async (req, res) => {
         const { externalId, correo, clave, foto } = req.body
         var salt = bcrypt.genSaltSync(10);
@@ -193,15 +193,15 @@ let controller = {
         return res.json({ message: 'Se ha actualizado la información de cuenta' });
     },
     /**
-* updateEstadoCuenta: Esta funcion sirve para actualizar el estado de una cuenta
-* @param {*} req 
-* @param {*} res 
-* Esta lista se compone idP y estado.
-* Se hace una busqueda en cuenta por id de persona
-* Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
-* Y la dataCuenta que es la información nueva de cuenta
-* @returns Un mensaje de comprobación de estado de la tarea
-*/
+    * updateEstadoCuenta: Esta funcion sirve para actualizar el estado de una cuenta
+    * @param {*} req 
+    * @param {*} res 
+    * Esta lista se compone idP y estado.
+    * Se hace una busqueda en cuenta por id de persona
+    * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
+    * Y la dataCuenta que es la información nueva de cuenta
+    * @returns Un mensaje de comprobación de estado de la tarea
+    */
     updateEstadoCuenta: async (req, res) => {
         const { externalId, estado } = req.body
         const dataCuenta = {
@@ -338,10 +338,8 @@ let controller = {
             cuartoNivel,
             cuartoEspecialidad
         } = req.body
-
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
         const infoperfilProfesional = await PerfilProfesional.findOne({ where: { id_persona: infoPersona.id } });
-
         const datatituloPro = {
             nivelEducacion: nivelEducacion,
             tercerNivel: tercerNivel,
