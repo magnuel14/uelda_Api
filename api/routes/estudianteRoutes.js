@@ -6,7 +6,7 @@ const estudianteController = require('../controllers/estudianteController');
 
 //estudiante
 router.get('/getEstudiantes', tryCatch(estudianteController.getEstudiantes));
-router.post('/registrar_estudiante', tryCatch(estudianteController.createEstudiante));
+router.post('/registrar_estudiante', (estudianteController.createEstudiante));
 router.get('/getEstudianteByEx/:externalId', tryCatch(estudianteController.getEstudianteByEx));
 router.post('/update_infoEstudiante', tryCatch(estudianteController.updateEstudiante));
 //representante
@@ -14,6 +14,11 @@ router.get('/getRepresentanteByEx/:externalId', tryCatch(estudianteController.ge
 router.post('/registrar_representante', tryCatch(estudianteController.createRepresentante));
 router.post('/update_infoRepresentante', tryCatch(estudianteController.updateRepresentante));
 router.post('/delete_infoRepresentante', tryCatch(estudianteController.deleteRepresentante));
+//hernanos
+router.get('/getHermanosByEx/:externalId', (estudianteController.getAllhermanos));
+router.post('/registrar_hermano', (estudianteController.addHermano));
+router.post('/delete_hermano', (estudianteController.deleteHermano));
+
 
 
 //router.get('/getEstudianteByEx/:externalId',tryCatch(estudianteController.getEstudianteByEx));

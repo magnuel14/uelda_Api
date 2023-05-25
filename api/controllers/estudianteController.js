@@ -7,11 +7,9 @@ const cedulaValidator = require('../../helpers/cedulaHelper');
 
 const Persona = models.persona;
 const Representante = models.representante;
+const Hermano = models.hermano;
 const Cuenta = models.cuenta;
 const InfoMedica = models.infoMedica;
-const Rol = models.rol;
-
-
 
 let controller = {
     /** Implementado try cath*/
@@ -37,8 +35,6 @@ let controller = {
      * @returns La información de la persona y su cuenta.
      */
     createEstudiante: async (req, res) => {
-        //Preguntar que datos se debe validar
-        //Correropersonal para crear cuenta.
         const {
             nombre, apellido, tipoDocId, numeroId,
             correoPersonal
@@ -46,71 +42,14 @@ let controller = {
         const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
         if (!searchPersona) {
             if (tipoDocId == 'pasaporte') {
-                const personaData = {
+                const estudianteData = {
                     nombre: nombre, apellido: apellido,
                     tipoDocId: tipoDocId, numeroId: numeroId,
+                    id_rol: "6",
                     correoPersonal: correoPersonal,
-                    id_rol: "6"
                 }
-                const persona = await Persona.create(personaData);
-                const newPersona = await Persona.findOne({ where: { numeroId: numeroId } });
-                var salt = bcrypt.genSaltSync(10);
-                let password = bcrypt.hashSync(numeroId, salt);
-                const dataCuenta = {
-                    correo: correoPersonal,
-                    clave: password,
-                    estado: 0,
-                    id_persona: newPersona.id,
-                };
-                const newPersonaCuenta = await Cuenta.create(dataCuenta);
-                //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
-                if (!newPersonaCuenta) return res.json({ message: 'La cuenta no se puedo crear, revise bien su información.' })
-                //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
-                const dataRol = await Rol.findOne({ where: { id: newPersona.id_rol } });
-                const dataInfoMed = {
-                    id_persona: newPersona.id,
-                    discapacidad: "1",
-                    tipoDiscapacidad: "N/A",
-                    porcentajeDiscapacidad: "N/A",
-                    nCarnetDiscapacidad: "N/A",
-                    enfermedadCatastrofica: "1",
-                    tipoEnfermedadCatastrofica: "N/A"
-                };
-                const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                if (dataRol == 'Estudiante') {
-                    return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica });
-                } else {
-                    const dataPerfilProfe = {
-                        id_persona: newPersona.id,
-                        fechaInMag: 'dia/mes/año',
-                        tiempoMagisterio: 'N/A',
-                        fechaInULEDA: 'dia/mes/año',
-                        tiempoUelda: 'N/A',
-                        categoria: 'N/A',
-                        aniosCategoria: 'N/A',
-                    }
-                    const newperfilProfesional = await PerfilProfesional.create(dataPerfilProfe);
-                    const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona: newPersona.id } });
-                    const datatituloPro = {
-                        id_perfilProfesional: infoPerfilPro.id,
-                        nivelEducacion: 'N/A',
-                        tercerNivel: 'N/A',
-                        tercerEspecialidad: 'N/A',
-                        cuartoNivel: 'N/A',
-                        cuartoEspecialidad: 'N/A'
-                    }
-                    const newtituloProfesional = await TituloProfesional.create(datatituloPro);
-                    return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
-                }
-            } else {
-                const cedulaValida = cedulaValidator.validator(numeroId);
-                if (cedulaValida.flag == 3) {
-                    const estudianteData = {
-                        nombre: nombre, apellido: apellido,
-                        tipoDocId: tipoDocId, numeroId: numeroId,
-                        id_rol: "6",
-                        correoPersonal: correoPersonal,
-                    }
+                const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+                if (!infoEstudianteCuenta) {
                     const estudiante = await Persona.create(estudianteData);
                     const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
                     var salt = bcrypt.genSaltSync(10);
@@ -123,7 +62,6 @@ let controller = {
                     };
                     const newEstudianteCuenta = await Cuenta.create(dataCuenta);
                     if (!newEstudianteCuenta) return res.json({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
-                    const dataRol = await Rol.findOne({ where: { id: newEstudiante.id_rol } });
                     const dataInfoMed = {
                         id_persona: newEstudiante.id,
                         discapacidad: "1",
@@ -135,6 +73,46 @@ let controller = {
                     };
                     const newInfoMedica = await InfoMedica.create(dataInfoMed);
                     return res.json({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
+                } else {
+                    return res.json({ message: 'Ya existe un estudiante con ese correro' });
+                }
+            } else {
+                const cedulaValida = cedulaValidator.validator(numeroId);
+                if (cedulaValida.flag == 3) {
+                    const estudianteData = {
+                        nombre: nombre, apellido: apellido,
+                        tipoDocId: tipoDocId, numeroId: numeroId,
+                        id_rol: "6",
+                        correoPersonal: correoPersonal,
+                    }
+                    const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+                    if (!infoEstudianteCuenta) {
+                        const estudiante = await Persona.create(estudianteData);
+                        const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
+                        var salt = bcrypt.genSaltSync(10);
+                        let password = bcrypt.hashSync(numeroId, salt);
+                        const dataCuenta = {
+                            correo: correoPersonal,
+                            clave: password,
+                            estado: 0,
+                            id_persona: newEstudiante.id,
+                        };
+                        const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+                        if (!newEstudianteCuenta) return res.json({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
+                        const dataInfoMed = {
+                            id_persona: newEstudiante.id,
+                            discapacidad: "1",
+                            tipoDiscapacidad: "N/A",
+                            porcentajeDiscapacidad: "N/A",
+                            nCarnetDiscapacidad: "N/A",
+                            enfermedadCatastrofica: "1",
+                            tipoEnfermedadCatastrofica: "N/A"
+                        };
+                        const newInfoMedica = await InfoMedica.create(dataInfoMed);
+                        return res.json({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
+                    } else {
+                        return res.json({ message: 'Ya existe un estudiante con ese correro' });
+                    }
                 } else {
                     return res.json({ message: cedulaValida.message });
                 }
@@ -185,9 +163,20 @@ let controller = {
             codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
             estadoAc: estadoAc
         };
-        //console.log('datos: ', upateEstudianteData)
-        await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
-        return res.json({ message: 'Se ha actualizado la información del estudiante' });
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const infoEstudianteCuenta = await Persona.findOne({ where: { correo: correoPersonal } });
+        if (!infoEstudianteCuenta) {
+            const dataCuenta = {
+                correo: correoPersonal,
+            };
+            const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+            await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+            //console.log('datos: ', upateEstudianteData)
+            await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+            return res.json({ message: 'Se ha actualizado la información del estudiante' });
+        } else {
+            return res.json({ message: 'Este correo esta ligado a otra cuenta' });
+        }
     },
     /**
      * getRepresentanteByEx: Función para obtener el o los representantes registrados del estudiante según su 
@@ -390,6 +379,77 @@ let controller = {
             return res.json({ message: 'No existe un representante con esa infórmación' });
         }
 
+    },
+    /**
+     * getAllhermanos: Función para recuperar todos los hermanos del estudiante segun
+     * el externalId del estudiante
+     * @param {*} req 
+     * @param {*} res 
+     * @returns Una lista de hermanos en formato json
+     */
+    getAllhermanos: async (req, res) => {
+        const {
+            externalId
+        } = req.params;
+        const infopersona = await Persona.findOne({ where: { external_id: externalId } });
+        const infoHermanos = await Hermano.findAll({ where: { id_persona: infopersona.id } });
+        let containerHermanos = [];
+        for (let i = 0; i < infoHermanos.length; i++) {
+            const element = infoHermanos[i].id_hermano;
+            const infoHermano = await Persona.findOne({ where: { id: element } });
+            const nombre = infoHermano.nombre;
+            const apellido = infoHermano.apellido;
+            const numeroId = infoHermano.numeroId;
+            containerHermanos.push({ nombre: nombre, apellido: apellido, numeroId: numeroId, id: element })
+        }
+        return res.json({ containerHermanos });
+    },
+    /**
+     * addHermano: Funciónpra agregar un hermano que este registrado en el sistema
+     * se hace la busqueda de un estudiante segun su numero de DNI 
+     * En caso de exista una persoana que cumpla con esta condición
+     * Se agrega un hermano al estudiante
+     * En esta tabalsolo se guarda el id del estudiante
+     * debido a que el resto de la informacion
+     * @param {*} req 
+     * @param {*} res
+     * @returns  
+     */
+    addHermano: async (req, res) => {
+        const {
+            externalId,
+            numeroId
+        } = req.body;
+        const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+        const infoHermano = await Persona.findOne({ where: { numeroId: numeroId } });
+        if (infoHermano) {
+            const hermanoData = {
+                id_hermano: infoHermano.id,
+                id_persona: infoEstudiante.id,
+            };
+            const newHermano = await Hermano.create(hermanoData);
+            return res.json({ message: 'Se ha guardado  su hermano', newHermano });
+        } else {
+            return res.json({ message: 'No existe un estudiante con este numero de DNI' });
+        }
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    deleteHermano: async (req, res) => {
+        const {
+            numeroId
+        } = req.body;
+        const searchHermano = await Persona.findOne({ where: { numeroId: numeroId } });
+        if (searchHermano) {
+            await Hermano.destroy({ where: { id_hermano: searchHermano.id } });
+            return res.json({ message: 'Se ha eliminado su hermano' });
+        } else {
+            return res.json({ message: 'Error al Eliminar' });
+        }
     }
     /**Fin funciones validadas */
 }
