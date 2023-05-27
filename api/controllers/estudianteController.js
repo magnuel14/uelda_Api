@@ -2,6 +2,7 @@
 const jwt = require('jsonwebtoken');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
+const { Op } = require("sequelize");
 
 const cedulaValidator = require('../../helpers/cedulaHelper');
 
@@ -39,15 +40,17 @@ let controller = {
             nombre, apellido, tipoDocId, numeroId,
             correoPersonal
         } = req.body
+        const estudianteData = {
+            nombre: nombre, apellido: apellido,
+            tipoDocId: tipoDocId, numeroId: numeroId,
+            id_rol: "6",
+            correoPersonal: correoPersonal,
+        }
+
         const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
         if (!searchPersona) {
             if (tipoDocId == 'pasaporte') {
-                const estudianteData = {
-                    nombre: nombre, apellido: apellido,
-                    tipoDocId: tipoDocId, numeroId: numeroId,
-                    id_rol: "6",
-                    correoPersonal: correoPersonal,
-                }
+
                 const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
                 if (!infoEstudianteCuenta) {
                     const estudiante = await Persona.create(estudianteData);
@@ -74,17 +77,12 @@ let controller = {
                     const newInfoMedica = await InfoMedica.create(dataInfoMed);
                     return res.json({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
                 } else {
-                    return res.json({ message: 'Ya existe un estudiante con ese correro' });
+                    return res.json({ message: 'Ya existe un estudiante con ese correo' });
                 }
             } else {
                 const cedulaValida = cedulaValidator.validator(numeroId);
                 if (cedulaValida.flag == 3) {
-                    const estudianteData = {
-                        nombre: nombre, apellido: apellido,
-                        tipoDocId: tipoDocId, numeroId: numeroId,
-                        id_rol: "6",
-                        correoPersonal: correoPersonal,
-                    }
+
                     const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
                     if (!infoEstudianteCuenta) {
                         const estudiante = await Persona.create(estudianteData);
@@ -111,7 +109,7 @@ let controller = {
                         const newInfoMedica = await InfoMedica.create(dataInfoMed);
                         return res.json({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
                     } else {
-                        return res.json({ message: 'Ya existe un estudiante con ese correro' });
+                        return res.json({ message: 'Ya existe un estudiante con ese correo' });
                     }
                 } else {
                     return res.json({ message: cedulaValida.message });
@@ -144,6 +142,9 @@ let controller = {
      * @returns Un mensaje de comprobación del estado de la tarea
      */
     updateEstudiante: async (req, res) => {
+
+        //validar cunado existe un estudiante
+        //validar quese actulize el correo personal
         const {
             externalId,
             nombre, apellido, nacionalidad, cuidadNaci, provincia, fechaNaci,
@@ -163,19 +164,33 @@ let controller = {
             codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
             estadoAc: estadoAc
         };
+        const dataCuenta = {
+            correo: correoPersonal,
+        };
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const infoEstudianteCuenta = await Persona.findOne({ where: { correo: correoPersonal } });
-        if (!infoEstudianteCuenta) {
-            const dataCuenta = {
-                correo: correoPersonal,
-            };
-            const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-            await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-            //console.log('datos: ', upateEstudianteData)
-            await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
-            return res.json({ message: 'Se ha actualizado la información del estudiante' });
+        const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+        if (infoPersona) {
+            console.log('1',infoPersona.id == infoEstudianteCuenta)
+            if (infoEstudianteCuenta) {
+                console.log('2:',infoPersona.id == infoEstudianteCuenta.id)
+                if (infoPersona.id == infoEstudianteCuenta.id) {
+                    const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+                    await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+                    //console.log('datos: ', upateEstudianteData)
+                    await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+                    return res.json({ message: 'Se ha actualizado la información del estudiante' });
+                } else {
+                    return res.json({ message: 'Este correo esta ligado a otra cuenta' });
+                }
+            } else {
+                const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+                await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+                //console.log('datos: ', upateEstudianteData)
+                await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+                return res.json({ message: 'Se ha actualizado la información del estudiante' });
+            }
         } else {
-            return res.json({ message: 'Este correo esta ligado a otra cuenta' });
+            return res.json({ message: 'No existe un estudiante con esta información' });
         }
     },
     /**
@@ -212,20 +227,59 @@ let controller = {
             teleTrabajo, relacionFamiliar, contactoEmer,
             autorizacionRetirarDoc
         } = req.body;
-        const searchRepresentante = await Representante.findOne({ where: { numeroId: numeroId } })
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
-        let contadorCero = 0;
-        //console.log(infoRepresentantes)
-        for (let i = 0; i < infoRepresentantes.length; i++) {
-            if (infoRepresentantes[i].autorizacionRetirarDoc === 0) {
-                contadorCero++;
+        const searchRepresentante = await Representante.findOne({
+            where: {
+                [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
             }
-        }
-        if (!searchRepresentante) {
-            if (contadorCero === 1) {
+        })
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
+        let contadorCero = 0;
+        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
+        if (infoRepresentantes.length <= 2) {
+            if (!searchRepresentante) {
                 if (autorizacionRetirarDoc == 0) {
-                    return res.json({ message: 'Ya existe un representante con autorizacion de retirar la carpeta del estudiante' });
+                    for (let i = 0; i < infoRepresentantes.length; i++) {
+                        if (infoRepresentantes[i].autorizacionRetirarDoc === 0) {
+                            contadorCero++;
+                        }
+                    }
+                    if (contadorCero === 1) {
+                        return res.json({ message: 'Ya existe un representante con autorizacion de retirar la carpeta del estudiante' });
+                    }
+                    else {
+                        if (tipoDocId == 'pasaporte') {
+                            const representnateData = {
+                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
+                                correoPersonal: correoPersonal,
+                                celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
+                                nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
+                                teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
+                                autorizacionRetirarDoc: autorizacionRetirarDoc,
+                                id_persona: infoPersona.id,
+                            };
+                            //console.log('datos: ', representnateData)
+                            const newRepresentante = await Representante.create(representnateData);
+                            return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
+                        } else {
+                            const cedulaValida = cedulaValidator.validator(numeroId);
+                            if (cedulaValida.flag == 3) {
+                                const representnateData = {
+                                    nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
+                                    correoPersonal: correoPersonal,
+                                    celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
+                                    nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
+                                    teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
+                                    autorizacionRetirarDoc: autorizacionRetirarDoc,
+                                    id_persona: infoPersona.id,
+                                };
+                                //console.log('datos: ', representnateData)
+                                const newRepresentante = await Representante.create(representnateData);
+                                return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
+                            } else {
+                                return res.json({ message: cedulaValida.message });
+                            }
+                        }
+                    }
                 } else {
                     if (tipoDocId == 'pasaporte') {
                         const representnateData = {
@@ -261,41 +315,11 @@ let controller = {
                     }
                 }
             } else {
-                if (tipoDocId == 'pasaporte') {
-                    const representnateData = {
-                        nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                        correoPersonal: correoPersonal,
-                        celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
-                        nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                        teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                        autorizacionRetirarDoc: autorizacionRetirarDoc,
-                        id_persona: infoPersona.id,
-                    };
-                    //console.log('datos: ', representnateData)
-                    const newRepresentante = await Representante.create(representnateData);
-                    return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
-                } else {
-                    const cedulaValida = cedulaValidator.validator(numeroId);
-                    if (cedulaValida.flag == 3) {
-                        const representnateData = {
-                            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                            correoPersonal: correoPersonal,
-                            celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
-                            nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                            teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                            autorizacionRetirarDoc: autorizacionRetirarDoc,
-                            id_persona: infoPersona.id,
-                        };
-                        //console.log('datos: ', representnateData)
-                        const newRepresentante = await Representante.create(representnateData);
-                        return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
-                    } else {
-                        return res.json({ message: cedulaValida.message });
-                    }
-                }
+                return res.json({ message: 'Ya existe un representante con ese numero de DNI o Correo Personal' });
             }
+
         } else {
-            return res.json({ message: 'Ya existe un representante con información' });
+            return res.json({ message: 'El estudiante solo puede tener como maximo 3 representantes' });
         }
     },
     /**
@@ -317,36 +341,83 @@ let controller = {
             teleTrabajo, relacionFamiliar, contactoEmer, numeroId,
             autorizacionRetirarDoc
         } = req.body;
+        const updateRepresentanteData = {
+            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
+            correoPersonal: correoPersonal,
+            celular: celular,
+            nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
+            teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
+            autorizacionRetirarDoc: autorizacionRetirarDoc,
+        };
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
-        let contadorCero = 0;
-        //console.log(infoRepresentantes)
-        for (let i = 0; i < infoRepresentantes.length; i++) {
-            if (infoRepresentantes[i].autorizacionRetirarDoc === 0) {
-                contadorCero++;
+        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } })
+        const searchRepresentante = await Representante.findOne({
+            where: {
+                [Op.or]: [{ numeroId: numeroId }, { id_persona: infoPersona.id }]
             }
+        })
+        //console.log(searchRepresentante.id)
+        let id_representante;
+        let contadorCero = 0;
+        for (let i = 0; i < infoRepresentantes.length; i++) {
+            id_representante = infoRepresentantes[i].id;
         }
-        const searchRepresentante = await Representante.findOne({ where: { numeroId: numeroId } })
         if (searchRepresentante) {
-            if (contadorCero === 1) {
-                if (autorizacionRetirarDoc == 0) {
-                    return res.json({ message: 'Ya existe un representante con autorizacion de retirar la carpeta del estudiante' });
-                } else {
-                    const updateRepresentanteData = {
-                        nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                        correoPersonal: correoPersonal,
-                        celular: celular,
-                        nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                        teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                        autorizacionRetirarDoc: autorizacionRetirarDoc,
-                    };
+            console.log(id_representante == searchRepresentante.id)
+            if (autorizacionRetirarDoc == 0) {
+                for (let i = 0; i < infoRepresentantes.length; i++) {
+                    if (infoRepresentantes[i].autorizacionRetirarDoc === 0) {
+                        contadorCero++;
+                    }
+                }
+                if (contadorCero === 1) {
+                    const infoRepresentanteAuhtDoc = await Representante.findOne({
+                        where: {
+                            [Op.or]: [{ autorizacionRetirarDoc: 0 }, { id: searchRepresentante.id }]
+                        }
+                    })
+                    if (infoRepresentanteAuhtDoc) {
+                        const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
+                        return res.json({ message: 'Se ha ingresado la información de su representante', updateRepresentante });
+                    } else {
+                        return res.json({ message: 'Ya existe un representante con autorizacion de retirar la carpeta del estudiante' });
+                    }
+                }
+                else {
+                    const searchRepresentanteByemail = await Representante.findOne({ where: { correoPersonal: correoPersonal } })
+                    if (searchRepresentanteByemail) {
+                        if (searchRepresentante.id == searchRepresentanteByemail.id) {
+                            //console.log('datos: ', updateRepresentanteData)
+                            const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
+                            return res.json({ message: 'Se ha ingresado la información de su representante', updateRepresentante });
+                        } else {
+                            return res.json({ message: 'Este correo esta ligado a otro representante 3' });
+                        }
+                    } else if (!searchRepresentanteByemail) {
+                        //console.log('datos: ', updateRepresentanteData)
+                        const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
+                        return res.json({ message: 'Se ha ingresado la información de su representante', updateRepresentante });
+                    }
+                }
+            } else {
+                const searchRepresentanteByemail = await Representante.findOne({ where: { correoPersonal: correoPersonal } })
+                if (searchRepresentanteByemail) {
+                    console.log(searchRepresentante.id == searchRepresentanteByemail.id)
+                    if (searchRepresentante.id == searchRepresentanteByemail.id) {
+                        //console.log('datos: ', updateRepresentanteData)
+                        const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
+                        return res.json({ message: 'Se ha actualizado la información de su representante', updateRepresentante });
+                    } else {
+                        return res.json({ message: 'Este correo esta ligado a otro representante 1' });
+                    }
+                } else if (!searchRepresentanteByemail) {
                     //console.log('datos: ', updateRepresentanteData)
                     const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
-                    return res.json({ message: 'Se ha ingresado la información de su representante', updateRepresentante });
+                    return res.json({ message: 'Se ha actualizado la información de su representante', updateRepresentante });
                 }
             }
         } else {
-            return res.json({ message: 'No existe un respresentante con esa información' });
+            return res.json({ message: 'El representante no existe' });
         }
     },
     /**
