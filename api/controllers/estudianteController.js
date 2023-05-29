@@ -46,11 +46,9 @@ let controller = {
             id_rol: "6",
             correoPersonal: correoPersonal,
         }
-
         const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
         if (!searchPersona) {
             if (tipoDocId == 'pasaporte') {
-
                 const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
                 if (!infoEstudianteCuenta) {
                     const estudiante = await Persona.create(estudianteData);
@@ -82,7 +80,6 @@ let controller = {
             } else {
                 const cedulaValida = cedulaValidator.validator(numeroId);
                 if (cedulaValida.flag == 3) {
-
                     const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
                     if (!infoEstudianteCuenta) {
                         const estudiante = await Persona.create(estudianteData);
@@ -142,9 +139,6 @@ let controller = {
      * @returns Un mensaje de comprobación del estado de la tarea
      */
     updateEstudiante: async (req, res) => {
-
-        //validar cunado existe un estudiante
-        //validar quese actulize el correo personal
         const {
             externalId,
             nombre, apellido, nacionalidad, cuidadNaci, provincia, fechaNaci,
@@ -170,9 +164,9 @@ let controller = {
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
         const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
         if (infoPersona) {
-            console.log('1',infoPersona.id == infoEstudianteCuenta)
+            console.log('1', infoPersona.id == infoEstudianteCuenta)
             if (infoEstudianteCuenta) {
-                console.log('2:',infoPersona.id == infoEstudianteCuenta.id)
+                console.log('2:', infoPersona.id == infoEstudianteCuenta.id)
                 if (infoPersona.id == infoEstudianteCuenta.id) {
                     const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
                     await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
@@ -494,12 +488,16 @@ let controller = {
         const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
         const infoHermano = await Persona.findOne({ where: { numeroId: numeroId } });
         if (infoHermano) {
-            const hermanoData = {
-                id_hermano: infoHermano.id,
-                id_persona: infoEstudiante.id,
-            };
-            const newHermano = await Hermano.create(hermanoData);
-            return res.json({ message: 'Se ha guardado  su hermano', newHermano });
+            if (infoEstudiante.numeroId == infoHermano.numeroId) {
+                return res.json({ message: 'No se puede agregarse a usted mismo como hermano' });
+            } else {
+                const hermanoData = {
+                    id_hermano: infoHermano.id,
+                    id_persona: infoEstudiante.id,
+                };
+                const newHermano = await Hermano.create(hermanoData);
+                return res.json({ message: 'Se ha guardado  su hermano', newHermano });
+            }
         } else {
             return res.json({ message: 'No existe un estudiante con este numero de DNI' });
         }

@@ -59,71 +59,71 @@ let controller = {
             nombre, apellido, tipoDocId, numeroId,
             correoPersonal, id_rol
         } = req.body
-        const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
+        const searchPersona = await Persona.findOne({
+            where: {
+                [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
+            }
+        });
         const cedulaValida = cedulaValidator.validator(numeroId);
         //return res.json({ message: cedulaValida.flag });
         if (cedulaValida.flag == 3) {
             if (!searchPersona) {
-                const infoPersonalCuenta = await Persona.findOne({ where: { correo: correoPersonal } });
-                if (!infoPersonalCuenta) {
-                    const personaData = {
-                        nombre: nombre, apellido: apellido,
-                        tipoDocId: tipoDocId, numeroId: numeroId,
-                        id_rol: id_rol,
-                        correoPersonal: correoPersonal,
-                    }
-                    const persona = await Persona.create(personaData);
-                    const newPersona = await Persona.findOne({ where: { numeroId: numeroId } });
-                    var salt = bcrypt.genSaltSync(10);
-                    let password = bcrypt.hashSync(numeroId, salt);
-                    const dataCuenta = {
-                        correo: correoPersonal,
-                        clave: password,
-                        estado: 0,
-                        id_persona: newPersona.id,
-                    };
-                    const newPersonaCuenta = await Cuenta.create(dataCuenta);
-                    //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
-                    if (!newPersonaCuenta) return res.json({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
-                    //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
-                    const dataInfoMed = {
-                        id_persona: newPersona.id,
-                        discapacidad: "1",
-                        tipoDiscapacidad: "N/A",
-                        porcentajeDiscapacidad: "N/A",
-                        nCarnetDiscapacidad: "N/A",
-                        enfermedadCatastrofica: "1",
-                        tipoEnfermedadCatastrofica: "N/A"
-                    };
-                    //const persona = await Persona.findOne({ where: { id: idP } });
-                    //return res.json({persona });
-                    const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                    const dataPerfilProfe = {
-                        id_persona: newPersona.id,
-                        fechaInMag: 'dia/mes/año',
-                        tiempoMagisterio: 'N/A',
-                        fechaInULEDA: 'dia/mes/año',
-                        tiempoUelda: 'N/A',
-                        categoria: 'N/A',
-                        aniosCategoria: 'N/A',
-                    }
-                    const newperfilProfesional = await PerfilProfesional.create(dataPerfilProfe);
-                    const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona: newPersona.id } });
-                    const datatituloPro = {
-                        id_perfilProfesional: infoPerfilPro.id,
-                        nivelEducacion: 'N/A',
-                        tercerNivel: 'N/A',
-                        tercerEspecialidad: 'N/A',
-                        cuartoNivel: 'N/A',
-                        cuartoEspecialidad: 'N/A'
-                    }
-                    const newtituloProfesional = await TituloProfesional.create(datatituloPro);
-                    return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
-                } else {
-                    return res.json({ message: 'Este correo personal esta ligado a otra cuenta' });
+                const personaData = {
+                    nombre: nombre, apellido: apellido,
+                    tipoDocId: tipoDocId, numeroId: numeroId,
+                    id_rol: id_rol,
+                    correoPersonal: correoPersonal,
                 }
+                const persona = await Persona.create(personaData);
+                const newPersona = await Persona.findOne({ where: { numeroId: numeroId } });
+                var salt = bcrypt.genSaltSync(10);
+                let password = bcrypt.hashSync(numeroId, salt);
+                const dataCuenta = {
+                    correo: correoPersonal,
+                    clave: password,
+                    estado: 0,
+                    id_persona: newPersona.id,
+                };
+                const newPersonaCuenta = await Cuenta.create(dataCuenta);
+                //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
+                if (!newPersonaCuenta) return res.json({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
+                //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
+                const dataInfoMed = {
+                    id_persona: newPersona.id,
+                    discapacidad: "1",
+                    tipoDiscapacidad: "N/A",
+                    porcentajeDiscapacidad: "N/A",
+                    nCarnetDiscapacidad: "N/A",
+                    enfermedadCatastrofica: "1",
+                    tipoEnfermedadCatastrofica: "N/A"
+                };
+                //const persona = await Persona.findOne({ where: { id: idP } });
+                //return res.json({persona });
+                const newInfoMedica = await InfoMedica.create(dataInfoMed);
+                const dataPerfilProfe = {
+                    id_persona: newPersona.id,
+                    fechaInMag: 'dia/mes/año',
+                    tiempoMagisterio: 'N/A',
+                    fechaInULEDA: 'dia/mes/año',
+                    tiempoUelda: 'N/A',
+                    categoria: 'N/A',
+                    aniosCategoria: 'N/A',
+                }
+                const newperfilProfesional = await PerfilProfesional.create(dataPerfilProfe);
+                const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona: newPersona.id } });
+                const datatituloPro = {
+                    id_perfilProfesional: infoPerfilPro.id,
+                    nivelEducacion: 'N/A',
+                    tercerNivel: 'N/A',
+                    tercerEspecialidad: 'N/A',
+                    cuartoNivel: 'N/A',
+                    cuartoEspecialidad: 'N/A'
+                }
+                const newtituloProfesional = await TituloProfesional.create(datatituloPro);
+                return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
+
             } else {
-                return res.json({ message: 'Ya existe un usuario con esta información' });
+                return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
             }
         } else {
             return res.json({ message: cedulaValida.message });
@@ -166,19 +166,34 @@ let controller = {
             barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
             calleSecond: calleSecond
         };
+        const dataCuenta = {
+            correo: correoPersonal,
+        };
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const infoCuenta = await Cuenta.findOne({ where: { correo: correoPersonal } });
-        if (!infoCuenta) {
-            const dataCuenta = {
-                correo: correoPersonal,
-            };
-            const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-            await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-            //console.log('datos: ', udatepersonaData)
-            await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-            return res.json({ message: 'Se ha actualizado la información de usuario' });
+        if (infoPersona) {
+            const infoCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+            if (infoCuenta) {
+                const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
+                if (searchCuentaByEmail) {
+                    if (infoCuenta.id == searchCuentaByEmail.id) {
+                        await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                        //console.log('datos: ', udatepersonaData)
+                        await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                        return res.json({ message: 'Se ha actualizado la información de usuario' });
+                    } else {
+                        return res.json({ message: 'Este correo esta ligado a otro usuario' });
+                    }
+                } else if (!searchCuentaByEmail) {
+                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                    //console.log('datos: ', udatepersonaData)
+                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                    return res.json({ message: 'Se ha actualizado la información de usuario' });
+                }
+            } else {
+                return res.json({ message: 'No existe un usuario con esa información' });
+            }
         } else {
-            return res.json({ message: 'Este correo esta ligado a otra cuenta' });
+            return res.json({ message: 'No existe un usuario con esa información' });
         }
     },
     /**
