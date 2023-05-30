@@ -55,7 +55,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         //contacto de emergencia
         contactoEmer: {
-            type: DataTypes.INTEGER
+            type: DataTypes.STRING(50)
         },
         //autorizacion de retirar la carpeta del estudiante, solo un repsentante
         //0 autorizado - 1 no autorizado
@@ -66,7 +66,8 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
         }
-    }, {freezeTableName: true,
+    }, {
+        freezeTableName: true,
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });

@@ -17,6 +17,12 @@ const TituloProfesional = models.tituloProfesional;
 
 let controller = {
     /** Implementado try cath*/
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     getPersonal: async (req, res) => {
         const personal = await Persona.findAll(
             {
@@ -53,8 +59,11 @@ let controller = {
             nombre, apellido, tipoDocId, numeroId,
             correoPersonal, id_rol
         } = req.body
-
-        const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
+        const searchPersona = await Persona.findOne({
+            where: {
+                [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
+            }
+        });
         const cedulaValida = cedulaValidator.validator(numeroId);
         //return res.json({ message: cedulaValida.flag });
         if (cedulaValida.flag == 3) {
@@ -79,7 +88,6 @@ let controller = {
                 //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
                 if (!newPersonaCuenta) return res.json({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
                 //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
-                const dataRol = await Rol.findOne({ where: { id: newPersona.id_rol } });
                 const dataInfoMed = {
                     id_persona: newPersona.id,
                     discapacidad: "1",
@@ -92,7 +100,6 @@ let controller = {
                 //const persona = await Persona.findOne({ where: { id: idP } });
                 //return res.json({persona });
                 const newInfoMedica = await InfoMedica.create(dataInfoMed);
-
                 const dataPerfilProfe = {
                     id_persona: newPersona.id,
                     fechaInMag: 'dia/mes/año',
@@ -114,8 +121,9 @@ let controller = {
                 }
                 const newtituloProfesional = await TituloProfesional.create(datatituloPro);
                 return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
+
             } else {
-                return res.json({ message: 'Ya existe un usuario con esta información' });
+                return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
             }
         } else {
             return res.json({ message: cedulaValida.message });
@@ -144,38 +152,63 @@ let controller = {
     updatePersona: async (req, res) => {
         const {
             externalId,
-            nombre, apellido, nacionalidad, cuidadNaci, provincia, tipoDocId, numeroId,
+            nombre, apellido, nacionalidad, cuidadNaci, provincia,
             fechaNaci, edad, correoPersonal, correroInstitucional, celular, telefono,
             estadoCivil, etnia, tipoGenero, nCarFamilia, nCarEdu, parroquia, barrio, refeCasa,
             idenCasa, callePrin, calleSecond
         } = req.body;
-
         const udatepersonaData = {
             nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-            provincia: provincia, tipoDocId: tipoDocId, numeroId: numeroId, fechaNaci: fechaNaci,
+            provincia: provincia, fechaNaci: fechaNaci,
             edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
             celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
             tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
             barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
             calleSecond: calleSecond
         };
-        //console.log('datos: ', udatepersonaData)
-        await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-        return res.json({ message: 'Se ha actualizado la información de usario' });
+        const dataCuenta = {
+            correo: correoPersonal,
+        };
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        if (infoPersona) {
+            const infoCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+            if (infoCuenta) {
+                const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
+                if (searchCuentaByEmail) {
+                    if (infoCuenta.id == searchCuentaByEmail.id) {
+                        await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                        //console.log('datos: ', udatepersonaData)
+                        await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                        return res.json({ message: 'Se ha actualizado la información de usuario' });
+                    } else {
+                        return res.json({ message: 'Este correo esta ligado a otro usuario' });
+                    }
+                } else if (!searchCuentaByEmail) {
+                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                    //console.log('datos: ', udatepersonaData)
+                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                    return res.json({ message: 'Se ha actualizado la información de usuario' });
+                }
+            } else {
+                return res.json({ message: 'No existe un usuario con esa información' });
+            }
+        } else {
+            return res.json({ message: 'No existe un usuario con esa información' });
+        }
     },
     /**
- * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
- * @param {*} req 
- * @param {*} res 
- * Esta lista se compone idP, correo y clave.
- * Se hace una busqueda en cuenta por id
- * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
- * Y la dataCuenta que es la información nueva de cuenta
- * Esta clave es encriptada para enviarla a la BD
- * @returns Un mensaje de comprobación de estado de la tarea
- */
+     * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
+     * @param {*} req 
+     * @param {*} res 
+     * Esta lista se compone idP, correo y clave.
+     * Se hace una busqueda en cuenta por id
+     * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
+     * Y la dataCuenta que es la información nueva de cuenta
+     * Esta clave es encriptada para enviarla a la BD
+     * @returns Un mensaje de comprobación de estado de la tarea
+     */
     updateCuenta: async (req, res) => {
-        const { externalId, correo, clave, foto } = req.body
+        const { externalId, clave, foto } = req.body
         var salt = bcrypt.genSaltSync(10);
         let password = bcrypt.hashSync(clave, salt);
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
@@ -184,7 +217,6 @@ let controller = {
         }
         await Persona.update(dataFoto, { where: { id: infoPersona.id } });
         const dataCuenta = {
-            correo: correo,
             clave: password,
         };
         const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
@@ -193,15 +225,15 @@ let controller = {
         return res.json({ message: 'Se ha actualizado la información de cuenta' });
     },
     /**
-* updateEstadoCuenta: Esta funcion sirve para actualizar el estado de una cuenta
-* @param {*} req 
-* @param {*} res 
-* Esta lista se compone idP y estado.
-* Se hace una busqueda en cuenta por id de persona
-* Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
-* Y la dataCuenta que es la información nueva de cuenta
-* @returns Un mensaje de comprobación de estado de la tarea
-*/
+    * updateEstadoCuenta: Esta funcion sirve para actualizar el estado de una cuenta
+    * @param {*} req 
+    * @param {*} res 
+    * Esta lista se compone idP y estado.
+    * Se hace una busqueda en cuenta por id de persona
+    * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
+    * Y la dataCuenta que es la información nueva de cuenta
+    * @returns Un mensaje de comprobación de estado de la tarea
+    */
     updateEstadoCuenta: async (req, res) => {
         const { externalId, estado } = req.body
         const dataCuenta = {
@@ -338,10 +370,8 @@ let controller = {
             cuartoNivel,
             cuartoEspecialidad
         } = req.body
-
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
         const infoperfilProfesional = await PerfilProfesional.findOne({ where: { id_persona: infoPersona.id } });
-
         const datatituloPro = {
             nivelEducacion: nivelEducacion,
             tercerNivel: tercerNivel,
@@ -358,27 +388,3 @@ let controller = {
 }
 
 module.exports = controller;
-//revisar optimizar flujo entre usuarios
-
-/**
-    * Funcion para guardar datos sobre informacion medica del usuario
-    * @param {*} req 
-    * @param {*} res 
-    * Recibe una lista de datos relacionaos con su modelo
-    * @returns Un mensaje sobre el estado de la tarea.
-    */
-/**
-infoMedica: async (idP, res) => {
-    const dataInfoMed = {
-        id_persona: idP,
-        tipoDiscapacidad: "Ninguna",
-        porcentajeDiscapacidad: "0%",
-        nCarnetDiscapacidad: "N/A",
-        tipoEnfermedadCatastrofica: "Ninguna"
-    };
-    //const persona = await Persona.findOne({ where: { id: idP } });
-    //return res.json({persona });
-    const newInfoMedica = await InfoMedica.create(dataInfoMed);
-    return res.json({ message: 'Se ha ingresado la información', newInfoMedica });
-},
-*/

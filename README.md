@@ -77,7 +77,7 @@ DATABASE_USER = <my-bd-username>
 DATABASE_PASS = <my-bd-password>
 DATABASE_NAME = ueldaWebBD
 ```
-<i>**NOTE**</i>.- Para sincronizar los modelos generados por Sequelize, debe decomentar el siguiente fragmento de [NodeJs](https://github.com/magnuel14/uelda_Api/blob/main/app.js). Luego descomente la el codigo para generar los roles para los usuarios.
+<i>**NOTE**</i>.- Para sincronizar los modelos generados por Sequelize, debe descomentar  el siguiente fragmento de [NodeJs](https://github.com/magnuel14/uelda_Api/blob/main/app.js). Luego descomente la el codigo para generar los roles para los usuarios.
 ```
 /** 
 //sincronizacion dde los modelos de la bd
