@@ -195,10 +195,22 @@ let controller = {
      * @param {*} res 
      * @returns Una lista en formato json del o los representantes registrados
      */
-    getRepresentanteByEx: async (req, res) => {
+    getRepresentantesByEx: async (req, res) => {
         const { externalId } = req.params;
         const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
         const infoRepresentante = await Representante.findAll({ where: { id_persona: infoEstudiante.id } });
+        return res.json({ infoRepresentante });
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getRepresentanteByDNI: async (req, res) => {
+        const { numeroId } = req.params;
+        //const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+        const infoRepresentante = await Representante.findOne({ where: { numeroId: numeroId } });
         return res.json({ infoRepresentante });
     },
     /**
