@@ -1,5 +1,5 @@
-const mysqlConnection = require('../api/connection/connection');
-const { transporter } = require('../helpers/email');
+//const mysqlConnection = require('../api/connection/connection');
+//const { transporter } = require('../helpers/email');
 const path = require('path');
 const handlebars = require('handlebars');
 let fs = require('fs');
@@ -196,16 +196,7 @@ function file(path) {
   }
 }
 
-async function sendMail(mailOptions) {
-  try {
-    let result = await transporter.sendMail(mailOptions)
-    console.log('mail sent')
-    return 1;
-  } catch (error) {
-    console.log("error al enviar");
-    return 0;
-  }
-}
+
 async function mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, subjectMail, codeFlag) {
   let htmlCompiled = template({ nameToSend: nameMail, headerMail: headerMail, products: productsArray, order: order, codeFlag: codeFlag, timeStamp: new Date().toLocaleString("es-ES", 'America/Bogota'), additionalInfo: additionalInfo, logo: process.env.LOGO_EMAIL, miniLogo: process.env.MINI_LOGO_EMAIL });
   let mailOptions = {
@@ -301,6 +292,48 @@ mailing.sendMailPasswordReset = async (rows, token) => {
     return answer;
   }
 }
+
+const { google } = require('googleapis');
+const nodemailer = require('nodemailer');
+
+// Configurar las credenciales de OAuth 2.0
+const clientId = '580634221547-ug0tukk8e4otat5jo2qastfhqm944gbm.apps.googleusercontent.com';
+const clientSecret = 'HVgYSRTVOx3kKc2bk2DSfh6V';
+const refreshToken = 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&response_type=code&client_id=580634221547-ug0tukk8e4otat5jo2qastfhqm944gbm.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A4000%2Fuelda%2F';
+
+async function createTransporter() {
+  const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret);
+  oAuth2Client.setCredentials({ refresh_token: refreshToken });
+
+  // Obtener un token de acceso válido
+  const accessToken = await oAuth2Client.getAccessToken();
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      type: 'OAuth2',
+      user: 'ueldaweb2023@gmail.com',
+      clientId: clientId,
+      clientSecret: clientSecret,
+      refreshToken: refreshToken,
+      accessToken: accessToken,
+    },
+  });
+
+  return transporter;
+}
+
+async function sendMail(mailOptions) {
+  try {
+    let result = await  createTransporter().sendMail(mailOptions)
+    console.log('mail sent')
+    return 1;
+  } catch (error) {
+    console.log("error al enviar");
+    return 0;
+  }
+}
+
 mailing.sendSystemErrorMail = async (data) => {
   const path = './public/email_templates/error_handling.html';
   let htmlF = fs.readFileSync(path).toString();
@@ -319,10 +352,10 @@ mailing.sendSystemErrorMail = async (data) => {
     let template = handlebars.compile(htmlF)
     let htmlToSent = template(replacements)
     let mailOptions = {
-      from: `"Error Handling - Menfri" <manuelvicente912@gmail.com>`,
-      to: ['manuelvicente67@hotmail.com'],
-      subject: 'System Error Menfri', // Subject line
-      text: 'Error Menfri', // plain text body
+      from: `"Error Handling - UELDAWeb" <ueldaweb2023@gmail.com>`,
+      to: ['manuelvicente912@gmail.com'],
+      subject: 'System Error UELDAWeb', // Subject line
+      text: 'Error UELDAWeb', // plain text body
       html: htmlToSent,
     };
     sendMail(mailOptions);
