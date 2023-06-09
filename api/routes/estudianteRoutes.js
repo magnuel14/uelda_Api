@@ -1,7 +1,6 @@
 const express = require('express');
 const { tryCatch } = require('../../utils/tryCatch');
 const router = express.Router();
-
 const estudianteController = require('../controllers/estudianteController');
 
 //estudiante

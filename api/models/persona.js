@@ -119,10 +119,19 @@ module.exports = function (sequelize, DataTypes) {
         foto: {
             type: DataTypes.TEXT
         },
+        public_id: {
+            type: DataTypes.TEXT
+        },
         //estado del estuidante
         //matriculado ,retirado, graduados
         //     0     -     1   -   2       
         estadoAc: {
+            type: DataTypes.INTEGER,
+        },
+        //rol auxilar para personal uelda
+        //subInspector
+        // 0
+        rolAuxiliar: {
             type: DataTypes.INTEGER,
         },
         external_id: {

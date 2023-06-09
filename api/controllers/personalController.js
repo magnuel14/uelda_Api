@@ -26,6 +26,7 @@ let controller = {
     getPersonal: async (req, res) => {
         const personal = await Persona.findAll(
             {
+                include: [Cuenta],
                 where: {
                     [Op.or]: [
                         { id_rol: 1 },
@@ -195,58 +196,6 @@ let controller = {
         } else {
             return res.json({ message: 'No existe un usuario con esa información' });
         }
-    },
-    /**
-     * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
-     * @param {*} req 
-     * @param {*} res 
-     * Esta lista se compone idP, correo y clave.
-     * Se hace una busqueda en cuenta por id
-     * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
-     * Y la dataCuenta que es la información nueva de cuenta
-     * Esta clave es encriptada para enviarla a la BD
-     * @returns Un mensaje de comprobación de estado de la tarea
-     */
-    updateCuenta: async (req, res) => {
-        const { externalId, clave, foto } = req.body
-        var salt = bcrypt.genSaltSync(10);
-        let password = bcrypt.hashSync(clave, salt);
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const dataFoto = {
-            foto: foto
-        }
-        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-        const dataCuenta = {
-            clave: password,
-        };
-        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
-        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-        return res.json({ message: 'Se ha actualizado la información de cuenta' });
-    },
-    /**
-    * updateEstadoCuenta: Esta funcion sirve para actualizar el estado de una cuenta
-    * @param {*} req 
-    * @param {*} res 
-    * Esta lista se compone idP y estado.
-    * Se hace una busqueda en cuenta por id de persona
-    * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
-    * Y la dataCuenta que es la información nueva de cuenta
-    * @returns Un mensaje de comprobación de estado de la tarea
-    */
-    updateEstadoCuenta: async (req, res) => {
-        const { externalId, estado } = req.body
-        const dataCuenta = {
-            estado: estado
-        };
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
-        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-        return res.json({
-            message: 'Se ha actualizado el estado de la cuenta de: ',
-            apellido: infoPersona.apellido, nombre: infoPersona.nombre
-        });
     },
     /**
     * 
