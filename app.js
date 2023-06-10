@@ -7,6 +7,9 @@ const models = require('./api/models');
 const errorHandler = require('./middleware/errorHandler');
 const session = require('express-session');
 const flash = require('connect-flash');
+const fs = require('fs-extra');
+const path = require('path');
+const borrarTemp = require('./helpers/borrarTemps');
 const app = express();
 
 dotenv.config();
@@ -37,6 +40,16 @@ app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: './uploads'
 }));
+
+
+const tempFolderPath = path.join(__dirname, './uploads');
+const tiempoExpiracion = 60 * 1000; // 1 minuto en milisegundos
+
+// Función para eliminar la carpeta temporal
+setTimeout(() => {
+    borrarTemp.borrar(tempFolderPath);
+}, tiempoExpiracion);
+
 /** 
 //sincronizacion dde los modelos de la bd
 try {

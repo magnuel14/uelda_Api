@@ -2,6 +2,9 @@
 const jwt = require('jsonwebtoken');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
+const cloudinaryC = require('../../cloudinary');
+const fs = require('fs-extra');
+
 const Persona = models.persona;
 const Cuenta = models.cuenta;
 const Rol = models.rol;
@@ -38,12 +41,106 @@ let controller = {
         if (!checkedT) {
             const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '8h' });
             res.json({ token, persona, rol });
-            console.log('8 horas')
+            //console.log('8 horas')
         } else {
             const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '30d' });
             res.json({ token, persona, rol });
-            console.log('30 dias')
+            //console.log('30 dias')
         }
+    },
+    /**
+    * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
+    * @param {*} req 
+    * @param {*} res 
+    * Esta lista se compone idP, correo y clave.
+    * Se hace una busqueda en cuenta por id
+    * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
+    * Y la dataCuenta que es la información nueva de cuenta
+    * Esta clave es encriptada para enviarla a la BD
+    * @returns Un mensaje de comprobación de estado de la tarea
+    */
+    updateCuenta: async (req, res) => {
+        const { externalId, clave } = req.body
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+        //console.log(req.files)
+        if (!req.files) {
+            var salt = bcrypt.genSaltSync(10);
+            let password = bcrypt.hashSync(clave, salt);
+            const dataCuenta = {
+                clave: password,
+            };
+            if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+            await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+            return res.json({ message: 'Se ha actualizado su contraseña' });
+        } else {
+            //console.log('bool: ', infoPersona.public_id != null)
+            //console.log('delete: ', infoPersona.public_id)
+            if (infoPersona.public_id != null) {
+                await cloudinaryC.deleteImage(infoPersona.public_id);
+                //console.log(req.files?.foto)
+                if (req.files?.foto) {
+                    const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
+                    const dataFoto = {
+                        foto: result.secure_url,
+                        public_id: result.public_id
+                    }
+                    //console.log(clave != 'null')
+                    if (clave != 'null') {
+                        var salt = bcrypt.genSaltSync(10);
+                        let password = bcrypt.hashSync(clave, salt);
+                        const dataCuenta = {
+                            clave: password,
+                        };
+                        await fs.unlink(req.files.foto.tempFilePath)
+                        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+                        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
+                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
+                    } else {
+                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
+                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
+                    }
+                }
+            } else {
+                if (req.files?.foto) {
+                    const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
+                    const dataFoto = {
+                        foto: result.secure_url,
+                        public_id: result.public_id
+                    }
+                    await fs.unlink(req.files.foto.tempFilePath)
+                    if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+                    await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+                    await Persona.update(dataFoto, { where: { id: infoPersona.id } });
+                    return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
+                }
+            }
+        }
+    },
+    /**
+    * updateEstadoCuenta: Esta funcion sirve para actualizar el estado de una cuenta
+    * @param {*} req 
+    * @param {*} res 
+    * Esta lista se compone idP y estado.
+    * Se hace una busqueda en cuenta por id de persona
+    * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
+    * Y la dataCuenta que es la información nueva de cuenta
+    * @returns Un mensaje de comprobación de estado de la tarea
+    */
+    updateEstadoCuenta: async (req, res) => {
+        const { externalId, estado } = req.body
+        const dataCuenta = {
+            estado: estado
+        };
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+        return res.json({
+            message: 'Se ha actualizado el estado de la cuenta de: ',
+            apellido: infoPersona.apellido, nombre: infoPersona.nombre
+        });
     }
 }
 /** fin Implementado try cath*/
