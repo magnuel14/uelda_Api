@@ -104,6 +104,11 @@ let controller = {
                 }
             } else {
                 if (req.files?.foto) {
+                    const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
+                    const dataFoto = {
+                        foto: result.secure_url,
+                        public_id: result.public_id
+                    }
                     if (clave != 'null') {
                         var salt = bcrypt.genSaltSync(10);
                         let password = bcrypt.hashSync(clave, salt);
