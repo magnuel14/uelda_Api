@@ -2,7 +2,7 @@
     "development": {
         "username": "postgres",
         "password": "1412",
-        "database": "ueldaBD_v8",
+        "database": "ueldaBD_v9",
         "host": "localhost",
         "dialect": "postgres"
     },

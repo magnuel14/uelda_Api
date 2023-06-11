@@ -1,8 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var rol = require('../models/rol');
-    var Rol = new rol(sequelize, DataTypes);
-    var paralelo = require('../models/paralelo');
-    var Paralelo = new paralelo(sequelize, DataTypes);
+    var Rol = require('../models/rol')(sequelize, DataTypes);
     var Persona = sequelize.define('persona', {
         id: {
             autoIncrement: true,
@@ -146,9 +143,6 @@ module.exports = function (sequelize, DataTypes) {
     Persona.belongsTo(Rol, {
         foreignKey: 'id_rol'
     });
-    Persona.belongsTo(Paralelo, {
-        foreignKey: 'id_paralelo'
-    });
     Persona.associate = function (models) {
         models.persona.hasOne(models.cuenta, {
             foreignKey: 'id_persona'
@@ -175,6 +169,9 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'id_persona'
         });
         models.persona.hasOne(models.infoDocente, {
+            foreignKey: 'id_persona'
+        });
+        models.persona.hasOne(models.matricula, {
             foreignKey: 'id_persona'
         });
     };
