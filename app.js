@@ -43,7 +43,7 @@ app.use(fileUpload({
 
 
 const tempFolderPath = path.join(__dirname, './uploads');
-const tiempoExpiracion = 60 * 1000; // 1 minuto en milisegundos
+const tiempoExpiracion = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
 
 // Función para eliminar la carpeta temporal
 setTimeout(() => {

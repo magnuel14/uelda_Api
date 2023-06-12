@@ -1,6 +1,4 @@
 module.exports = function (sequelize, DataTypes) {
-    var paralelo = require('./paralelo');
-    var Paralelo = new paralelo(sequelize, DataTypes);
     var Materia = sequelize.define('materia', {
         id: {
             autoIncrement: true,
@@ -19,8 +17,10 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    Materia.belongsTo(Paralelo, {
-        foreignKey: 'id_paralelo'
-    });
+    Materia.associate = function (models) {
+        models.materia.hasMany(models.matricula, {
+            foreignKey: 'id_materia'
+        });
+    };
     return Materia;
 };

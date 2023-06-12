@@ -23,7 +23,7 @@ module.exports = function (sequelize, DataTypes) {
         foreignKey: 'id_anioLectivo'
     });
     Curso.associate = function (models) {
-        models.curso.hasMany(models.paralelo, {
+        models.curso.hasMany(models.matricula, {
             foreignKey: 'id_curso'
         });
     };

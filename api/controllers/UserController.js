@@ -109,11 +109,21 @@ let controller = {
                         foto: result.secure_url,
                         public_id: result.public_id
                     }
-                    await fs.unlink(req.files.foto.tempFilePath)
-                    if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
-                    await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-                    await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                    return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
+                    if (clave != 'null') {
+                        var salt = bcrypt.genSaltSync(10);
+                        let password = bcrypt.hashSync(clave, salt);
+                        const dataCuenta = {
+                            clave: password,
+                        };
+                        await fs.unlink(req.files.foto.tempFilePath)
+                        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+                        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
+                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
+                    } else {
+                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
+                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
+                    }
                 }
             }
         }
