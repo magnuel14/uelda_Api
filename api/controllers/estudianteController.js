@@ -20,7 +20,6 @@ let controller = {
      * @returns Una lista en formato json de los estuidantes registrados
      */
     getEstudiantes: async (req, res) => {
-        //cargar cuentas 
         const estudiantes = await Persona.findAll({ include: [Cuenta], where: { id_rol: 6 } });
         res.json(estudiantes);
     },

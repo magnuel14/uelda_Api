@@ -12,7 +12,7 @@ module.exports = function (sequelize, DataTypes) {
         razonUELDA: {
             type: DataTypes.ENUM({
                 values: [
-                    'Cectorización',
+                    'Sectorización',
                     'Bienestar Social',
                     'Concurso'
                 ]
