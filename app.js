@@ -49,8 +49,14 @@ const tiempoExpiracion = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
 setTimeout(() => {
     borrarTemp.borrar(tempFolderPath);
 }, tiempoExpiracion);
-
-/** 
+/**
+ * antes de usar la funcion de sincronizar
+ * se debe respaldar la data
+ * usar force: true solo en caso de sincronizar cambios en una bd con tablas
+ * sync({force: true})
+ * models.sequelize.sync({force: true}).then(() => {
+ */
+ /** 
 //sincronizacion dde los modelos de la bd
 try {
     // basede dtatos 
@@ -70,6 +76,8 @@ try {
 app.use('/uelda/user', require('./api/routes/userRoutes'))
 app.use('/uelda/personal', require('./api/routes/personalRoutes'))
 app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
+app.use('/uelda/gestion_academica', require('./api/routes/gestonAcademicaRoutes'))
+
 
 
 //middleware

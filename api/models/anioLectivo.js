@@ -27,6 +27,10 @@ module.exports = function (sequelize, DataTypes) {
         modalidad: {
             type: DataTypes.STRING(50)
         },
+         //0: activo , 1: finalizado
+         estadoAniolectivo: {
+            type: DataTypes.STRING(50)
+        },
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
