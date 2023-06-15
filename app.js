@@ -57,10 +57,10 @@ setTimeout(() => {
  * models.sequelize.sync({force: true}).then(() => {
  */
  /** 
-//sincronizacion dde los modelos de la bd
+//sincronizacion de los modelos de la bd
 try {
     // basede dtatos 
-    models.sequelize.sync().then(() => {
+    models.sequelize.sync({force: true}).then(() => {
         console.log('Base de Datos conectada');
     }).catch(err => {
         console.log(err, "No se conecto a la BD");

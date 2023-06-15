@@ -1,4 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
+    var curso = require('./curso');
+    var Curso = new curso(sequelize, DataTypes);
     var Paralelo = sequelize.define('paralelo', {
         id: {
             autoIncrement: true,
@@ -16,6 +18,9 @@ module.exports = function (sequelize, DataTypes) {
         freezeTableName: true,
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
+    });
+    Paralelo.belongsTo(Curso, {
+        foreignKey: 'id_curso'
     });
     Paralelo.associate = function (models) {
         models.paralelo.hasMany(models.matricula, {
