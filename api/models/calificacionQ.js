@@ -12,8 +12,8 @@ module.exports = function (sequelize, DataTypes) {
         firstParcialPQ: {
             type: DataTypes.STRING(50)
         },
-         //segundo parcial primer quimestre
-         secondParcialPQ: {
+        //segundo parcial primer quimestre
+        secondParcialPQ: {
             type: DataTypes.STRING(50)
         },
         //promedio de los dos parciales = 80% del quimestre
@@ -21,44 +21,48 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50)
         },
         //examen primer quimestre = 20% del quimestre
-        testPQ:{
+        testPQ: {
             type: DataTypes.STRING(50)
         },
         //total primer quimestre = 50% del año lectivo
-        totalPQ:{
+        totalPQ: {
             type: DataTypes.STRING(50)
         },
-         //primer parcial segundo quimestre
-         firstParcialSQ: {
+        //primer parcial segundo quimestre
+        firstParcialSQ: {
             type: DataTypes.STRING(50)
         },
-         //segundo parcial segundo quimestre
-         secondParcialSQ: {
+        //segundo parcial segundo quimestre
+        secondParcialSQ: {
             type: DataTypes.STRING(50)
         },
-         //promedio de los dos parciales = 80% del quimestre
-         subTotalPQ: {
+        //promedio de los dos parciales = 80% del quimestre
+        subTota2PQ: {
             type: DataTypes.STRING(50)
         },
         //examen primer quimestre = 20% del quimestre
-        testPQ:{
+        testSQ: {
             type: DataTypes.STRING(50)
         },
         //total primer quimestre = 50% del año lectivo
-        totalPQ:{
+        totalSQ: {
+            type: DataTypes.STRING(50)
+        },
+        //total del año lectivo
+        notaFinal: {
             type: DataTypes.STRING(50)
         },
         supletorio: {
             type: DataTypes.STRING(50)
         },
-        remeial: {
+        remedial: {
             type: DataTypes.STRING(50)
         },
         gracia: {
             type: DataTypes.STRING(50)
         },
         //si esta en 0 el estudiante esta aprobado - si esta en 1 no ha sido aprobado
-        aprobado:{
+        aprobado: {
             type: DataTypes.INTEGER
         },
         external_id: {

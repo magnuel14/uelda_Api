@@ -43,7 +43,7 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     AnioLectivo.associate = function (models) {
-        models.rol.hasMany(models.curso, {
+        models.anioLectivo.hasMany(models.curso, {
             foreignKey: 'id_anioLectivo'
         });
     };

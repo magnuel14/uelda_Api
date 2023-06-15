@@ -19,15 +19,10 @@ let controller = {
        * @returns Una lista en formato json de los anios lectivos registrados
        */
     getAllAniosLectivos: async (req, res) => {
-        const aniosLectivos = await AnioLectivo.findAll();
+        const aniosLectivos = await AnioLectivo.findAll({ include: [Curso] });
         console.log(aniosLectivos)
-        const cursos = await Curso.findAll(
-            {
-                include: [Cuenta],
-                where: [{ id_anioLectivo: 4 }]
-            });
 
-        return res.json({ aniosLectivos, cursos });
+        return res.json({ aniosLectivos });
     },
     /**createAnioLectivo: Funcion get para obtener la lista de de años lesctivos
        * @param {*} req 
@@ -41,474 +36,489 @@ let controller = {
             fechaInicio: fechaInicio, fechaFin: fechaFin,
             modalidad: modalidad, estadoAniolectivo: '0'
         }
-        const newAnioLectivo = await AnioLectivo.create(anioLectivoData);
-        //res.json(newAnioLectivo);
+        const infoAniosLectivos = await AnioLectivo.findAll();
 
-        console.log('newAnioLectivo: ', newAnioLectivo);
-        //crear cursos
-        const {
-            boolInicial, boolPrimaria, boolSecundaria,
-            bool1I, num_paralelo1I,
-            bool2I, num_paralelo2I,
-            bool1P, num_paralelo1P,
-            bool2P, num_paralelo2P,
-            bool3P, num_paralelo3P,
-            bool4P, num_paralelo4P,
-            bool5P, num_paralelo5P,
-            bool6P, num_paralelo6P,
-            bool7P, num_paralelo7P,
-            bool8S, num_paralelo8S,
-            bool9S, num_paralelo9S,
-            bool10S, num_paralelo10S,
-            bool1S, num_paralelo1S,
-            bool2S, num_paralelo2S,
-            bool3S, num_paralelo3S
-        } = req.body;
-        if (newAnioLectivo) {
-            if (boolInicial == 0) {
-                if (bool1I == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Inicial',
-                        gradoAcademico: '1',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo1I;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-                if (bool2I == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Inicial',
-                        gradoAcademico: '2',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-
-                    const numeroParalelo = num_paralelo2I;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-                        //res.json(newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                    }
-                }
+        let contadorEstadoAnioLectivo = 0; // Variable contador
+        for (let i = 0; i < infoAniosLectivos.length; i++) {
+            if (infoAniosLectivos[i].estadoAniolectivo === 0) {
+                contadorEstadoAnioLectivo++;
             }
-            if (boolPrimaria == 0) {
-                if (bool1P == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Primaria',
-                        gradoAcademico: '1',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo1P;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
+        }
+        //console.log(contadorEstadoAnioLectivo)
 
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
+        if (contadorEstadoAnioLectivo == 0) {
+            const newAnioLectivo = await AnioLectivo.create(anioLectivoData);
+            //crear cursos
+            const {
+                boolInicial, boolBasica, boolBachillerato,
+                bool1I, num_paralelo1I,
+                bool2I, num_paralelo2I,
+                bool1B, num_paralelo1B,
+                bool2B, num_paralelo2B,
+                bool3B, num_paralelo3B,
+                bool4B, num_paralelo4B,
+                bool5B, num_paralelo5B,
+                bool6B, num_paralelo6B,
+                bool7B, num_paralelo7B,
+                bool8B, num_paralelo8B,
+                bool9B, num_paralelo9B,
+                bool10B, num_paralelo10B,
+                bool1S, num_paralelo1S,
+                bool2S, num_paralelo2S,
+                bool3S, num_paralelo3S
+            } = req.body;
+            if (newAnioLectivo) {
+
+                if (boolInicial == 0) {
+                    if (bool1I == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Inicial 3 años',
+                            gradoAcademico: '1',
+                            id_anioLectivo: newAnioLectivo.id,
                         }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo1I;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+                    if (bool2I == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Inicial 4 años',
+                            gradoAcademico: '2',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+
+                        const numeroParalelo = num_paralelo2I;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+                            //res.json(newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                        }
                     }
                 }
 
-                if (bool2P == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Primaria',
-                        gradoAcademico: '2',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json( newCurso);
-                    const numeroParalelo = num_paralelo2P;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
+                if (boolBasica == 0) {
+                    if (bool1B == 0) {
                         const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
+                            nivelAcademico: 'Básica Preparatoria',
+                            gradoAcademico: '1',
+                            id_anioLectivo: newAnioLectivo.id,
                         }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo1B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
 
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
                         }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
                     }
+
+                    if (bool2B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Elemental',
+                            gradoAcademico: '2',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json( newCurso);
+                        const numeroParalelo = num_paralelo2B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool3B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Elemental',
+                            gradoAcademico: '3',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo3B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool4B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Elemental',
+                            gradoAcademico: '4',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo4B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool5B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Media',
+                            gradoAcademico: '5',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo5B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool6B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Media',
+                            gradoAcademico: '6',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo6B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool7B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Media',
+                            gradoAcademico: '7',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo7B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool8B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Superior',
+                            gradoAcademico: '8',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo8B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool9B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Superior',
+                            gradoAcademico: '9',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo9B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool10B == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Básica Superior',
+                            gradoAcademico: '10',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo10B;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
                 }
 
-                if (bool3P == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Primaria',
-                        gradoAcademico: '3',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo3P;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
+                if (boolBachillerato == 0) {
 
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
+                    if (bool1S == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Bachillerato',
+                            gradoAcademico: '1',
+                            id_anioLectivo: newAnioLectivo.id,
                         }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo1S;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
                     }
+
+                    if (bool2S == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Bachillerato',
+                            gradoAcademico: '2',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo2S;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
+                    if (bool3S == 0) {
+                        const cursoData = {
+                            nivelAcademico: 'Bachillerato',
+                            gradoAcademico: '3',
+                            id_anioLectivo: newAnioLectivo.id,
+                        }
+                        const newCurso = await Curso.create(cursoData);
+                        console.log('newCurso: ', newCurso);
+                        //res.json(newCurso);
+                        const numeroParalelo = num_paralelo3S;
+                        const startCharCode = 65; // Código ASCII de la letra 'A'
+                        for (let i = 0; i < numeroParalelo; i++) {
+                            const letra = String.fromCharCode(startCharCode + i);
+                            const cursoData = {
+                                titulo: letra,
+                                id_curso: newCurso.id
+                            }
+                            const newParalelo = await Paralelo.create(cursoData);
+                            console.log('newParalelo: ', newParalelo);
+
+                            const matriculaData = {
+                                id_paralelo: newParalelo.id,
+                            }
+                            const newMatricula = await Matricula.create(matriculaData);
+                            console.log('newMatricula: ', newMatricula);
+                            //res.json(newParalelo);
+                        }
+                    }
+
                 }
 
-                if (bool4P == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Primaria',
-                        gradoAcademico: '4',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo4P;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool5P == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Primaria',
-                        gradoAcademico: '5',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo5P;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool6P == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Primaria',
-                        gradoAcademico: '6',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo6P;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool7P == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Primaria',
-                        gradoAcademico: '7',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo7P;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
+                return res.json({ message: 'Se ha generado el año lectivo y La oferta académica exitosamente', newAnioLectivo });
+            } else {
+                return res.json({ message: 'Error, revise bien la información' });
             }
-            if (boolSecundaria == 0) {
-                if (bool8S == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Secundaria',
-                        gradoAcademico: '8',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo8S;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool9S == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Secundaria',
-                        gradoAcademico: '9',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo9S;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool10S == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Secundaria',
-                        gradoAcademico: '10',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo10S;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool1S == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Secundaria',
-                        gradoAcademico: '1',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo1S;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool2S == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Secundaria',
-                        gradoAcademico: '2',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo2S;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-                if (bool3S == 0) {
-                    const cursoData = {
-                        nivelAcademico: 'Secundaria',
-                        gradoAcademico: '3',
-                        id_anioLectivo: newAnioLectivo.id,
-                    }
-                    const newCurso = await Curso.create(cursoData);
-                    console.log('newCurso: ', newCurso);
-                    //res.json(newCurso);
-                    const numeroParalelo = num_paralelo3S;
-                    const startCharCode = 65; // Código ASCII de la letra 'A'
-                    for (let i = 0; i < numeroParalelo; i++) {
-                        const letra = String.fromCharCode(startCharCode + i);
-                        const cursoData = {
-                            titulo: letra,
-                            id_curso: newCurso.id
-                        }
-                        const newParalelo = await Paralelo.create(cursoData);
-                        console.log('newParalelo: ', newParalelo);
-
-                        const matriculaData = {
-                            id_paralelo: newParalelo.id,
-                        }
-                        const newMatricula = await Matricula.create(matriculaData);
-                        console.log('newMatricula: ', newMatricula);
-                        //res.json(newParalelo);
-                    }
-                }
-
-            }
-            return res.json({ message: 'Se ha generado el Año Lectivo exitosamente' });
         } else {
-            return res.json({ message: 'Revise bien su información' });
-
+            return res.json({ message: 'Ya existe un Año lectivo con estado activo' });
         }
     },
     /**Fin funciones validadas */

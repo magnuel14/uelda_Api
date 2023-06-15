@@ -56,17 +56,17 @@ setTimeout(() => {
  * sync({force: true})
  * models.sequelize.sync({force: true}).then(() => {
  */
- /** 
+/** 
 //sincronizacion de los modelos de la bd
 try {
-    // basede dtatos 
-    models.sequelize.sync({force: true}).then(() => {
-        console.log('Base de Datos conectada');
-    }).catch(err => {
-        console.log(err, "No se conecto a la BD");
-    });
+   // basede dtatos 
+   models.sequelize.sync({force: true}).then(() => {
+       console.log('Base de Datos conectada');
+   }).catch(err => {
+       console.log(err, "No se conecto a la BD");
+   });
 } catch (error) {
-    console.error('Unable to connect to the server ', error);
+   console.error('Unable to connect to the server ', error);
 }
 */
 //rol de usuarios

@@ -7,6 +7,11 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
+         //área que pertenece a la asignatura: matematica, ciencias naturales, etc
+         area: {
+            type: DataTypes.STRING(50)
+        },
+        //nombre de la asignatura: matematica, fisica, quimica, etc
         nombre: {
             type: DataTypes.STRING(50)
         },
