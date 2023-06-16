@@ -9,6 +9,8 @@ router.get('/getPersonal',tryCatch(personalController.getPersonal));
 router.get('/getPersonByEx/:externalId',tryCatch(personalController.getPersonByEx));
 router.post('/registrar_persona',(personalController.createPerson));
 router.post('/update_infoPersona',tryCatch(personalController.updatePersona));
+//id_rol
+router.post('/update_rolPersona',(personalController.updatePersonalRol));
 //información medica
 router.get('/getInfoMedicByEx/:externalId',tryCatch(personalController.getInfoMedicByEx));
 router.post('/update_infoMec',tryCatch(personalController.updateinfoMedica));

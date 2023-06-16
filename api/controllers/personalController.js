@@ -332,6 +332,27 @@ let controller = {
         if (!infoTituloPro) return res.json({ message: 'Ocurrio un error' })
         await TituloProfesional.update(datatituloPro, { where: { id: infoTituloPro.id } });
         return res.json({ message: 'Se ha actualizado la información de su titulo profesional' });
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    updatePersonalRol: async (req, res) => {
+        const { externalId } = req.body
+        const { id_rol } = req.body
+        const dataNewRol = {
+            id_rol: id_rol
+        }
+        const infoPersona = await Persona.findOne({ include: [Cuenta], where: { external_id: externalId } });
+        let estadoCuenta = infoPersona.cuentum.estado;
+        if (estadoCuenta == 0) {
+            const personUpdate = await Persona.update(dataNewRol, { where: { external_id: externalId } });
+            return res.json({ message: 'Se ha actualizado la información de su titulo profesional', personUpdate });
+        } else {
+            return res.json({ message: 'La cuenta de este usuairo esta inactiva' });
+        }
     }
     /**Fin funciones validadas */
 }
