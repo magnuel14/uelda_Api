@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-    var paralelo = require('./paralelo');
-    var Paralelo = new paralelo(sequelize, DataTypes);
+    var matricula = require('./matricula');
+    var Matricula = new matricula(sequelize, DataTypes);
     var AsistenciaXDia = sequelize.define('asistenciaXDia', {
         //las asistencias por dia en educacion basica e inicial, debio a que un solo profesor da 
         //clases duarante todo el dia academico
@@ -29,8 +29,8 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    AsistenciaXDia.belongsTo(Paralelo, {
-        foreignKey: 'id_paralelo'
+    AsistenciaXDia.belongsTo(Matricula, {
+        foreignKey: 'id_matricula'
     });
     return AsistenciaXDia;
 };

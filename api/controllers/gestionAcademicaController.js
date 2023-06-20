@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
+const curso = require('../models/curso');
 
 
 const AnioLectivo = models.anioLectivo;
@@ -10,6 +11,9 @@ const Curso = models.curso;
 const Paralelo = models.paralelo;
 const Matricula = models.matricula;
 const Materia = models.materia;
+const AsistenciaXMate = models.asistenciaXMate;
+const CalificacionQ = models.calificacionQ;
+const CalificacionT = models.calificacionT;
 
 let controller = {
     /** Implementado try cath*/
@@ -30,7 +34,7 @@ let controller = {
        * @returns Una lista en formato json de los anios lectivos registrados
        */
     createAnioLectivo: async (req, res) => {
-        const { jornada, periodo, fechaInicio, fechaFin, modalidad } = req.body;
+        const { jornada, periodo, fechaInicio, fechaFin, modalidad, tipoCalificacion } = req.body;
         const anioLectivoData = {
             jornada: jornada, periodo: periodo,
             fechaInicio: fechaInicio, fechaFin: fechaFin,
@@ -77,25 +81,132 @@ let controller = {
                             id_anioLectivo: newAnioLectivo.id,
                         }
                         const newCurso = await Curso.create(cursoData);
-                        console.log('newCurso: ', newCurso);
-                        //res.json(newCurso);
+                        const id_curso = newCurso.id;
+                        if (newCurso) {
+                            const dataMateria_1 = {
+                                area: 'Desarrollo Personal y Social',
+                                nombre: 'Identidad y autonomía',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_1);
+
+                            const dataMateria_2 = {
+                                area: 'Desarrollo Personal y Social',
+                                nombre: 'Convivencia',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_2);
+
+                            const dataMateria_3 = {
+                                area: 'Descubrimiento del Medio Natural y Cultural',
+                                nombre: 'Relaciones con el Medio Natural y Cultural',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_3);
+
+                            const dataMateria_4 = {
+                                area: 'Descubrimiento del Medio Natural y Cultural',
+                                nombre: 'Relaciones con el Medio Natural y Cultural',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_4);
+
+                            const dataMateria_5 = {
+                                area: 'Descubrimiento del Medio Natural y Cultural',
+                                nombre: 'Relaciones Lógico / Matemáticas',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_5);
+
+                            const dataMateria_6 = {
+                                area: 'Expresión y Comunicación',
+                                nombre: 'Comprensión y Expresión del Lenguaje',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_6);
+
+                            const dataMateria_7 = {
+                                area: 'Expresión y Comunicación',
+                                nombre: 'Expresión Artística',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_7);
+
+                            const dataMateria_8 = {
+                                area: 'Expresión y Comunicación',
+                                nombre: 'Exploración Corporal y Motricidad',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_8);
+                        }
                         const numeroParalelo = num_paralelo1I;
                         const startCharCode = 65; // Código ASCII de la letra 'A'
                         for (let i = 0; i < numeroParalelo; i++) {
                             const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
+                            const parareloData = {
                                 titulo: letra,
-                                id_curso: newCurso.id
+                                id_curso: id_curso
                             }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
+                            const newParalelo = await Paralelo.create(parareloData);
                             const matriculaData = {
                                 id_paralelo: newParalelo.id,
                             }
                             const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
+                            const infoMateria = await Materia.findAll({ where: { id_curso: id_curso } })
+
+                            if (tipoCalificacion == 0) {
+                                for (let i = 0; i < infoMateria.length; i++) {
+                                    const id_materia = infoMateria[i].id;
+                                    const quimestreData = {
+                                        firstParcialPQ: '0',
+                                        secondParcialPQ: '0',
+                                        subTotalPQ: '0',
+                                        testPQ: '0',
+                                        totalPQ: '0',
+                                        firstParcialSQ: '0',
+                                        secondParcialSQ: '0',
+                                        subTota2PQ: '0',
+                                        testSQ: '0',
+                                        totalSQ: '0',
+                                        notaFinal: '0',
+                                        supletorio: '0',
+                                        aprobado: '1',
+                                        id_materia: id_materia,
+                                        id_matricula: newMatricula.id
+                                    }
+                                    await CalificacionQ.create(quimestreData);
+                                }
+                            } else {
+                                for (let i = 0; i < infoMateria.length; i++) {
+                                    const id_materia = infoMateria[i].id;
+                                    const trimestreData = {
+                                        aportesPrimerTimestre: '0',
+                                        proIntegradorFase_1: '0',
+                                        evaluacion_estructurada_1: '0',
+                                        aportesSegundoTimestre: '0',
+                                        proIntegradorFase_2: '0',
+                                        evaluacion_estructurada_2: '0',
+                                        aportesTercerTimestre: '0',
+                                        proIntegradorFase_3: '0',
+                                        evaluacion_estructurada_3: '0',
+                                        proyecto_Final: '0',
+                                        evaluacion_nivel: '0',
+                                        total_Final: '0',
+                                        aprobado: '1',
+                                        id_materia: id_materia,
+                                        id_matricula: newMatricula.id
+                                    }
+                                    await CalificacionT.create(trimestreData);
+                                }
+                            }
                         }
                     }
                     if (bool2I == 0) {
@@ -105,26 +216,139 @@ let controller = {
                             id_anioLectivo: newAnioLectivo.id,
                         }
                         const newCurso = await Curso.create(cursoData);
-                        console.log('newCurso: ', newCurso);
-                        //res.json(newCurso);
+                        const id_curso = newCurso.id;
+
+                        if (newCurso) {
+                            const dataMateria_1 = {
+                                area: 'Desarrollo Personal y Social',
+                                nombre: 'Identidad y autonomía',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_1);
+
+                            const dataMateria_2 = {
+                                area: 'Desarrollo Personal y Social',
+                                nombre: 'Convivencia',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_2);
+
+                            const dataMateria_3 = {
+                                area: 'Descubrimiento del Medio Natural y Cultural',
+                                nombre: 'Relaciones con el Medio Natural y Cultural',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_3);
+
+                            const dataMateria_4 = {
+                                area: 'Descubrimiento del Medio Natural y Cultural',
+                                nombre: 'Relaciones con el Medio Natural y Cultural',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_4);
+
+                            const dataMateria_5 = {
+                                area: 'Descubrimiento del Medio Natural y Cultural',
+                                nombre: 'Relaciones Lógico / Matemáticas',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_5);
+
+                            const dataMateria_6 = {
+                                area: 'Expresión y Comunicación',
+                                nombre: 'Comprensión y Expresión del Lenguaje',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_6);
+
+                            const dataMateria_7 = {
+                                area: 'Expresión y Comunicación',
+                                nombre: 'Expresión Artística',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_7);
+
+                            const dataMateria_8 = {
+                                area: 'Expresión y Comunicación',
+                                nombre: 'Exploración Corporal y Motricidad',
+                                tipoCalificacion: tipoCalificacion,
+                                id_curso: id_curso
+                            }
+                            await Materia.create(dataMateria_8);
+                        }
 
                         const numeroParalelo = num_paralelo2I;
                         const startCharCode = 65; // Código ASCII de la letra 'A'
                         for (let i = 0; i < numeroParalelo; i++) {
                             const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
+                            const paraleloData = {
                                 titulo: letra,
-                                id_curso: newCurso.id
+                                id_curso: id_curso
                             }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
+                            const newParalelo = await Paralelo.create(paraleloData);
+                            //console.log('newParalelo: ', newParalelo);
                             //res.json(newParalelo);
 
                             const matriculaData = {
                                 id_paralelo: newParalelo.id,
                             }
                             const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
+                            //console.log('newMatricula: ', newMatricula);
+                            const infoMateria = await Materia.findAll({ where: { id_curso: id_curso } })
+
+                            if (tipoCalificacion == 0) {
+                                for (let i = 0; i < infoMateria.length; i++) {
+                                    const id_materia = infoMateria[i].id;
+                                    const quimestreData = {
+                                        firstParcialPQ: '0',
+                                        secondParcialPQ: '0',
+                                        subTotalPQ: '0',
+                                        testPQ: '0',
+                                        totalPQ: '0',
+                                        firstParcialSQ: '0',
+                                        secondParcialSQ: '0',
+                                        subTota2PQ: '0',
+                                        testSQ: '0',
+                                        totalSQ: '0',
+                                        notaFinal: '0',
+                                        supletorio: '0',
+                                        aprobado: '1',
+                                        id_materia: id_materia,
+                                        id_matricula: newMatricula.id
+                                    }
+                                    await CalificacionQ.create(quimestreData);
+                                }
+                            } else {
+                                for (let i = 0; i < infoMateria.length; i++) {
+                                    const id_materia = infoMateria[i].id;
+                                    const trimestreData = {
+                                        aportesPrimerTimestre: '0',
+                                        proIntegradorFase_1: '0',
+                                        evaluacion_estructurada_1: '0',
+                                        aportesSegundoTimestre: '0',
+                                        proIntegradorFase_2: '0',
+                                        evaluacion_estructurada_2: '0',
+                                        aportesTercerTimestre: '0',
+                                        proIntegradorFase_3: '0',
+                                        evaluacion_estructurada_3: '0',
+                                        proyecto_Final: '0',
+                                        evaluacion_nivel: '0',
+                                        total_Final: '0',
+                                        aprobado: '1',
+                                        id_materia: id_materia,
+                                        id_matricula: newMatricula.id
+                                    }
+                                    await CalificacionT.create(trimestreData);
+                                }
+                            }
+
                         }
                     }
                 }
@@ -521,6 +745,32 @@ let controller = {
             return res.json({ message: 'Ya existe un Año lectivo con estado activo' });
         }
     },
+    test: async (req, res) => {
+        const infoCurso = await Curso.findOne({
+            include: [Paralelo],
+            where: {
+                gradoAcademico: '1',
+                nivelAcademico: 'Inicial 3 años'
+            }
+        })
+        console.log('res: ', infoCurso.paralelos)
+        let array = [];
+        var nombre;
+        for (let i = 0; i < infoCurso.paralelos.length; i++) {
+            const id_paralelo = infoCurso.paralelos[i].id
+            const info = await Matricula.findAll({
+                include: [CalificacionT, CalificacionQ],
+                where: { id_paralelo: id_paralelo }
+            })
+            nombre = `materia ${i}`
+            array.push({ nombre: info })
+        }
+        return res.json({ curso: infoCurso, matriculas: array })
+
+
+    }
+
+
     /**Fin funciones validadas */
 }
 

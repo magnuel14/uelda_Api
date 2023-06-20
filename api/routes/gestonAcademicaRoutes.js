@@ -8,5 +8,8 @@ const gestionAcademicaController = require(controller);
 router.get('/get-allAniosLectivos', tryCatch(gestionAcademicaController.getAllAniosLectivos));
 router.post('/create_AnioLectivo', (gestionAcademicaController.createAnioLectivo));
 
+router.get('/test', (gestionAcademicaController.test));
+
+
 
 module.exports = router;

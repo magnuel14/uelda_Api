@@ -1,14 +1,14 @@
 module.exports = function (sequelize, DataTypes) {
-    var matricula = require('./matricula');
-    var Matricula = new matricula(sequelize, DataTypes);
+    var curso = require('./curso');
+    var Curso = new curso(sequelize, DataTypes);
     var Materia = sequelize.define('materia', {
         id: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-         //área que pertenece a la asignatura: matematica, ciencias naturales, etc
-         area: {
+        //área que pertenece a la asignatura: matematica, ciencias naturales, etc
+        area: {
             type: DataTypes.STRING(50)
         },
         //nombre de la asignatura: matematica, fisica, quimica, etc
@@ -39,8 +39,8 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'id_materia'
         });
     };
-    Materia.belongsTo(Matricula, {
-        foreignKey: 'id_matricula'
+    Materia.belongsTo(Curso, {
+        foreignKey: 'id_curso'
     });
     return Materia;
 };

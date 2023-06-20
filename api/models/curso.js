@@ -31,6 +31,9 @@ module.exports = function (sequelize, DataTypes) {
         models.curso.hasMany(models.paralelo, {
             foreignKey: 'id_curso'
         });
+        models.curso.hasMany(models.materia, {
+            foreignKey: 'id_curso'
+        });
     };
     return Curso;
 };

@@ -2,6 +2,8 @@
 module.exports = function (sequelize, DataTypes) {
     var materia = require('./materia');
     var Materia = new materia(sequelize, DataTypes);
+    var matricula = require('./matricula');
+    var Matricula = new matricula(sequelize, DataTypes);
     var CalificacionQ = sequelize.define('calificacionQ', {
         id: {
             autoIncrement: true,
@@ -76,6 +78,9 @@ module.exports = function (sequelize, DataTypes) {
     });
     CalificacionQ.belongsTo(Materia, {
         foreignKey: 'id_materia'
+    });
+    CalificacionQ.belongsTo(Matricula, {
+        foreignKey: 'id_matricula'
     });
     return CalificacionQ;
 };
