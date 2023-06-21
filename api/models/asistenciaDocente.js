@@ -1,8 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
     var perosna = require('./persona');
     var Persona = new perosna(sequelize, DataTypes);
-    var Asistencia = sequelize.define('asistencia', {
-        //Asistencia para la planta docente y admistrativos del plantel
+    var AsistenciaDocente = sequelize.define('asistenciaDocente', {
+        //AsistenciaDocente para la planta docente y admistrativos del plantel
         id: {
             autoIncrement: true,
             primaryKey: true,
@@ -28,8 +28,8 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    Asistencia.belongsTo(Persona, {
+    AsistenciaDocente.belongsTo(Persona, {
         foreignKey: 'id_persona'
     });
-    return Asistencia;
+    return AsistenciaDocente;
 };

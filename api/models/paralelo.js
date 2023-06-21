@@ -26,9 +26,6 @@ module.exports = function (sequelize, DataTypes) {
         models.paralelo.hasMany(models.matricula, {
             foreignKey: 'id_paralelo'
         });
-        models.paralelo.hasMany(models.asistenciaXDia, {
-            foreignKey: 'id_paralelo'
-        });
     };
     return Paralelo;
 };

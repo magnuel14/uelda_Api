@@ -1,15 +1,10 @@
+
 {
     "development": {
-        "username": "postgres",
-        "password": "1412",
-        "database": "ueldaBD_v9",
         "host": "localhost",
         "dialect": "postgres"
     },
     "staging": {
-        "username": "postgres",
-        "password": "1412",
-        "database": "ueldaBD_v8",
         "host": "localhost",
         "dialect": "postgres"
     }

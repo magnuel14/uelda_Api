@@ -23,8 +23,9 @@ app.use(session({
     saveUninitialized: true
 }));
 app.use(flash());
-app.use(cors());
+
 // Configurar cabeceras y CORS
+app.use(cors());
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
@@ -41,14 +42,13 @@ app.use(fileUpload({
     tempFileDir: './uploads'
 }));
 
-
 const tempFolderPath = path.join(__dirname, './uploads');
 const tiempoExpiracion = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
-
 // Función para eliminar la carpeta temporal
 setTimeout(() => {
     borrarTemp.borrar(tempFolderPath);
 }, tiempoExpiracion);
+
 /**
  * antes de usar la funcion de sincronizar
  * se debe respaldar la data
@@ -56,21 +56,38 @@ setTimeout(() => {
  * sync({force: true})
  * models.sequelize.sync({force: true}).then(() => {
  */
-/** 
 //sincronizacion de los modelos de la bd
+/** 
 try {
-   // basede dtatos 
+   // base de datos 
    models.sequelize.sync({force: true}).then(() => {
-       console.log('Base de Datos conectada');
+       console.log('Base de Datos sincronizada');
    }).catch(err => {
-       console.log(err, "No se conecto a la BD");
+       console.log(err, "No se sincronizada a la BD");
    });
 } catch (error) {
    console.error('Unable to connect to the server ', error);
 }
-*/
-//rol de usuarios
+ */
+//insertar rol para usuarios
 //require('./api/controllers/dataRol/insert_rol');
+
+// Middleware para verificar la conexión a la base de datos
+/** 
+try {
+    // base de datos 
+    models.sequelize.authenticate().then(() => {
+        console.log('Base de Datos conectada');
+    }).catch(err => {
+        console.log(err, "No se conecto a la BD");
+    });
+} catch (error) {
+    console.error('Unable to connect to the server ', error);
+}
+ */
+//middleware que evita que el server se pare en caso de detectar un error
+app.use(errorHandler);
+
 
 //routes
 app.use('/uelda/user', require('./api/routes/userRoutes'))
@@ -78,9 +95,5 @@ app.use('/uelda/personal', require('./api/routes/personalRoutes'))
 app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
 app.use('/uelda/gestion_academica', require('./api/routes/gestonAcademicaRoutes'))
 
-
-
-//middleware
-app.use(errorHandler);
 
 module.exports = app;

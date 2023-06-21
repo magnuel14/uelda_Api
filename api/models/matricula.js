@@ -1,5 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
     var Paralelo = require('../models/paralelo')(sequelize, DataTypes);
+    var Persona = require('../models/persona')(sequelize, DataTypes);
     var Matricula = sequelize.define('matricula', {
         id: {
             autoIncrement: true,
@@ -27,10 +28,10 @@ module.exports = function (sequelize, DataTypes) {
     Matricula.belongsTo(Paralelo, {
         foreignKey: 'id_paralelo'
     });
+    Matricula.belongsTo(Persona, {
+        foreignKey: 'id_persona'
+    });
     Matricula.associate = function (models) {
-        models.matricula.hasMany(models.persona, {
-            foreignKey: 'id_matricula'
-        });
         models.matricula.hasMany(models.calificacionT, {
             foreignKey: 'id_matricula'
         });

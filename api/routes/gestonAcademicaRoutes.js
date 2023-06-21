@@ -6,6 +6,9 @@ const controller = '../controllers/gestionAcademicaController.js';
 const gestionAcademicaController = require(controller);
 
 router.get('/get-allAniosLectivos', tryCatch(gestionAcademicaController.getAllAniosLectivos));
+
+router.get('/get-AllCursos_Materias/:id_anioLectivo', (gestionAcademicaController.getAllCursos_Materias));
+
 router.post('/create_AnioLectivo', (gestionAcademicaController.createAnioLectivo));
 
 router.get('/test', (gestionAcademicaController.test));

@@ -10,11 +10,19 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //numero de horas 
-        //llenar de forma grupal o de forma individual
-        horasClase: {
+        //total de numero de horas programadas para la materia
+        horasClase_programadas: {
             type: DataTypes.STRING(50)
         },
+        //total de numero de horas dictadas por el docente
+        horasClase_dictadas: {
+            type: DataTypes.STRING(50)
+        },
+        //total de numero de horas asistidas por el estudiante
+        horasClase_asistidas: {
+            type: DataTypes.STRING(50)
+        },
+        /** 
         // o si asiste, 1 si falta
         asistencia: {
             type: DataTypes.INTEGER
@@ -26,6 +34,7 @@ module.exports = function (sequelize, DataTypes) {
         observacion: {
             type: DataTypes.STRING(255)
         },
+        */
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
