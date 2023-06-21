@@ -73,7 +73,6 @@ try {
 //require('./api/controllers/dataRol/insert_rol');
 
 // Middleware para verificar la conexión a la base de datos
-/** 
 try {
     // base de datos 
     models.sequelize.authenticate().then(() => {
@@ -84,7 +83,6 @@ try {
 } catch (error) {
     console.error('Unable to connect to the server ', error);
 }
- */
 //middleware que evita que el server se pare en caso de detectar un error
 app.use(errorHandler);
 
@@ -93,7 +91,7 @@ app.use(errorHandler);
 app.use('/uelda/user', require('./api/routes/userRoutes'))
 app.use('/uelda/personal', require('./api/routes/personalRoutes'))
 app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
-app.use('/uelda/gestion_academica', require('./api/routes/gestonAcademicaRoutes'))
+app.use('/uelda/gestion_academica', require('./api/routes/gestionAcademicaRoutes'))
 
 
 module.exports = app;
