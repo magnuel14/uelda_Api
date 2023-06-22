@@ -351,7 +351,7 @@ let controller = {
             const personUpdate = await Persona.update(dataNewRol, { where: { external_id: externalId } });
             return res.json({ message: 'Se ha actualizado la información de su titulo profesional', personUpdate });
         } else {
-            return res.json({ message: 'La cuenta de este usuairo esta inactiva' });
+            return res.json({ message: 'La cuenta de este usuario esta inactiva' });
         }
     }
     /**Fin funciones validadas */

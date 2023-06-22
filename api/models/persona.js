@@ -126,8 +126,8 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER,
         },
         //rol auxilar para personal uelda
-        //subInspector
-        // 0
+        //sin rolauxiliar -   subInspector
+        //       0        -        1
         rolAuxiliar: {
             type: DataTypes.INTEGER,
         },

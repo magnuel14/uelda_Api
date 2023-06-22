@@ -92,6 +92,8 @@ app.use('/uelda/user', require('./api/routes/userRoutes'))
 app.use('/uelda/personal', require('./api/routes/personalRoutes'))
 app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
 app.use('/uelda/gestion_academica', require('./api/routes/gestionAcademicaRoutes'))
+app.use('/uelda/inspector', require('./api/routes/inspectorRoutes'))
+
 
 
 module.exports = app;

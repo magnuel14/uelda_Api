@@ -2,8 +2,7 @@ const express = require('express');
 const { tryCatch } = require('../../utils/tryCatch');
 const router = express.Router();
 
-const controller = '../controllers/gestionAcademicaController.js';
-const gestionAcademicaController = require(controller);
+const gestionAcademicaController = require('../controllers/gestionAcademicaController.js');
 
 router.get('/get-allAniosLectivos', tryCatch(gestionAcademicaController.getAllAniosLectivos));
 router.get('/get-AllCursos_Materias/:id_anioLectivo', (gestionAcademicaController.getAllCursos_Materias));
