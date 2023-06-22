@@ -13,7 +13,7 @@ router.post('/create_AnioLectivo', (gestionAcademicaController.createAnioLectivo
 router.post('/matricular_Estudiante', (gestionAcademicaController.matricularEstudiante));
 
 
-router.get('/test', (gestionAcademicaController.test));
+router.post('/test', (gestionAcademicaController.test));
 
 
 

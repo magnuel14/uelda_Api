@@ -7,12 +7,10 @@
     "boolInicial": 0,
     "boolBasica": 0,
     "boolBachillerato": 0,
-
     "bool1I": 0,
     "num_paralelo1I": 4,
     "bool2I": 0,
     "num_paralelo2I": 2,
-
     "bool1B": 0,
     "num_paralelo1B": 5,
     "bool2B": 0,
@@ -40,3 +38,4 @@
     "bool3S": 0,
     "num_paralelo3S": 9
 }
+
