@@ -10,10 +10,7 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //total de numero de horas programadas para la materia
-        horasClase_programadas: {
-            type: DataTypes.STRING(50)
-        },
+        //el tal de horas x materia se saca directamente de la materia a la que pertenece la asistencia
         //total de numero de horas dictadas por el docente
         horasClase_dictadas: {
             type: DataTypes.STRING(50)

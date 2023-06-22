@@ -19,6 +19,15 @@ module.exports = function (sequelize, DataTypes) {
         tipoCalificacion: {
             type: DataTypes.INTEGER
         },
+        //total de horas asiganadas a la materia por año escolar
+        //numero de horas programadas para la materia
+        horasClase_programadas: {
+            type: DataTypes.STRING(50)
+        },
+        //0 activa - 1 inactiva: caso 3ro  bachillerato hay materias optativas
+        estado: {
+            type: DataTypes.INTEGER
+        },
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
