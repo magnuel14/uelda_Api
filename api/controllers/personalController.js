@@ -223,12 +223,16 @@ let controller = {
     updateinfoMedica: async (req, res) => {
         const {
             externalId,
+            discapacidad,
+            enfermedadCatastrofica,
             tipoDiscapacidad,
             porcentajeDiscapacidad,
             nCarnetDiscapacidad,
             tipoEnfermedadCatastrofica
         } = req.body
         const dataInfoMed = {
+            discapacidad:discapacidad,
+            enfermedadCatastrofica:enfermedadCatastrofica,
             tipoDiscapacidad: tipoDiscapacidad,
             porcentajeDiscapacidad: porcentajeDiscapacidad,
             nCarnetDiscapacidad: nCarnetDiscapacidad,

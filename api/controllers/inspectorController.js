@@ -37,7 +37,6 @@ let controller = {
             });
         res.json(personal);
     },
-
     /**updateRol_auxilar: Funcion para actulizar el rol auxiliar al personal
      * @param {*} res 
      * @returns Una lista en formato json de los estuidantes registrados
@@ -92,7 +91,6 @@ let controller = {
                 }
             }
             return res.json({ message: 'Se ha eliminado el rol auxiliar al o los docentes selecionados' });
-
         }
         if (rolAuxiliar == 1) {
             for (let i = 0; i < externalId_list.length; i++) {

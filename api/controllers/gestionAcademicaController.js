@@ -4,7 +4,7 @@ const models = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
 
-
+const Persona = models.persona;
 const AnioLectivo = models.anioLectivo;
 const Curso = models.curso;
 const Paralelo = models.paralelo;
@@ -39,38 +39,33 @@ let controller = {
      * @returns 
      */
     matricularEstudiante: async (req, res) => {
-        let { info } = req.body
-
-
+        let { lista_externalid_estudiantes, id_paralelo } = req.body
         //const { cursoMatricula, plnatelAnterior, id_paralelo, id_persona, newEstudiante } = req.body;
 
-        for (let i = 0; i < info.length; i++) {
-            const { id_paralelo, id_persona } = info[i];
+        for (let i = 0; i < lista_externalid_estudiantes.length; i++) {
+            const { externalId } = lista_externalid_estudiantes[i];
 
             const infoParalelo = await Paralelo.findOne({
                 where: { id: id_paralelo }
             });
-            //console.log('paralelo: ', infoParalelo)
 
             const infoCurso = await Curso.findOne({
                 include: [Materia],
                 where: { id: infoParalelo.id_curso }
             });
-            //console.log('curso: ', infoCurso.materia.length)
-            //en caso de que el estudiante sea nuevo se recibe un 0=si o un 1=0
 
+            //en caso de que el estudiante sea nuevo se recibe un 0=si o un 1=0
+            const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } })
             const dataEstudiante = {
-                id_paralelo: id_paralelo, id_persona: id_persona
+                id_paralelo: id_paralelo, id_persona: infoEstudiante.id
             }
             const newMatricula_estudiante = await Matricula.create(dataEstudiante);
 
-            // return res.json({ newMatricula_estudiante });
             if (newMatricula_estudiante) {
                 let id_materia;
                 let tipoCalificacion;
-                console.log('bool 1:', (infoCurso.gradoAcademico))
 
-                if (infoCurso.gradoAcademico == 'Inicial 3 años') {
+                if (infoCurso.nivelAcademico == 'Inicial 3 años') {
                     const asistenciaXDia = {
                         horasClase_programadas: '55',
                         horasClase_dictadas: '0',
@@ -79,7 +74,7 @@ let controller = {
                     }
                     await AsistenciaXDia.create(asistenciaXDia);
                 }
-                if (infoCurso.gradoAcademico == 'Inicial 4 años') {
+                if (infoCurso.nivelAcademico == 'Inicial 4 años') {
                     const asistenciaXDia = {
                         horasClase_programadas: '55',
                         horasClase_dictadas: '0',
@@ -88,7 +83,7 @@ let controller = {
                     }
                     await AsistenciaXDia.create(asistenciaXDia);
                 }
-                if (infoCurso.gradoAcademico == 'Básica Preparatoria') {
+                if (infoCurso.nivelAcademico == 'Básica Preparatoria') {
                     const asistenciaXDia = {
                         horasClase_programadas: '55',
                         horasClase_dictadas: '0',
@@ -97,7 +92,7 @@ let controller = {
                     }
                     await AsistenciaXDia.create(asistenciaXDia);
                 }
-                if (infoCurso.gradoAcademico == 'Básica Elemental') {
+                if (infoCurso.nivelAcademico == 'Básica Elemental') {
                     const asistenciaXDia = {
                         horasClase_programadas: '55',
                         horasClase_dictadas: '0',
@@ -106,7 +101,7 @@ let controller = {
                     }
                     await AsistenciaXDia.create(asistenciaXDia);
                 }
-                if (infoCurso.gradoAcademico == 'Básica Media') {
+                if (infoCurso.nivelAcademico == 'Básica Media') {
                     const asistenciaXDia = {
                         horasClase_programadas: '55',
                         horasClase_dictadas: '0',
@@ -118,7 +113,7 @@ let controller = {
                 for (let i = 0; i < infoCurso.materia.length; i++) {
                     id_materia = infoCurso.materia[i].id;
                     tipoCalificacion = infoCurso.materia[i].tipoCalificacion;
-                    if (infoCurso.gradoAcademico == 'Básica Superior') {
+                    if (infoCurso.nivelAcademico == 'Básica Superior') {
                         const asistenciasXMateria = {
                             horasClase_programadas: '55',
                             horasClase_dictadas: '0',
@@ -128,7 +123,7 @@ let controller = {
                         }
                         await AsistenciaXMate.create(asistenciasXMateria);
                     }
-                    if (infoCurso.gradoAcademico == 'Bachillerato') {
+                    if (infoCurso.nivelAcademico == 'Bachillerato') {
                         const asistenciasXMateria = {
                             horasClase_programadas: '55',
                             horasClase_dictadas: '0',
@@ -167,7 +162,8 @@ let controller = {
                                 }
                                 await CalificacionT.create(dataCalificacionT);
                             }
-                        } if (infoCurso.gradoAcademico == 10) {
+                        }
+                        if (infoCurso.gradoAcademico == 10) {
                             const dataCalificacionT = {
                                 aportesPrimerTimestre: 0, proIntegradorFase_1: 0,
                                 evaluacion_estructurada_1: 0,
@@ -213,7 +209,6 @@ let controller = {
                         }
                     }
                 }
-
             } else {
                 return res.json({ message: 'Ocurrio un problema 1' });
             }
@@ -236,7 +231,13 @@ let controller = {
        * @returns Una lista en formato json de los anios lectivos registrados
        */
     createAnioLectivo: async (req, res) => {
-        const { jornada, periodo, fechaInicio, fechaFin, modalidad, tipoCalificacion } = req.body;
+        const {
+            jornada, periodo, fechaInicio,
+            fechaFin, modalidad, tipoCalificacion,
+            inicial, preparatoria, ele_med_sup,
+            bachillerato
+        } = req.body;
+
         const anioLectivoData = {
             jornada: jornada, periodo: periodo,
             fechaInicio: fechaInicio, fechaFin: fechaFin,
@@ -250,7 +251,6 @@ let controller = {
                 contadorEstadoAnioLectivo++;
             }
         }
-        //console.log(contadorEstadoAnioLectivo)
 
         if (contadorEstadoAnioLectivo == 0) {
             const newAnioLectivo = await AnioLectivo.create(anioLectivoData);
@@ -277,87 +277,38 @@ let controller = {
 
                 if (boolInicial == 0) {
                     if (bool1I == 0) {
+
                         const cursoData = {
                             nivelAcademico: 'Inicial 3 años',
                             gradoAcademico: '1',
                             id_anioLectivo: newAnioLectivo.id,
                         }
                         const newCurso = await Curso.create(cursoData);
+
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Desarrollo Personal y Social',
-                                nombre: 'Identidad y autonomía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < inicial.length; i++) {
+                                const { area, nombre, horasClase_programadas } = inicial[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Desarrollo Personal y Social',
-                                nombre: 'Convivencia',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo1I;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const parareloData = {
+                                    titulo: letra,
+                                    id_curso: id_curso
+                                }
+                                await Paralelo.create(parareloData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Descubrimiento del Medio Natural y Cultural',
-                                nombre: 'Relaciones con el Medio Natural y Cultural',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Descubrimiento del Medio Natural y Cultural',
-                                nombre: 'Relaciones con el Medio Natural y Cultural',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Descubrimiento del Medio Natural y Cultural',
-                                nombre: 'Relaciones Lógico / Matemáticas',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Expresión y Comunicación',
-                                nombre: 'Comprensión y Expresión del Lenguaje',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Expresión y Comunicación',
-                                nombre: 'Expresión Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Expresión y Comunicación',
-                                nombre: 'Exploración Corporal y Motricidad',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-                        }
-                        const numeroParalelo = num_paralelo1I;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const parareloData = {
-                                titulo: letra,
-                                id_curso: id_curso
-                            }
-                            await Paralelo.create(parareloData);
                         }
                     }
                     if (bool2I == 0) {
@@ -370,80 +321,28 @@ let controller = {
                         const id_curso = newCurso.id;
 
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Desarrollo Personal y Social',
-                                nombre: 'Identidad y autonomía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < inicial.length; i++) {
+                                const { area, nombre, horasClase_programadas } = inicial[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Desarrollo Personal y Social',
-                                nombre: 'Convivencia',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo2I;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const paraleloData = {
+                                    titulo: letra,
+                                    id_curso: id_curso
+                                }
+                                await Paralelo.create(paraleloData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Descubrimiento del Medio Natural y Cultural',
-                                nombre: 'Relaciones con el Medio Natural y Cultural',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Descubrimiento del Medio Natural y Cultural',
-                                nombre: 'Relaciones con el Medio Natural y Cultural',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Descubrimiento del Medio Natural y Cultural',
-                                nombre: 'Relaciones Lógico / Matemáticas',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Expresión y Comunicación',
-                                nombre: 'Comprensión y Expresión del Lenguaje',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Expresión y Comunicación',
-                                nombre: 'Expresión Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Expresión y Comunicación',
-                                nombre: 'Exploración Corporal y Motricidad',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-                        }
-
-                        const numeroParalelo = num_paralelo2I;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const paraleloData = {
-                                titulo: letra,
-                                id_curso: id_curso
-                            }
-                            await Paralelo.create(paraleloData);
                         }
                     }
                 }
@@ -458,105 +357,27 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < preparatoria.length; i++) {
+                                const { area, nombre, horasClase_programadas } = preparatoria[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
-
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo1B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo1B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -569,105 +390,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json( newCurso);
-                        const numeroParalelo = num_paralelo2B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -680,105 +424,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo3B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -791,105 +458,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo4B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -902,105 +492,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo5B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1013,105 +526,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo6B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1124,105 +560,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo7B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1235,105 +594,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo8B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1346,105 +628,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo9B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1457,105 +662,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < ele_med_sup.length; i++) {
+                                const { area, nombre, horasClase_programadas } = ele_med_sup[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Estudios Sociales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Ciencias Naturales',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Animación a la lectura',
-                                nombre: 'Animación a la lectura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Orientación vocacional y profesional',
-                                nombre: 'Orientación vocacional y profesional',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo10B;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1572,152 +700,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < bachillerato.length; i++) {
+                                const { area, nombre, horasClase_programadas } = bachillerato[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Química',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Biología',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Historia',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Educación para la Ciudadanía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Filosofía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                            const dataMateria_11 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_11);
-
-                            const dataMateria_12 = {
-                                area: 'Módulo Interdisciplinar',
-                                nombre: 'Emprendimiento y Gestión',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_12);
-
-                            const dataMateria_13 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_13);
-
-                            const dataMateria_14 = {
-                                area: 'ASIGNATURAS OPTATIVAS ',
-                                nombre: 'Investigación Ciencia y Tecnología',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_14);
-
-                            const dataMateria_15 = {
-                                area: 'ASIGNATURAS OPTATIVAS ',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_15);
-
-                            const dataMateria_16 = {
-                                area: 'ASIGNATURAS OPTATIVAS',
-                                nombre: 'Lectura Crítica de Mensajes',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_16);
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo1S;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1730,152 +734,28 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < bachillerato.length; i++) {
+                                const { area, nombre, horasClase_programadas } = bachillerato[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Química',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Biología',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Historia',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Educación para la Ciudadanía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Filosofía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                            const dataMateria_11 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_11);
-
-                            const dataMateria_12 = {
-                                area: 'Módulo Interdisciplinar',
-                                nombre: 'Emprendimiento y Gestión',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_12);
-
-                            const dataMateria_13 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_13);
-
-                            const dataMateria_14 = {
-                                area: 'ASIGNATURAS OPTATIVAS ',
-                                nombre: 'Investigación Ciencia y Tecnología',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_14);
-
-                            const dataMateria_15 = {
-                                area: 'ASIGNATURAS OPTATIVAS ',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_15);
-
-                            const dataMateria_16 = {
-                                area: 'ASIGNATURAS OPTATIVAS',
-                                nombre: 'Lectura Crítica de Mensajes',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_16);
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo2S;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
 
@@ -1888,155 +768,30 @@ let controller = {
                         const newCurso = await Curso.create(cursoData);
                         const id_curso = newCurso.id;
                         if (newCurso) {
-                            const dataMateria_1 = {
-                                area: 'Matemática',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            for (let i = 0; i < bachillerato.length; i++) {
+                                const { area, nombre, horasClase_programadas } = bachillerato[i];
+                                const dataMateria = {
+                                    area: area,
+                                    nombre: nombre,
+                                    horasClase_programadas: horasClase_programadas,
+                                    tipoCalificacion: tipoCalificacion,
+                                    id_curso: id_curso
+                                }
+                                await Materia.create(dataMateria);
                             }
-                            await Materia.create(dataMateria_1);
 
-                            const dataMateria_2 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
+                            const numeroParalelo = num_paralelo6B;
+                            const startCharCode = 65; // Código ASCII de la letra 'A'
+                            for (let i = 0; i < numeroParalelo; i++) {
+                                const letra = String.fromCharCode(startCharCode + i);
+                                const cursoData = {
+                                    titulo: letra,
+                                    id_curso: newCurso.id
+                                }
+                                await Paralelo.create(cursoData);
                             }
-                            await Materia.create(dataMateria_2);
-
-                            const dataMateria_3 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Química',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_3);
-
-                            const dataMateria_4 = {
-                                area: 'Ciencias Naturales',
-                                nombre: 'Biología',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_4);
-
-                            const dataMateria_5 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Historia',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_5);
-
-                            const dataMateria_6 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Educación para la Ciudadanía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_6);
-
-                            const dataMateria_7 = {
-                                area: 'Ciencias Sociales',
-                                nombre: 'Filosofía',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            Materia.create(dataMateria_7);
-
-                            const dataMateria_8 = {
-                                area: 'Lengua y Literatura',
-                                nombre: 'Lengua y Literatura',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_8);
-
-                            const dataMateria_9 = {
-                                area: 'Lengua Extranjera',
-                                nombre: 'Inglés',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_9);
-
-                            const dataMateria_10 = {
-                                area: 'Educación Cultural y Artística',
-                                nombre: 'Educación Cultural y Artística',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_10);
-
-                            const dataMateria_11 = {
-                                area: 'Educación Física',
-                                nombre: 'Educación Física',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_11);
-
-                            const dataMateria_12 = {
-                                area: 'Módulo Interdisciplinar',
-                                nombre: 'Emprendimiento y Gestión',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_12);
-
-                            const dataMateria_13 = {
-                                area: 'Acompañamiento integral en el aula',
-                                nombre: 'Acompañamiento integral en el aula',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_13);
-
-                            const dataMateria_14 = {
-                                area: 'ASIGNATURAS OPTATIVAS ',
-                                nombre: 'Investigación Ciencia y Tecnología',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_14);
-
-                            const dataMateria_15 = {
-                                area: 'ASIGNATURAS OPTATIVAS ',
-                                nombre: 'Matemática',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_15);
-
-                            const dataMateria_16 = {
-                                area: 'ASIGNATURAS OPTATIVAS',
-                                nombre: 'Lectura Crítica de Mensajes',
-                                tipoCalificacion: tipoCalificacion,
-                                id_curso: id_curso
-                            }
-                            await Materia.create(dataMateria_16);
-                        }
-                        //res.json(newCurso);
-                        const numeroParalelo = num_paralelo3S;
-                        const startCharCode = 65; // Código ASCII de la letra 'A'
-                        for (let i = 0; i < numeroParalelo; i++) {
-                            const letra = String.fromCharCode(startCharCode + i);
-                            const cursoData = {
-                                titulo: letra,
-                                id_curso: newCurso.id
-                            }
-                            const newParalelo = await Paralelo.create(cursoData);
-                            console.log('newParalelo: ', newParalelo);
-
-                            const matriculaData = {
-                                id_paralelo: newParalelo.id,
-                            }
-                            const newMatricula = await Matricula.create(matriculaData);
-                            console.log('newMatricula: ', newMatricula);
-                            //res.json(newParalelo);
                         }
                     }
-
                 }
 
                 return res.json({ message: 'Se ha generado el año lectivo y la oferta académica exitosamente', newAnioLectivo });
@@ -2047,19 +802,12 @@ let controller = {
             return res.json({ message: 'Ya existe un Año lectivo con estado activo' });
         }
     },
-
+    /**Fin funciones validadas */
 
     test: async (req, res) => {
         let { info } = req.body
-
         return res.json(info)
-
-
-    },
-
-
-
-    /**Fin funciones validadas */
+    }
 }
 
 module.exports = controller;
