@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
 
 const cedulaValidator = require('../../helpers/cedulaHelper');
+const persona = require('../models/persona');
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
@@ -35,42 +36,49 @@ let controller = {
                     ]
                 }
             });
-        res.json(personal);
+        return res.json(personal);
+    },
+    /**
+     * @param {*} res 
+     * @returns Una lista en formato json de los estuidantes registrados
+     */
+    createAsistencia_Docentes: async (req, res) => {
+        const { fechaRegistro, list_personal } = req.body;
+        for (let i = 0; i < list_personal.length; i++) {
+            const { externalId, asistencia, observacion } = list_personal[i];
+            const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
+            if (infoPersona) {
+                const dataAsistecia = {
+                    id_persona: infoPersona.id,
+                    asistencia: asistencia,
+                    fechaRegistro: fechaRegistro,
+                    observacion: observacion,
+                }
+                await AsistenciaDocente.create(dataAsistecia)
+            }
+        }
+        return res.json({ message: 'Se ha registrado la asistencia' });
     },
     /**updateRol_auxilar: Funcion para actulizar el rol auxiliar al personal
      * @param {*} res 
      * @returns Una lista en formato json de los estuidantes registrados
      */
-    createAsistencia_Docente: async (req, res) => {
-        const { externalId, asistencia, hora_llegada, observacion } = req.body;
+    //luego de crear asistencias desactivar el boton 24 horas
+    //o por fecha 
+    updateAsistencia_Docente: async (req, res) => {
+
+        const { fechaRegistro, externalId, asistencia, observacion } = req.body;
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
         if (infoPersona) {
             const dataAsistecia = {
-                id_persona: infoPersona.id,
                 asistencia: asistencia,
-                fechaRegistro: hora_llegada,
-                observacion: observacion
+                fechaRegistro: fechaRegistro,
+                observacion: observacion,
             }
-            const newAsistenciaDocente = await AsistenciaDocente.create(dataAsistecia)
-            return res.json({ message: 'Se ha registrado la asistencia', newAsistenciaDocente });
+            await AsistenciaDocente.update(dataAsistecia, { where: {} })
+            return res.json({ message: `Se ha registrado la asistencia del docente ${infoPersona.nombre} ${infoPersona.apellido}` });
         } else {
-            return res.json({ message: 'La persona no existe' });
-        }
-    },
-    createAsistencia_Docentes: async (req, res) => {
-        const { externalId, asistencia, hora_llegada, observacion } = req.body;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        if (infoPersona) {
-            const dataAsistecia = {
-                id_persona: infoPersona.id,
-                asistencia: asistencia,
-                fechaRegistro: hora_llegada,
-                observacion: observacion
-            }
-            const newAsistenciaDocente = await AsistenciaDocente.create(dataAsistecia)
-            return res.json({ message: 'Se ha registrado la asistencia', newAsistenciaDocente });
-        } else {
-            return res.json({ message: 'La persona no existe' });
+            return res.json({ message: 'Se ha registrado la asistencia' });
         }
     },
     /**updateRol_auxilar: Funcion para actulizar el rol auxiliar al personal

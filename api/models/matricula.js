@@ -13,7 +13,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         //solo para estudiantes nuevos
         //plantel de donde proviene
-        plnatelAnterior: {
+        plantelAnterior: {
             type: DataTypes.STRING(50)
         },
         external_id: {

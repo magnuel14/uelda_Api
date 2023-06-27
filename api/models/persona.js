@@ -120,8 +120,8 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.TEXT
         },
         //estado del estuidante
-        //matriculado ,retirado, graduados
-        //     0     -     1   -   2       
+        //matriculado, promovido, no promovido, retirado, graduados
+        //     0     -     1    -       2     -    3    -    4
         estadoAc: {
             type: DataTypes.INTEGER,
         },

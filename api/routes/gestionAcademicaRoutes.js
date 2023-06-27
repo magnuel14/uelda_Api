@@ -8,8 +8,10 @@ router.get('/get-allAniosLectivos', tryCatch(gestionAcademicaController.getAllAn
 router.get('/get-AllCursos_Materias/:id_anioLectivo', (gestionAcademicaController.getAllCursos_Materias));
 router.post('/create_AnioLectivo', (gestionAcademicaController.createAnioLectivo));
 
-//matricular estudiante
-router.post('/matricular_Estudiante', (gestionAcademicaController.matricularEstudiante));
+//gestion de matricula o promociones de estudiantes
+router.post('/matricular_Estudiante', (gestionAcademicaController.matricularEstudiantes));
+router.post('/promover_Estudiante', (gestionAcademicaController.promoverEstudiantes));
+
 
 
 router.post('/test', (gestionAcademicaController.test));
