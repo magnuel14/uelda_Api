@@ -4536,8 +4536,8 @@ let controller = {
             } = req.body;
             if (newAnioLectivo) {
 
-                if (boolInicial == 0) {
-                    if (bool1I == 0) {
+                if (boolInicial == true) {
+                    if (bool1I == true) {
 
                         const cursoData = {
                             nivelAcademico: 'Inicial 3 años',
@@ -4572,7 +4572,7 @@ let controller = {
                             }
                         }
                     }
-                    if (bool2I == 0) {
+                    if (bool2I == true) {
                         const cursoData = {
                             nivelAcademico: 'Inicial 4 años',
                             gradoAcademico: '2',
@@ -4608,8 +4608,8 @@ let controller = {
                     }
                 }
 
-                if (boolBasica == 0) {
-                    if (bool1B == 0) {
+                if (boolBasica == true) {
+                    if (bool1B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Preparatoria',
                             gradoAcademico: '1',
@@ -4642,7 +4642,7 @@ let controller = {
                         }
                     }
 
-                    if (bool2B == 0) {
+                    if (bool2B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Elemental',
                             gradoAcademico: '2',
@@ -4676,7 +4676,7 @@ let controller = {
                         }
                     }
 
-                    if (bool3B == 0) {
+                    if (bool3B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Elemental',
                             gradoAcademico: '3',
@@ -4710,7 +4710,7 @@ let controller = {
                         }
                     }
 
-                    if (bool4B == 0) {
+                    if (bool4B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Elemental',
                             gradoAcademico: '4',
@@ -4744,7 +4744,7 @@ let controller = {
                         }
                     }
 
-                    if (bool5B == 0) {
+                    if (bool5B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Media',
                             gradoAcademico: '5',
@@ -4778,7 +4778,7 @@ let controller = {
                         }
                     }
 
-                    if (bool6B == 0) {
+                    if (bool6B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Media',
                             gradoAcademico: '6',
@@ -4812,7 +4812,7 @@ let controller = {
                         }
                     }
 
-                    if (bool7B == 0) {
+                    if (bool7B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Media',
                             gradoAcademico: '7',
@@ -4846,7 +4846,7 @@ let controller = {
                         }
                     }
 
-                    if (bool8B == 0) {
+                    if (bool8B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Superior',
                             gradoAcademico: '8',
@@ -4880,7 +4880,7 @@ let controller = {
                         }
                     }
 
-                    if (bool9B == 0) {
+                    if (bool9B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Superior',
                             gradoAcademico: '9',
@@ -4914,7 +4914,7 @@ let controller = {
                         }
                     }
 
-                    if (bool10B == 0) {
+                    if (bool10B == true) {
                         const cursoData = {
                             nivelAcademico: 'Básica Superior',
                             gradoAcademico: '10',
@@ -4950,9 +4950,9 @@ let controller = {
 
                 }
 
-                if (boolBachillerato == 0) {
+                if (boolBachillerato == true) {
 
-                    if (bool1S == 0) {
+                    if (bool1S == true) {
                         const cursoData = {
                             nivelAcademico: 'Bachillerato',
                             gradoAcademico: '1',
@@ -4986,7 +4986,7 @@ let controller = {
                         }
                     }
 
-                    if (bool2S == 0) {
+                    if (bool2S == true) {
                         const cursoData = {
                             nivelAcademico: 'Bachillerato',
                             gradoAcademico: '2',
@@ -5020,7 +5020,7 @@ let controller = {
                         }
                     }
 
-                    if (bool3S == 0) {
+                    if (bool3S == true) {
                         const cursoData = {
                             nivelAcademico: 'Bachillerato',
                             gradoAcademico: '3',
