@@ -43,9 +43,9 @@ let controller = {
      * @returns Una lista en formato json de los estuidantes registrados
      */
     createAsistencia_Docentes: async (req, res) => {
-        const { fechaRegistro, list_personal } = req.body;
+        const { fechaRegistro, list_personal, asistencia } = req.body;
         for (let i = 0; i < list_personal.length; i++) {
-            const { externalId, asistencia, observacion } = list_personal[i];
+            const { externalId, observacion } = list_personal[i];
             const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
             if (infoPersona) {
                 const dataAsistecia = {
