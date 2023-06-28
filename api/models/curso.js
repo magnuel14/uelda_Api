@@ -1,6 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var anioLectivo = require('./anioLectivo');
-    var AnioLectivo = new anioLectivo(sequelize, DataTypes);
+    var AnioLectivo = require('./anioLectivo')(sequelize, DataTypes);
     var Curso = sequelize.define('curso', {
         id: {
             autoIncrement: true,

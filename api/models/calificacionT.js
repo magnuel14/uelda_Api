@@ -1,9 +1,7 @@
 //Calificación por Trimestre
 module.exports = function (sequelize, DataTypes) {
-    var materia = require('./materia');
-    var Materia = new materia(sequelize, DataTypes);
-    var matricula = require('./matricula');
-    var Matricula = new matricula(sequelize, DataTypes);
+    var Materia = require('./materia')(sequelize, DataTypes);
+    var Matricula = require('./matricula')(sequelize, DataTypes);
     var CalificacionT = sequelize.define('calificacionT', {
         id: {
             autoIncrement: true,

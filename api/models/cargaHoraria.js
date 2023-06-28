@@ -6,16 +6,12 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //id del curso
-        id_curso: {
-            type: DataTypes.INTEGER
-        },
-        //lista de ids de paralelos
-        id_paralelos: {
+        //id del paralelo donde es tutor el docente
+        id_paralelo_tutor: {
             type: DataTypes.STRING(50)
         },
-        //lista de ids de materias
-        id_materia: {
+        //horas carga horaria
+        horas_asignadas: {
             type: DataTypes.STRING(50)
         },
         external_id: {
@@ -30,5 +26,13 @@ module.exports = function (sequelize, DataTypes) {
     CargaHoraria.belongsTo(Persona, {
         foreignKey: 'id_persona'
     });
+    CargaHoraria.associate = function (models) {
+        models.CargaHoraria.hasMany(models.cargaHoraria_Paralelos, {
+            foreignKey: 'id_cargaHoraria'
+        });
+        models.CargaHoraria.hasMany(models.cargaHoraria_Materias, {
+            foreignKey: 'id_cargaHoraria'
+        });
+    };
     return CargaHoraria;
 };

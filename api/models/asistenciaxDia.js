@@ -1,6 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var matricula = require('./matricula');
-    var Matricula = new matricula(sequelize, DataTypes);
+    var Matricula = require('./matricula')(sequelize, DataTypes);
     var AsistenciaXDia = sequelize.define('asistenciaXDia', {
         //las asistencias por dia en educacion basica e inicial, debio a que un solo profesor da 
         //clases duarante todo el dia academico

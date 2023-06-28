@@ -1,6 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var curso = require('./curso');
-    var Curso = new curso(sequelize, DataTypes);
+    var Curso = require('./curso')(sequelize, DataTypes);
     var Paralelo = sequelize.define('paralelo', {
         id: {
             autoIncrement: true,

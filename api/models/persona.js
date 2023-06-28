@@ -131,6 +131,10 @@ module.exports = function (sequelize, DataTypes) {
         rolAuxiliar: {
             type: DataTypes.INTEGER,
         },
+        //copia de los documentos de identificacion.
+        url_documentos_identificación: {
+            type: DataTypes.TEXT
+        },
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
