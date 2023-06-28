@@ -27,10 +27,10 @@ module.exports = function (sequelize, DataTypes) {
         foreignKey: 'id_persona'
     });
     CargaHoraria.associate = function (models) {
-        models.CargaHoraria.hasMany(models.cargaHoraria_Paralelos, {
+        models.cargaHoraria.hasMany(models.cargaHoraria_Paralelos, {
             foreignKey: 'id_cargaHoraria'
         });
-        models.CargaHoraria.hasMany(models.cargaHoraria_Materias, {
+        models.cargaHoraria.hasMany(models.cargaHoraria_Materias, {
             foreignKey: 'id_cargaHoraria'
         });
     };

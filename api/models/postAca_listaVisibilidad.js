@@ -26,5 +26,5 @@ module.exports = function (sequelize, DataTypes) {
     PostAca_listaVisibilidad.belongsTo(PostAcademico, {
         foreignKey: 'id_postAcademico'
     });
-    return postAca_listaVisibilidad;
+    return PostAca_listaVisibilidad;
 };
