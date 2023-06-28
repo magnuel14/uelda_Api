@@ -120,16 +120,20 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.TEXT
         },
         //estado del estuidante
-        //matriculado ,retirado, graduados
-        //     0     -     1   -   2       
+        //matriculado, promovido, no promovido, retirado, graduados
+        //     0     -     1    -       2     -    3    -    4
         estadoAc: {
             type: DataTypes.INTEGER,
         },
         //rol auxilar para personal uelda
-        //subInspector
-        // 0
+        //sin rolauxiliar -   subInspector
+        //       0        -        1
         rolAuxiliar: {
             type: DataTypes.INTEGER,
+        },
+        //copia de los documentos de identificacion.
+        url_documentos_identificación: {
+            type: DataTypes.TEXT
         },
         external_id: {
             type: DataTypes.UUID,
@@ -165,13 +169,13 @@ module.exports = function (sequelize, DataTypes) {
         models.persona.hasMany(models.postAcademico, {
             foreignKey: 'id_persona'
         });
-        models.persona.hasMany(models.asistencia, {
+        models.persona.hasMany(models.asistenciaDocente, {
             foreignKey: 'id_persona'
         });
-        models.persona.hasOne(models.infoDocente, {
+        models.persona.hasMany(models.cargaHoraria, {
             foreignKey: 'id_persona'
         });
-        models.persona.hasOne(models.matricula, {
+        models.persona.hasMany(models.matricula, {
             foreignKey: 'id_persona'
         });
     };

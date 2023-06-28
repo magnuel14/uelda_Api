@@ -5,7 +5,7 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //matutina - vespertina - noturna
+        //matutina - vespertina - nocturna
         jornada: {
             type: DataTypes.STRING(50)
         },
@@ -29,7 +29,7 @@ module.exports = function (sequelize, DataTypes) {
         },
          //0: activo , 1: finalizado
          estadoAniolectivo: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.INTEGER
         },
         external_id: {
             type: DataTypes.UUID,
@@ -43,7 +43,7 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     AnioLectivo.associate = function (models) {
-        models.rol.hasMany(models.curso, {
+        models.anioLectivo.hasMany(models.curso, {
             foreignKey: 'id_anioLectivo'
         });
     };

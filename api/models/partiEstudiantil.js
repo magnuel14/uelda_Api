@@ -1,6 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var persona = require('./persona');
-    var Persona = new persona(sequelize, DataTypes);
+    var Persona = require('./persona')(sequelize, DataTypes);
     var PartiEstudiantil = sequelize.define('partiestudiantil', {
         id: {
             autoIncrement: true,

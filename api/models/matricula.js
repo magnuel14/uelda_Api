@@ -1,9 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-    var Persona = require('../models/persona')(sequelize, DataTypes);
-    var Curso = require('../models/curso')(sequelize, DataTypes);
     var Paralelo = require('../models/paralelo')(sequelize, DataTypes);
-    var Materia = require('../models/materia')(sequelize, DataTypes);
-  
+    var Persona = require('../models/persona')(sequelize, DataTypes);
     var Matricula = sequelize.define('matricula', {
         id: {
             autoIncrement: true,
@@ -16,7 +13,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         //solo para estudiantes nuevos
         //plantel de donde proviene
-        plnatelAnterior: {
+        plantelAnterior: {
             type: DataTypes.STRING(50)
         },
         external_id: {
@@ -28,19 +25,22 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    
-    Matricula.belongsTo(Persona, {
-        foreignKey: 'id_persona'
-    });
-    Matricula.belongsTo(Curso, {
-        foreignKey: 'id_curso'
-    });
     Matricula.belongsTo(Paralelo, {
         foreignKey: 'id_paralelo'
     });
-    Matricula.belongsTo(Materia, {
-        foreignKey: 'id_materia'
+    Matricula.belongsTo(Persona, {
+        foreignKey: 'id_persona'
     });
-    
+    Matricula.associate = function (models) {
+        models.matricula.hasMany(models.calificacionT, {
+            foreignKey: 'id_matricula'
+        });
+        models.matricula.hasMany(models.calificacionQ, {
+            foreignKey: 'id_matricula'
+        });
+        models.matricula.hasMany(models.asistenciaXMate, {
+            foreignKey: 'id_matricula'
+        });
+    };
     return Matricula;
 };

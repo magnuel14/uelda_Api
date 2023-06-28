@@ -223,12 +223,16 @@ let controller = {
     updateinfoMedica: async (req, res) => {
         const {
             externalId,
+            discapacidad,
+            enfermedadCatastrofica,
             tipoDiscapacidad,
             porcentajeDiscapacidad,
             nCarnetDiscapacidad,
             tipoEnfermedadCatastrofica
         } = req.body
         const dataInfoMed = {
+            discapacidad:discapacidad,
+            enfermedadCatastrofica:enfermedadCatastrofica,
             tipoDiscapacidad: tipoDiscapacidad,
             porcentajeDiscapacidad: porcentajeDiscapacidad,
             nCarnetDiscapacidad: nCarnetDiscapacidad,
@@ -351,7 +355,7 @@ let controller = {
             const personUpdate = await Persona.update(dataNewRol, { where: { external_id: externalId } });
             return res.json({ message: 'Se ha actualizado la información de su titulo profesional', personUpdate });
         } else {
-            return res.json({ message: 'La cuenta de este usuairo esta inactiva' });
+            return res.json({ message: 'La cuenta de este usuario esta inactiva' });
         }
     }
     /**Fin funciones validadas */

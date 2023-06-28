@@ -1,0 +1,215 @@
+{
+    "inicial": [
+        {
+            "area": "Desarrollo Personal y Social",
+            "nombre": "Identidad y autonomía",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Desarrollo Personal y Social",
+            "nombre": "Convivencia",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Descubrimiento del Medio Natural y Cultural",
+            "nombre": "Relaciones con el Medio Natural y Cultural",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Descubrimiento del Medio Natural y Cultural",
+            "nombre": "Relaciones Lógico / Matemáticas",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Expresión y Comunicación",
+            "nombre": "Comprensión y Expresión del Lenguaje",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Expresión y Comunicación",
+            "nombre": "Expresión Artística",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Expresión y Comunicación",
+            "nombre": "Exploración Corporal y Motricidad",
+            "horasClase_programadas": ""
+        }
+    ],
+    "preparatoria": [
+        {
+            "area": "Currículo Integrador por ámbitos de aprendizaje",
+            "nombre": "Identidad",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Currículo Integrador por ámbitos de aprendizaje",
+            "nombre": "Convivencia",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Currículo Integrador por ámbitos de aprendizaje",
+            "nombre": "Descubrimiento del medio natural",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Currículo Integrador por ámbitos de aprendizaje",
+            "nombre": "Relaciones lógico-matemáticas",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Currículo Integrador por ámbitos de aprendizaje",
+            "nombre": "Comprensión y expresión oral y escrita",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Currículo Integrador por ámbitos de aprendizaje",
+            "nombre": "Expresión corporal",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Educación Cultural y Artística",
+            "nombre": "Educación Cultural y Artística",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Educación Física",
+            "nombre": "Educación Física",
+            "horasClase_programadas": ""
+        }
+    ],
+    "ele_med_sup": [
+        {
+            "area": "Lengua y Literatura",
+            "nombre": "Lengua y Literatura",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Matemática",
+            "nombre": "Matemática",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Sociales",
+            "nombre": "Estudios Sociales",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Naturales",
+            "nombre": "Ciencias Naturales",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Educación Cultural y Artística",
+            "nombre": "Educación Cultural y Artística",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Educación Física",
+            "nombre": "Educación Física",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Lengua Extranjera",
+            "nombre": "Inglés",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Acompañamiento integral en el aula",
+            "nombre": "Acompañamiento integral en el aula",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Animación a la lectura",
+            "nombre": "Animación a la lectura",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Orientación vocacional y profesional",
+            "nombre": "Orientación vocacional y profesional",
+            "horasClase_programadas": ""
+        }
+    ],
+    "bachillerato": [
+        {
+            "area": "Matemática",
+            "nombre": "Matemática",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Naturales",
+            "nombre": "Física",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Naturales",
+            "nombre": "Química",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Naturales",
+            "nombre": "Biología",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Sociales",
+            "nombre": "Historia",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Sociales",
+            "nombre": "Educación para la Ciudadanía",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Ciencias Sociales",
+            "nombre": "Filosofía",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Lengua y Literatura",
+            "nombre": "Lengua y Literatura",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Lengua Extranjera",
+            "nombre": "Inglés",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Educación Cultural y Artística",
+            "nombre": "Educación Cultural y Artística",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Educación Física",
+            "nombre": "Educación Física",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Módulo Interdisciplinar",
+            "nombre": "Emprendimiento y Gestión",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "Acompañamiento integral en el aula",
+            "nombre": "Acompañamiento integral en el aula",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "ASIGNATURAS OPTATIVAS",
+            "nombre": "Investigación Ciencia y Tecnología",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "ASIGNATURAS OPTATIVAS",
+            "nombre": "Matemática",
+            "horasClase_programadas": ""
+        },
+        {
+            "area": "ASIGNATURAS OPTATIVAS",
+            "nombre": "Lectura Crítica de Mensajes",
+            "horasClase_programadas": ""
+        }
+    ]
+}
