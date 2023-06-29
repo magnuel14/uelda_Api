@@ -20,22 +20,22 @@ let controller = {
    * @returns 
    */
     getPersonal_asistencia: async (req, res) => {
-        const personal = await Persona.findAll(
-            {
-                include: [
-                    Cuenta,
-                    AsistenciaDocente
-                ],
-                where: {
-                    [Op.or]: [
-                        { id_rol: 1 },
-                        { id_rol: 2 },
-                        { id_rol: 3 },
-                        { id_rol: 4 },
-                        { id_rol: 5 }
-                    ]
+        const personal = await Persona.findAll({
+            include: [
+                {
+                    model: Cuenta,
+                    where: {
+                        estado: 0
+                    }
+                },
+                AsistenciaDocente
+            ],
+            where: {
+                id_rol: {
+                    [Op.or]: [1, 2, 3, 4, 5]
                 }
-            });
+            }
+        });
         return res.json(personal);
     },
     /**
@@ -75,7 +75,7 @@ let controller = {
                 fechaRegistro: fechaRegistro,
                 observacion: observacion,
             }
-            await AsistenciaDocente.update(dataAsistecia, { where: {} })
+            await AsistenciaDocente.update(dataAsistecia, { where: { id_persona: infoPersona.id } })
             return res.json({ message: `Se ha registrado la asistencia del docente ${infoPersona.nombre} ${infoPersona.apellido}` });
         } else {
             return res.json({ message: 'Se ha registrado la asistencia' });

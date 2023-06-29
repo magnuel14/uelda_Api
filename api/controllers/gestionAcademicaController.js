@@ -1754,7 +1754,7 @@ let controller = {
                                     include: [Materia],
                                     where: { id: info_paralelo_matricula.id_curso }
                                 });
-                              
+
                                 let id_materia;
                                 let tipoCalificacion;
 
@@ -2036,7 +2036,7 @@ let controller = {
                                     include: [Materia],
                                     where: { id: info_paralelo_matricula.id_curso }
                                 });
-                            
+
                                 let id_materia;
                                 let tipoCalificacion;
 
@@ -2293,7 +2293,7 @@ let controller = {
             }
             //estudiante no promovido
             if (estadoAc == '2') {
-               
+
                 const list_matricula = await Matricula.findAll({ where: { id_persona: id_persona } });
                 for (let j = 0; j < list_matricula.length; j++) {
                     const id_paralelo = list_matricula[j].id_paralelo;
@@ -3794,7 +3794,7 @@ let controller = {
                                     include: [Materia],
                                     where: { id: info_paralelo_matricula.id_curso }
                                 });
-                              
+
                                 let id_materia;
                                 let tipoCalificacion;
 
@@ -4076,7 +4076,7 @@ let controller = {
                                     include: [Materia],
                                     where: { id: info_paralelo_matricula.id_curso }
                                 });
-                            
+
                                 let id_materia;
                                 let tipoCalificacion;
 
@@ -5063,12 +5063,62 @@ let controller = {
             return res.json({ message: 'Ya existe un Año lectivo con estado activo' });
         }
     },
-    /**Fin funciones validadas */
-
-    test: async (req, res) => {
-        let { info } = req.body
-        return res.json(info)
+    /**updateAnioLectivo: Funcion para actualizar ciertos campos de un año lectivo
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+    updateAnioLectivo: async (req, res) => {
+        const { external_id, jornada, periodo, fechaFin, modalidad } = req.body;
+        const dataAnioLectivo = {
+            jornada: jornada,
+            periodo: periodo,
+            fechaFin: fechaFin,
+            modalidad: modalidad
+        }
+        const updateAnioLectivo = await AnioLectivo.update(dataAnioLectivo, { where: { external_id: external_id } });
+        return res.json({ message: 'Se ha actulizado el Año lectivo corecctemente', updateAnioLectivo });
+    },
+    /**updateEstadoAnioLectivo: Funcion para actualizar el estado lectivo
+   * @param {*} req 
+   * @param {*} res 
+   * @returns 
+   */
+    updateEstadoAnioLectivo: async (req, res) => {
+        const { external_id, estadoAniolectivo } = req.body;
+        const dataAnioLectivo = {
+            estadoAniolectivo: estadoAniolectivo
+        }
+        const updateAnioLectivo = await AnioLectivo.update(dataAnioLectivo, { where: { external_id: external_id } });
+        return res.json({ message: 'El año lectivo actual ha finalizado', updateAnioLectivo });
+    },
+    createAsignacionDocente_xsubnivel: async (req, res) => {
+        const { list_personal, subnivel_asignado } = req.body;
+        for (let i = 0; i < list_personal.length; i++) {
+            const { externalId } = list_personal[i];
+            const dataAsignacion_subnivel = { subnivel_asignado: subnivel_asignado }
+            await Persona.update(dataAsignacion_subnivel, { where: { external_id: externalId } })
+        }
+        if (subnivel_asignado == 0) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de inicial' })
+        }
+        if (subnivel_asignado == 1) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica preparatoria' })
+        }
+        if (subnivel_asignado == 2) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica elemental' })
+        }
+        if (subnivel_asignado == 3) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica media' })
+        }
+        if (subnivel_asignado == 4) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica superior' })
+        }
+        if (subnivel_asignado == 5) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de bachillerato' })
+        }
     }
+    /**Fin funciones validadas */
 }
 
 module.exports = controller;

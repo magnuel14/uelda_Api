@@ -231,8 +231,8 @@ let controller = {
             tipoEnfermedadCatastrofica
         } = req.body
         const dataInfoMed = {
-            discapacidad:discapacidad,
-            enfermedadCatastrofica:enfermedadCatastrofica,
+            discapacidad: discapacidad,
+            enfermedadCatastrofica: enfermedadCatastrofica,
             tipoDiscapacidad: tipoDiscapacidad,
             porcentajeDiscapacidad: porcentajeDiscapacidad,
             nCarnetDiscapacidad: nCarnetDiscapacidad,

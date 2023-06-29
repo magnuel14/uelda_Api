@@ -8,11 +8,15 @@ module.exports = function (sequelize, DataTypes) {
         },
         //id del paralelo donde es tutor el docente
         id_paralelo_tutor: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.INTEGER
         },
         //horas carga horaria
         horas_asignadas: {
             type: DataTypes.STRING(50)
+        },
+        //id del año lectivo actual
+        id_anioLectivo_actual: {
+            type:DataTypes.INTEGER
         },
         external_id: {
             type: DataTypes.UUID,

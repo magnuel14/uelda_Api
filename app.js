@@ -93,6 +93,7 @@ app.use('/uelda/personal', require('./api/routes/personalRoutes'))
 app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
 app.use('/uelda/gestion_academica', require('./api/routes/gestionAcademicaRoutes'))
 app.use('/uelda/inspector', require('./api/routes/inspectorRoutes'))
+app.use('/uelda/docente', require('./api/routes/docenteRoutes'))
 
 
 

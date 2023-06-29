@@ -52,7 +52,7 @@ let controller = {
     * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
     * @param {*} req 
     * @param {*} res 
-    * Esta lista se compone idP, correo y clave.
+    * Esta lista se compone externalId, correo y clave.
     * Se hace una busqueda en cuenta por id
     * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
     * Y la dataCuenta que es la información nueva de cuenta
