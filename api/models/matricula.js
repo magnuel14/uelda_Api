@@ -16,6 +16,10 @@ module.exports = function (sequelize, DataTypes) {
         plantelAnterior: {
             type: DataTypes.STRING(50)
         },
+        //id del año lectivo actual
+        id_anioLectivo_actual: {
+            type: DataTypes.INTEGER
+        },
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
@@ -39,6 +43,9 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'id_matricula'
         });
         models.matricula.hasMany(models.asistenciaXMate, {
+            foreignKey: 'id_matricula'
+        });
+        models.matricula.hasMany(models.asistenciaXDia, {
             foreignKey: 'id_matricula'
         });
     };

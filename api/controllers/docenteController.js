@@ -15,6 +15,14 @@ const CargaHoraria_Materias = models.cargaHoraria_Materias;
 const CargaHoraria_Paralelos = models.cargaHoraria_Paralelos;
 const AsistenciaDocente = models.asistenciaDocente;
 const AnioLectivo = models.anioLectivo;
+const Curso = models.curso;
+const Paralelo = models.paralelo;
+const Materia = models.materia;
+const Matricula = models.matricula;
+const AsistenciaXDia = models.asistenciaXDia;
+const AsistenciaXMate = models.asistenciaXMate;
+const CalificacionQ = models.calificacionQ;
+const CalificacionT = models.calificacionT;
 
 let controller = {
     /** Implementado try cath*/
@@ -124,6 +132,98 @@ let controller = {
             }
         });
         return res.json({ personal })
+    },
+    /**
+    * 
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+    getParaleloTutor_docente: async (req, res) => {
+        const { externalId } = req.body;
+        const infoAniosLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        if (infoPersona) {
+            const info_cargaHoraria = await CargaHoraria.findOne({
+                where: {
+                    id_persona: infoPersona.id,
+                    id_anioLectivo_actual: infoAniosLectivo.id
+                },
+                include: [
+                    {
+                        model: CargaHoraria_Materias,
+                        as: 'cargaHoraria_Materias'
+                    },
+                    {
+                        model: CargaHoraria_Paralelos,
+                        as: 'cargaHoraria_Paralelos'
+                    }
+                ]
+            });
+
+            if (info_cargaHoraria) {
+                const lista_paralelo = [];
+                const lista_materia = [];
+
+                const info_paralelo_tutor = await Paralelo.findOne({ where: { id: info_cargaHoraria.id_paralelo_tutor } });
+
+                for (let i = 0; i < info_cargaHoraria.cargaHoraria_Paralelos.length; i++) {
+                    const id_paralelo = info_cargaHoraria.cargaHoraria_Paralelos[i].id_paralelo;
+                    const info_paralelo_docente = await Paralelo.findOne({ where: { id: id_paralelo } });
+                    lista_paralelo.push(info_paralelo_docente);
+                }
+
+                for (let j = 0; j < info_cargaHoraria.cargaHoraria_Materias.length; j++) {
+                    const id_materia = info_cargaHoraria.cargaHoraria_Materias[j].id_materia;
+                    const info_materia_docente = await Materia.findOne({ where: { id: id_materia } });
+                    lista_materia.push(info_materia_docente);
+                }
+
+                return res.json({ info_paralelo_tutor, lista_paralelo, lista_materia });
+            } else {
+                return res.json({ message: 'Ocurrió un error 2' });
+            }
+        } else {
+            return res.json({ message: 'Ocurrió un error 1' });
+        }
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getAllmatriculas_byIdParalelo: async (req, res) => {
+        const { id_paralelo } = req.params;
+
+        const all_matriculas = await Matricula.findAll({
+            where: { id_paralelo: id_paralelo },
+            include: [
+              { model: AsistenciaXDia, order: [['id', 'ASC']] },
+              { model: AsistenciaXMate, order: [['id', 'ASC']] },
+              { model: CalificacionQ, order: [['id', 'ASC']] },
+              { model: CalificacionT, order: [['id', 'ASC']] }
+            ]
+          });
+
+        // Obtener los id_persona de las matrículas
+        const id_personas = all_matriculas.map(matricula => matricula.id_persona);
+
+        // Consultar los datos de las personas asociadas a las matrículas
+        const personas = await Persona.findAll({ where: { id: id_personas } });
+
+        // Agregar la información de la persona a cada matrícula
+        const matriculas_con_personas = all_matriculas.map(matricula => {
+            const persona = personas.find(p => p.id === matricula.id_persona);
+            return {
+                ...matricula.toJSON(),
+                persona: persona.toJSON()
+            };
+        });
+
+        // Devolver el resultado
+        res.json({ all_matriculas: matriculas_con_personas });
+
     },
     /**
    * 

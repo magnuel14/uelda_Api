@@ -8,11 +8,12 @@ const gestionAcademicaController = require('../controllers/gestionAcademicaContr
 router.get('/get-allAniosLectivos', tryCatch(gestionAcademicaController.getAllAniosLectivos));
 router.get('/get-AllCursos_Materias/:id_anioLectivo', tryCatch(gestionAcademicaController.getAllCursos_Materias));
 router.post('/create_AnioLectivo', tryCatch(gestionAcademicaController.createAnioLectivo));
+
 router.post('/update_AnioLectivo', tryCatch(gestionAcademicaController.updateAnioLectivo));
 router.post('/update_EstadoAnioLectivo', tryCatch(gestionAcademicaController.updateEstadoAnioLectivo));
 
 //gestion de matricula o promociones de estudiantes
-router.post('/matricular_Estudiante', tryCatch(gestionAcademicaController.matricularEstudiantes));
+router.post('/matricular_Estudiante', (gestionAcademicaController.matricularEstudiantes));
 router.post('/promover_Estudiante', tryCatch(gestionAcademicaController.promoverEstudiantes));
 
 //asigancion por subnivel

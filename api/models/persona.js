@@ -182,6 +182,9 @@ module.exports = function (sequelize, DataTypes) {
         models.persona.hasMany(models.postAcademico, {
             foreignKey: 'id_persona'
         });
+        models.persona.hasMany(models.listaVisibilidad, {
+            foreignKey: 'id_persona'
+        });
         models.persona.hasMany(models.asistenciaDocente, {
             foreignKey: 'id_persona'
         });

@@ -27,8 +27,12 @@ module.exports = function (sequelize, DataTypes) {
         modalidad: {
             type: DataTypes.STRING(50)
         },
-         //0: activo , 1: finalizado
-         estadoAniolectivo: {
+        //0 por quimestre - 1 por trimestre
+        tipoCalificacion: {
+            type: DataTypes.INTEGER
+        },
+        //0: activo , 1: finalizado
+        estadoAniolectivo: {
             type: DataTypes.INTEGER
         },
         external_id: {

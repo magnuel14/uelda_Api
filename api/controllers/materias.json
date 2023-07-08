@@ -82,134 +82,186 @@
         {
             "area": "Lengua y Literatura",
             "nombre": "Lengua y Literatura",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "216"
         },
         {
             "area": "Matemática",
             "nombre": "Matemática",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "216"
         },
         {
             "area": "Ciencias Sociales",
             "nombre": "Estudios Sociales",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "144"
         },
         {
             "area": "Ciencias Naturales",
             "nombre": "Ciencias Naturales",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "144"
         },
         {
             "area": "Educación Cultural y Artística",
             "nombre": "Educación Cultural y Artística",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Educación Física",
             "nombre": "Educación Física",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Lengua Extranjera",
             "nombre": "Inglés",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Acompañamiento integral en el aula",
             "nombre": "Acompañamiento integral en el aula",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "36"
         },
         {
             "area": "Animación a la lectura",
             "nombre": "Animación a la lectura",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "36"
         },
         {
             "area": "Orientación vocacional y profesional",
             "nombre": "Orientación vocacional y profesional",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "36"
         }
     ],
     "bachillerato": [
         {
             "area": "Matemática",
             "nombre": "Matemática",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         },
         {
             "area": "Ciencias Naturales",
             "nombre": "Física",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Ciencias Naturales",
             "nombre": "Química",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Ciencias Naturales",
             "nombre": "Biología",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Ciencias Sociales",
             "nombre": "Historia",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Ciencias Sociales",
             "nombre": "Educación para la Ciudadanía",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Ciencias Sociales",
             "nombre": "Filosofía",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Lengua y Literatura",
             "nombre": "Lengua y Literatura",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         },
         {
             "area": "Lengua Extranjera",
             "nombre": "Inglés",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Educación Cultural y Artística",
             "nombre": "Educación Cultural y Artística",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Educación Física",
             "nombre": "Educación Física",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Módulo Interdisciplinar",
             "nombre": "Emprendimiento y Gestión",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Acompañamiento integral en el aula",
             "nombre": "Acompañamiento integral en el aula",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "36"
+        }
+    ],
+    "bachillerato_3ro": [
+        {
+            "area": "Matemática",
+            "nombre": "Matemática",
+            "horasClase_programadas": "144"
+        },
+        {
+            "area": "Ciencias Naturales",
+            "nombre": "Física",
+            "horasClase_programadas": "72"
+        },
+        {
+            "area": "Ciencias Naturales",
+            "nombre": "Química",
+            "horasClase_programadas": "72"
+        },
+        {
+            "area": "Ciencias Naturales",
+            "nombre": "Biología",
+            "horasClase_programadas": "72"
+        },
+        {
+            "area": "Ciencias Sociales",
+            "nombre": "Historia",
+            "horasClase_programadas": "108"
+        },
+        {
+            "area": "Lengua y Literatura",
+            "nombre": "Lengua y Literatura",
+            "horasClase_programadas": "144"
+        },
+        {
+            "area": "Lengua Extranjera",
+            "nombre": "Inglés",
+            "horasClase_programadas": "108"
+        },
+        {
+            "area": "Educación Física",
+            "nombre": "Educación Física",
+            "horasClase_programadas": "72"
+        },
+        {
+            "area": "Módulo Interdisciplinar",
+            "nombre": "Emprendimiento y Gestión",
+            "horasClase_programadas": "72"
+        },
+        {
+            "area": "Acompañamiento integral en el aula",
+            "nombre": "Acompañamiento integral en el aula",
+            "horasClase_programadas": "36"
         },
         {
             "area": "ASIGNATURAS OPTATIVAS",
             "nombre": "Investigación Ciencia y Tecnología",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "ASIGNATURAS OPTATIVAS",
             "nombre": "Matemática",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "144"
         },
         {
             "area": "ASIGNATURAS OPTATIVAS",
             "nombre": "Lectura Crítica de Mensajes",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         }
     ]
 }

@@ -54,10 +54,14 @@ let controller = {
             });
 
             const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
-            if (!infoEstudiante.estadoAc == '0' || infoEstudiante.estadoAc == null) {
 
-                const dataEstudiante = {
-                    id_paralelo: id_paralelo, id_persona: infoEstudiante.id
+            if (infoEstudiante.estadoAc !== '0' || infoEstudiante.estadoAc === null) {
+                const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+
+                const data_newMatriculaEstudiante = {
+                    id_paralelo: id_paralelo,
+                    id_persona: infoEstudiante.id,
+                    id_anioLectivo_actual: info_AnioLectivo.id
                 }
                 const dataEstadoAcademico = {
                     estadoAc: '0'
@@ -65,11 +69,9 @@ let controller = {
 
                 await Persona.update(dataEstadoAcademico, { where: { id: infoEstudiante.id } });
 
-                const newMatricula_estudiante = await Matricula.create(dataEstudiante);
+                const newMatricula_estudiante = await Matricula.create(data_newMatriculaEstudiante);
 
                 if (newMatricula_estudiante) {
-                    let id_materia;
-                    let tipoCalificacion;
 
                     if (infoCurso.nivelAcademico == 'Inicial 3 años') {
                         const asistenciaXDia = {
@@ -117,31 +119,20 @@ let controller = {
                         await AsistenciaXDia.create(asistenciaXDia);
                     }
                     for (let i = 0; i < infoCurso.materia.length; i++) {
-                        id_materia = infoCurso.materia[i].id;
-                        tipoCalificacion = infoCurso.materia[i].tipoCalificacion;
-
+                        const { tipoCalificacion } = infoCurso.materia[i];
+                        const id_materia = infoCurso.materia[i].id;
                         const infoMateria = await Materia.findOne({ where: { id: id_materia } });
 
-                        if (infoCurso.nivelAcademico == 'Básica Superior') {
-                            const asistenciasXMateria = {
-                                horasClase_programadas: infoMateria.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: id_materia,
-                                id_matricula: newMatricula_estudiante.id
-                            }
-                            await AsistenciaXMate.create(asistenciasXMateria);
-                        }
-                        if (infoCurso.nivelAcademico == 'Bachillerato') {
-                            const asistenciasXMateria = {
-                                horasClase_programadas: infoMateria.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: id_materia,
-                                id_matricula: newMatricula_estudiante.id
-                            }
-                            await AsistenciaXMate.create(asistenciasXMateria);
-                        }
+                        const asistenciasXMateria = {
+                            horasClase_programadas: infoMateria.horasClase_programadas,
+                            horasClase_dictadas: '0',
+                            horasClase_asistidas: '0',
+                            id_materia: id_materia,
+                            id_matricula: newMatricula_estudiante.id
+                        };
+
+                        await AsistenciaXMate.create(asistenciasXMateria);
+
                         if (tipoCalificacion == 0) {
                             const dataCalificacionQ = {
                                 firstParcialPQ: 0, secondParcialPQ: 0,
@@ -151,28 +142,11 @@ let controller = {
                                 notaFinal: 0, aprobado: 1,
                                 id_materia: id_materia,
                                 id_matricula: newMatricula_estudiante.id
-                            }
+                            };
                             await CalificacionQ.create(dataCalificacionQ);
                         } else {
-                            if (infoCurso.gradoAcademico == 3) {
-                                //console.log('2: ', infoCurso.nivelAcademico == 'Bachillerato')
-                                if (infoCurso.nivelAcademico == 'Bachillerato') {
-                                    const dataCalificacionT = {
-                                        aportesPrimerTimestre: 0, proIntegradorFase_1: 0,
-                                        evaluacion_estructurada_1: 0,
-                                        aportesSegundoTimestre: 0, proIntegradorFase_2: 0,
-                                        evaluacion_estructurada_2: 0,
-                                        aportesTercerTimestre: 0, proIntegradorFase_3: 0,
-                                        evaluacion_estructurada_3: 0,
-                                        proyecto_Final: 0, evaluacion_nivel: 0,
-                                        total_Final: 0, aprobado: 1,
-                                        id_materia: id_materia,
-                                        id_matricula: newMatricula_estudiante.id
-                                    }
-                                    await CalificacionT.create(dataCalificacionT);
-                                }
-                            }
-                            if (infoCurso.gradoAcademico == 10) {
+                            if (infoCurso.nivelAcademico == 'Bachillerato' && infoCurso.gradoAcademico == 3 ||
+                                infoCurso.gradoAcademico == 10 || infoCurso.gradoAcademico == 7) {
                                 const dataCalificacionT = {
                                     aportesPrimerTimestre: 0, proIntegradorFase_1: 0,
                                     evaluacion_estructurada_1: 0,
@@ -184,22 +158,7 @@ let controller = {
                                     total_Final: 0, aprobado: 1,
                                     id_materia: id_materia,
                                     id_matricula: newMatricula_estudiante.id
-                                }
-                                await CalificacionT.create(dataCalificacionT);
-                            }
-                            if (infoCurso.gradoAcademico == 7) {
-                                const dataCalificacionT = {
-                                    aportesPrimerTimestre: 0, proIntegradorFase_1: 0,
-                                    evaluacion_estructurada_1: 0,
-                                    aportesSegundoTimestre: 0, proIntegradorFase_2: 0,
-                                    evaluacion_estructurada_2: 0,
-                                    aportesTercerTimestre: 0, proIntegradorFase_3: 0,
-                                    evaluacion_estructurada_3: 0,
-                                    proyecto_Final: 0, evaluacion_nivel: 0,
-                                    total_Final: 0, aprobado: 1,
-                                    id_materia: id_materia,
-                                    id_matricula: newMatricula_estudiante.id
-                                }
+                                };
                                 await CalificacionT.create(dataCalificacionT);
                             } else {
                                 const dataCalificacionT = {
@@ -213,11 +172,12 @@ let controller = {
                                     total_Final: 0, aprobado: 1,
                                     id_materia: id_materia,
                                     id_matricula: newMatricula_estudiante.id
-                                }
+                                };
                                 await CalificacionT.create(dataCalificacionT);
                             }
                         }
                     }
+
                 } else {
                     return res.json({ message: 'Ocurrio un problema' });
                 }
@@ -244,6 +204,8 @@ let controller = {
             }
         });
         const list_Estudiantes = await Persona.findAll({ where: { id_rol: '6' } });
+        const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+
 
         for (let i = 0; i < list_Estudiantes.length; i++) {
             const estadoAc = list_Estudiantes[i].estadoAc;
@@ -275,16 +237,19 @@ let controller = {
                                 }
                             });
 
-                            const dataEstudiante = {
-                                id_paralelo: info_paralelo_matricula.id, id_persona: id_persona
+                            const data_newMatriculaEstudiante = {
+                                id_paralelo: id_paralelo,
+                                id_persona: infoEstudiante.id,
+                                id_anioLectivo_actual: info_AnioLectivo
                             }
+
                             const dataEstadoAcademico = {
                                 estadoAc: '0'
                             }
 
                             await Persona.update(dataEstadoAcademico, { where: { id: id_persona } });
 
-                            const newMatricula_estudiante = await Matricula.create(dataEstudiante);
+                            const newMatricula_estudiante = await Matricula.create(data_newMatriculaEstudiante);
 
                             const infoCurso = await Curso.findOne({
                                 include: [Materia],
