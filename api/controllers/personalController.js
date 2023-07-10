@@ -357,7 +357,100 @@ let controller = {
         } else {
             return res.json({ message: 'La cuenta de este usuario esta inactiva' });
         }
-    }
+    },
+    /**
+     * registrarPersonal: Funcion para resgistrar una lista de nuevos usuarios.
+     * @param {*} req 
+     * @param {*} res 
+     * Recibe una lista de información personal, de indole familiar y dirección de su domicilio
+     * Se genera las credenciales para la tabla cuenta, con el correro personal y numero de identificación, al ser esta
+     * la clave, será encriptada.
+     * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
+     * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero 
+     * de identificación
+     * En la tabla perfilProfesional, solo se registrará la informacion cuando el usuario no tenga 
+     * el rol estudiante
+     * @returns La información de la persona y su cuenta.
+     */
+    registrarPersonal: async (req, res) => {
+        const { lista_Personal } = req.body;
+        for (let i = 0; i < lista_Personal.length; i++) {
+            const {
+                nombre, apellido, tipoDocId, numeroId,
+                correoPersonal, id_rol
+            } = lista_Personal[i];
+            const searchPersona = await Persona.findOne({
+                where: {
+                    [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
+                }
+            });
+            const cedulaValida = cedulaValidator.validator(numeroId);
+            //return res.json({ message: cedulaValida.flag });
+            if (cedulaValida.flag == 3) {
+                if (!searchPersona) {
+                    const personaData = {
+                        nombre: nombre, apellido: apellido,
+                        tipoDocId: tipoDocId, numeroId: numeroId,
+                        id_rol: id_rol,
+                        correoPersonal: correoPersonal,
+                    }
+                    const persona = await Persona.create(personaData);
+                    const newPersona = await Persona.findOne({ where: { numeroId: numeroId } });
+                    var salt = bcrypt.genSaltSync(10);
+                    let password = bcrypt.hashSync(numeroId, salt);
+                    const dataCuenta = {
+                        correo: correoPersonal,
+                        clave: password,
+                        estado: 0,
+                        id_persona: newPersona.id,
+                    };
+                    const newPersonaCuenta = await Cuenta.create(dataCuenta);
+                    //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
+                    if (!newPersonaCuenta) console.log({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
+                    //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
+                    const dataInfoMed = {
+                        id_persona: newPersona.id,
+                        discapacidad: "1",
+                        tipoDiscapacidad: "N/A",
+                        porcentajeDiscapacidad: "N/A",
+                        nCarnetDiscapacidad: "N/A",
+                        enfermedadCatastrofica: "1",
+                        tipoEnfermedadCatastrofica: "N/A"
+                    };
+                    //const persona = await Persona.findOne({ where: { id: idP } });
+                    //console.log({persona });
+                    const newInfoMedica = await InfoMedica.create(dataInfoMed);
+                    const dataPerfilProfe = {
+                        id_persona: newPersona.id,
+                        fechaInMag: 'dia/mes/año',
+                        tiempoMagisterio: 'N/A',
+                        fechaInULEDA: 'dia/mes/año',
+                        tiempoUelda: 'N/A',
+                        categoria: 'N/A',
+                        aniosCategoria: 'N/A',
+                    }
+                    const newperfilProfesional = await PerfilProfesional.create(dataPerfilProfe);
+                    const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona: newPersona.id } });
+                    const datatituloPro = {
+                        id_perfilProfesional: infoPerfilPro.id,
+                        nivelEducacion: 'N/A',
+                        tercerNivel: 'N/A',
+                        tercerEspecialidad: 'N/A',
+                        cuartoNivel: 'N/A',
+                        cuartoEspecialidad: 'N/A'
+                    }
+                    const newtituloProfesional = await TituloProfesional.create(datatituloPro);
+                    console.log({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
+
+                } else {
+                    console.log({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
+                }
+            } else {
+                console.log({ message: cedulaValida.message });
+            }
+        }
+        return res.json({message:'Se ha resitrado al Personal de institución'})
+    },
     /**Fin funciones validadas */
 }
 
