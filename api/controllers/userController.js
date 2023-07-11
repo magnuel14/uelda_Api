@@ -74,18 +74,14 @@ let controller = {
             await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
             return res.json({ message: 'Se ha actualizado su contraseña' });
         } else {
-            //console.log('bool: ', infoPersona.public_id != null)
-            //console.log('delete: ', infoPersona.public_id)
             if (infoPersona.public_id != null) {
-                await cloudinaryC.deleteImage(infoPersona.public_id);
-                //console.log(req.files?.foto)
+                await cloudinaryC.deleteFile(infoPersona.public_id);
                 if (req.files?.foto) {
                     const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
                     const dataFoto = {
                         foto: result.secure_url,
                         public_id: result.public_id
                     }
-                    //console.log(clave != 'null')
                     if (clave != 'null') {
                         var salt = bcrypt.genSaltSync(10);
                         let password = bcrypt.hashSync(clave, salt);

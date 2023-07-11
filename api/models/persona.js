@@ -120,12 +120,14 @@ module.exports = function (sequelize, DataTypes) {
         listaHogar: {
             type: DataTypes.STRING(50)
         },
+        //foto de persona
         foto: {
             type: DataTypes.TEXT
         },
         public_id: {
             type: DataTypes.TEXT
         },
+        //
         //estado del estuidante
         //matriculado, promovido, no promovido, retirado, graduados
         //     0     -     1    -       2     -    3    -    4
@@ -145,9 +147,13 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER,
         },
         //copia de los documentos de identificacion.
-        url_documentos_identificación: {
+        url_documentos_identificacion: {
             type: DataTypes.TEXT
         },
+        public_id_documentos: {
+            type: DataTypes.TEXT
+        },
+        //
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4

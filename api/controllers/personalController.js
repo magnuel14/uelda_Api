@@ -1,8 +1,11 @@
 'use strict';
 const jwt = require('jsonwebtoken');
+const cloudinaryC = require('../../cloudinary');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
+const fs = require('fs-extra');
+
 
 
 const cedulaValidator = require('../../helpers/cedulaHelper');
@@ -158,40 +161,123 @@ let controller = {
             estadoCivil, etnia, tipoGenero, nCarFamilia, nCarEdu, parroquia, barrio, refeCasa,
             idenCasa, callePrin, calleSecond
         } = req.body;
-        const udatepersonaData = {
-            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-            provincia: provincia, fechaNaci: fechaNaci,
-            edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
-            celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
-            tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
-            barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
-            calleSecond: calleSecond
-        };
+
         const dataCuenta = {
             correo: correoPersonal,
         };
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
         if (infoPersona) {
+
             const infoCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-            if (infoCuenta) {
-                const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
-                if (searchCuentaByEmail) {
-                    if (infoCuenta.id == searchCuentaByEmail.id) {
+
+            if (!req.files) {
+
+                if (infoCuenta) {
+                    const udatepersonaData = {
+                        nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
+                        provincia: provincia, fechaNaci: fechaNaci,
+                        edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
+                        celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
+                        tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
+                        barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
+                        calleSecond: calleSecond
+                    };
+
+                    const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
+
+                    if (searchCuentaByEmail) {
+
+                        if (infoCuenta.id == searchCuentaByEmail.id) {
+                            await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                            //console.log('datos: ', udatepersonaData)
+                            await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                            return res.json({ message: 'Se ha actualizado la información de usuario' });
+                        } else {
+                            return res.json({ message: 'Este correo esta ligado a otro usuario' });
+                        }
+                    } else if (!searchCuentaByEmail) {
                         await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
                         //console.log('datos: ', udatepersonaData)
                         await Persona.update(udatepersonaData, { where: { external_id: externalId } });
                         return res.json({ message: 'Se ha actualizado la información de usuario' });
-                    } else {
-                        return res.json({ message: 'Este correo esta ligado a otro usuario' });
                     }
-                } else if (!searchCuentaByEmail) {
-                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                    //console.log('datos: ', udatepersonaData)
-                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-                    return res.json({ message: 'Se ha actualizado la información de usuario' });
+                } else {
+                    return res.json({ message: 'No existe un usuario con esa información' });
                 }
             } else {
-                return res.json({ message: 'No existe un usuario con esa información' });
+                if (infoCuenta) {
+                    if (infoPersona.public_id_documentos != null) {
+                        await cloudinaryC.deleteFile(infoPersona.public_id_documentos);
+                        if (req.files?.url_documentos_identificacion) {
+                            const result = await cloudinaryC.uploadFile(
+                                req.files.url_documentos_identificacion.tempFilePath,
+                                { resource_type: 'raw' });
+                            const udatepersonaData = {
+                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
+                                provincia: provincia, fechaNaci: fechaNaci,
+                                edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
+                                celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
+                                tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
+                                barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
+                                calleSecond: calleSecond,
+                                url_documentos_identificacion: result.secure_url,
+                                public_id_documentos: result.public_id
+                            };
+                            const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
+                            if (searchCuentaByEmail) {
+                                if (infoCuenta.id == searchCuentaByEmail.id) {
+
+                                    await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
+
+                                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                    return res.json({ message: 'Se ha actualizado la información de usuario' });
+                                } else {
+                                    return res.json({ message: 'Este correo esta ligado a otro usuario' });
+                                }
+                            } else if (!searchCuentaByEmail) {
+                                await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                                await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                return res.json({ message: 'Se ha actualizado la información de usuario' });
+                            }
+                        }
+                    } else {
+                        if (req.files?.url_documentos_identificacion) {
+                            const result = await cloudinaryC.uploadFile(
+                                req.files.url_documentos_identificacion.tempFilePath,
+                                { resource_type: 'raw' });
+                            const udatepersonaData = {
+                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
+                                provincia: provincia, fechaNaci: fechaNaci,
+                                edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
+                                celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
+                                tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
+                                barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
+                                calleSecond: calleSecond,
+                                url_documentos_identificacion: result.secure_url,
+                                public_id_documentos: result.public_id
+                            };
+                            const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
+                            if (searchCuentaByEmail) {
+                                if (infoCuenta.id == searchCuentaByEmail.id) {
+                                    await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
+                                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                    return res.json({ message: 'Se ha actualizado la información de usuario' });
+                                } else {
+                                    return res.json({ message: 'Este correo esta ligado a otro usuario' });
+                                }
+                            } else if (!searchCuentaByEmail) {
+                                await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                                await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                return res.json({ message: 'Se ha actualizado la información de usuario' });
+                            }
+                        }
+                    }
+                } else {
+                    return res.json({ message: 'No existe un usuario con esa información' });
+                }
+
             }
         } else {
             return res.json({ message: 'No existe un usuario con esa información' });
@@ -449,7 +535,7 @@ let controller = {
                 console.log({ message: cedulaValida.message });
             }
         }
-        return res.json({message:'Se ha resitrado al Personal de institución'})
+        return res.json({ message: 'Se ha resitrado al Personal de institución' })
     },
     /**Fin funciones validadas */
 }

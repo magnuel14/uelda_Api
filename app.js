@@ -10,6 +10,7 @@ const flash = require('connect-flash');
 const fs = require('fs-extra');
 const path = require('path');
 const borrarTemp = require('./helpers/borrarTemps');
+const cron = require('node-cron');
 const app = express();
 
 dotenv.config();
@@ -43,12 +44,10 @@ app.use(fileUpload({
 }));
 
 const tempFolderPath = path.join(__dirname, './uploads');
-const tiempoExpiracion = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
-// Función para eliminar la carpeta temporal
-setTimeout(() => {
+// Programa la tarea cron para ejecutar la función de borrado a las 12 AM cada día
+cron.schedule('0 0 * * *', () => {
     borrarTemp.borrar(tempFolderPath);
-}, tiempoExpiracion);
-
+});
 /**
  * antes de usar la funcion de sincronizar
  * se debe respaldar la data

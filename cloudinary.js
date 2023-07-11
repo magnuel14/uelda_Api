@@ -16,7 +16,12 @@ cloudinaryControl.uploadImage = async (filePath) => {
     folder: 'ueldaContainer/Fotos_user'
   })
 }
-cloudinaryControl.deleteImage = async (publicId) => {
+cloudinaryControl.uploadFile = async (filePath) => {
+  return await cloudinary.uploader.upload(filePath, {
+    folder: 'ueldaContainer/Documentos_user'
+  })
+}
+cloudinaryControl.deleteFile = async (publicId) => {
   return await cloudinary.uploader.destroy(publicId)
 }
 

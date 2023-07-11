@@ -7,7 +7,7 @@ const personalController = require('../controllers/personalController');
 //persona
 router.get('/getPersonal',tryCatch(personalController.getPersonal));
 router.get('/getPersonByEx/:externalId',tryCatch(personalController.getPersonByEx));
-router.post('/update_infoPersona',tryCatch(personalController.updatePersona));
+router.post('/update_infoPersona',(personalController.updatePersona));
 router.post('/registrar_persona',(personalController.createPerson));
 router.post('/registrar_Listapersonal',(personalController.registrarPersonal));
 //id_rol
