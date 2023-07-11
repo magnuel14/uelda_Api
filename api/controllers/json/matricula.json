@@ -1,18 +1,18 @@
 {
-    "id_paralelo": "31",
+    "id_paralelo": "1",
     "periodo_academicos_Programados_inicial": "900",
     "periodo_academicos_Programados_preparatoria": "900",
     "periodo_academicos_Programados_elemental": "792",
     "periodo_academicos_Programados_media": "792",
     "lista_externalid_estudiantes": [
         {
-            "externalId": "bf12b732-8511-4587-a3b7-7fbfac0c8e5d"
+            "externalId": "a60bc9df-11e4-4d4e-b4b5-7b3bdd2b2fbf"
         },
         {
-            "externalId": "42a750ed-63c4-4d8a-98a6-0321baabd9b3"
+            "externalId": "24be97a6-32bd-40ee-97d4-ff261abc8193"
         },
         {
-            "externalId": "d8cfae94-7e84-4cf5-95fc-8eae635d17dd"
+            "externalId": "a0e1975a-652c-4a66-98f3-1723ff84cbab"
         }
     ]
 }

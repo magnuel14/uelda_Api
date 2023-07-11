@@ -20,7 +20,23 @@ let controller = {
      * @returns Una lista en formato json de los estuidantes registrados
      */
     getEstudiantes: async (req, res) => {
-        const estudiantes = await Persona.findAll({ include: [Cuenta], where: { id_rol: 6 } });
+        const estudiantes = await Persona.findAll(
+            {
+                include: [Cuenta], where: { id_rol: 6 }
+            });
+        res.json(estudiantes);
+    },
+    /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
+    * @param {*} req 
+    * @param {*} res 
+    * @returns Una lista en formato json de los estuidantes registrados
+    */
+    getEstudiantesExternal: async (req, res) => {
+        const estudiantes = await Persona.findAll(
+            {
+                attributes: ['external_id'],
+                where: { id_rol: 6 }
+            });
         res.json(estudiantes);
     },
     /**
@@ -81,7 +97,7 @@ let controller = {
                 const cedulaValida = cedulaValidator.validator(numeroId);
                 if (cedulaValida.flag == 3) {
                     const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
-                   
+
                     if (!infoEstudianteCuenta) {
                         const estudiante = await Persona.create(estudianteData);
                         const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
@@ -541,7 +557,7 @@ let controller = {
                 console.log({ message: 'Ya existe un estudiante con esta información' });
             }
         }
-        return res.json({message:'Se han registrado los estudiantes'})
+        return res.json({ message: 'Se han registrado los estudiantes' })
     },
     /**Fin funciones validadas */
 }

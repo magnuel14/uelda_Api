@@ -13,6 +13,7 @@ const inspectorController = require('../controllers/inspectorController');
 router.get('/getPersonal_asistencia', (inspectorController.getPersonal_asistencia));
 router.post('/update_rolAux_Persona', (inspectorController.updateRol_auxilar));
 router.post('/registrar_asisteciaDocente', (inspectorController.createAsistencia_Docentes));
+router.post('/update_asisteciaDocente', (inspectorController.updateAsistencia_Docente));
 
 module.exports = router;
 

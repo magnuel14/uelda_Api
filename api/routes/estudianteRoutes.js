@@ -5,6 +5,8 @@ const estudianteController = require('../controllers/estudianteController');
 
 //estudiante
 router.get('/getEstudiantes', tryCatch(estudianteController.getEstudiantes));
+router.get('/getEstudiantesExternal', tryCatch(estudianteController.getEstudiantesExternal));
+
 router.get('/getEstudianteByEx/:externalId', tryCatch(estudianteController.getEstudianteByEx));
 router.post('/update_infoEstudiante', tryCatch(estudianteController.updateEstudiante));
 

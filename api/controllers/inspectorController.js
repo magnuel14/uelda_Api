@@ -66,16 +66,14 @@ let controller = {
     //luego de crear asistencias desactivar el boton 24 horas
     //o por fecha 
     updateAsistencia_Docente: async (req, res) => {
-
-        const { fechaRegistro, externalId, asistencia, observacion } = req.body;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        if (infoPersona) {
+        const { externalId, observacion } = req.body;
+        const infoAsistencia = await AsistenciaDocente.findOne({ where: { external_id: externalId } });
+        const infoPersona = await Persona.findOne({ where: { id: infoAsistencia.id_persona } });
+        if (infoAsistencia) {
             const dataAsistecia = {
-                asistencia: asistencia,
-                fechaRegistro: fechaRegistro,
-                observacion: observacion,
+                observacion: observacion
             }
-            await AsistenciaDocente.update(dataAsistecia, { where: { id_persona: infoPersona.id } })
+            await AsistenciaDocente.update(dataAsistecia, { where: { external_id: externalId } })
             return res.json({ message: `Se ha registrado la asistencia del docente ${infoPersona.nombre} ${infoPersona.apellido}` });
         } else {
             return res.json({ message: 'Se ha registrado la asistencia' });
