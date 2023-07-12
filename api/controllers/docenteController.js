@@ -1,12 +1,6 @@
 'use strict';
-const jwt = require('jsonwebtoken');
 const models = require('../models');
-const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
-
-const cedulaValidator = require('../../helpers/cedulaHelper');
-const persona = require('../models/persona');
-const { json } = require('body-parser');
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
@@ -199,12 +193,12 @@ let controller = {
         const all_matriculas = await Matricula.findAll({
             where: { id_paralelo: id_paralelo },
             include: [
-              { model: AsistenciaXDia, order: [['id', 'ASC']] },
-              { model: AsistenciaXMate, order: [['id', 'ASC']] },
-              { model: CalificacionQ, order: [['id', 'ASC']] },
-              { model: CalificacionT, order: [['id', 'ASC']] }
+                { model: AsistenciaXDia, order: [['id', 'ASC']] },
+                { model: AsistenciaXMate, order: [['id', 'ASC']] },
+                { model: CalificacionQ, order: [['id', 'ASC']] },
+                { model: CalificacionT, order: [['id', 'ASC']] }
             ]
-          });
+        });
 
         // Obtener los id_persona de las matrículas
         const id_personas = all_matriculas.map(matricula => matricula.id_persona);
@@ -226,11 +220,11 @@ let controller = {
 
     },
     /**
-   * 
-   * @param {*} req 
-   * @param {*} res 
-   * @returns 
-   */
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     getCalicaciones: async (req, res) => {
         const personal = await Persona.findAll({
             include: [
@@ -250,6 +244,311 @@ let controller = {
         });
         return res.json(personal);
     },
+    /**
+    * 
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+    updateCalicaciones: async (req, res) => {
+        const { lista_externalsMateria_calificacion } = req.body;
+        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } })
+        for (let i = 0; i < lista_externalsMateria_calificacion.length; i++) {
+
+            if (info_anioLectivo.tipoCalificacion == 1) {
+
+                const { externalId,
+                    firstParcialPQ,
+                    secondParcialPQ,
+                    testPQ,
+
+                    firstParcialSQ,
+                    secondParcialSQ,
+                    testSQ,
+
+                    supletorio,
+                    remedial,
+                    gracia
+                } = lista_externalsMateria_calificacion[i];
+
+                //primer quimestre
+                var _subTotalPQ = (firstParcialPQ * 0.8 + secondParcialPQ * 0.8) / 2;
+                _subTotalPQ = Number(_subTotalPQ.toFixed(2));
+                var _testPQ = testPQ * 0.2;
+                _testPQ = Number(_testPQ.toFixed(2));
+                var _totalPQ = _subTotalPQ + _testPQ;
+
+                //segundo quimestre
+                var _subTota2PQ = (firstParcialSQ * 0.8 + secondParcialSQ * 0.8) / 2;
+                _subTota2PQ = Number(_subTota2PQ.toFixed(2));
+                var _testSQ = testSQ * 0.2;
+                _testSQ = Number(_testSQ.toFixed(2));
+                var _totalSQ = _subTota2PQ + _testSQ;
+
+                var _notaFinal = (_totalPQ + _totalSQ) / 2;
+
+                if (_notaFinal >= 7) {
+
+                    const dataCalificacionQ = {
+                        firstParcialPQ: firstParcialPQ,
+                        secondParcialPQ: secondParcialPQ,
+                        subTotalPQ: _subTotalPQ,
+                        testPQ: _testPQ,
+                        totalPQ: _totalPQ,
+
+                        firstParcialSQ: firstParcialSQ,
+                        secondParcialSQ: secondParcialSQ,
+                        subTota2PQ: _subTota2PQ,
+                        testSQ: _testSQ,
+                        totalSQ: _totalSQ,
+
+                        notaFinal: _notaFinal,
+
+                        aprobado: 0
+                    };
+
+                    await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
+                    console.log({ dataCalificacionQ })
+
+                } else {
+
+                    const dataCalificacionQ = {
+                        firstParcialPQ: firstParcialPQ,
+                        secondParcialPQ: secondParcialPQ,
+                        subTotalPQ: _subTotalPQ,
+                        testPQ: _testPQ,
+                        totalPQ: _totalPQ,
+
+                        firstParcialSQ: firstParcialSQ,
+                        secondParcialSQ: secondParcialSQ,
+                        subTota2PQ: _subTota2PQ,
+                        testSQ: _testSQ,
+                        totalSQ: _totalSQ,
+
+                        notaFinal: _notaFinal,
+
+                        aprobado: 1
+                    };
+
+                    await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
+                    console.log({ dataCalificacionQ })
+
+                }
+
+            } else {
+
+                const { externalId,
+                    aportesPrimerTimestre,
+                    proIntegradorFase_1,
+                    evaluacion_estructurada_1,
+                    aportesSegundoTimestre,
+                    proIntegradorFase_2,
+                    evaluacion_estructurada_2,
+                    aportesTercerTimestre,
+                    proIntegradorFase_3,
+                    evaluacion_estructurada_3,
+                    proyecto_Final,
+                    evaluacion_nivel } = lista_externalsMateria_calificacion[i];
+
+                const info_calificacionT = await CalificacionT.findOne(
+                    {
+                        attributes: ['id_materia'],
+                        where: { external_id: externalId }
+                    });
+
+                const info_Materia = await Materia.findOne(
+                    {
+                        attributes: ['id_curso'],
+                        where: { id: info_calificacionT.id_materia }
+                    });
+
+                const info_Curso = await Curso.findOne(
+                    {
+                        attributes: ['nivelAcademico', 'gradoAcademico'],
+                        where: { id: info_Materia.id_curso }
+                    });
+
+                //primer tirmestre
+                var _aportesPrimerTimestre = aportesPrimerTimestre * 0.9;
+                _aportesPrimerTimestre = Number(_aportesPrimerTimestre.toFixed(2));
+                var _proIntegradorFase_1 = (proIntegradorFase_1 * 0.5) / 10;
+                _proIntegradorFase_1 = Number(_proIntegradorFase_1.toFixed(2));
+                var _evaluacion_estructurada_1 = (evaluacion_estructurada_1 * 0.5) / 10;
+                _evaluacion_estructurada_1 = Number(_evaluacion_estructurada_1.toFixed(2));
+                var totalPT = _aportesPrimerTimestre + _proIntegradorFase_1 + _evaluacion_estructurada_1;
+                totalPT = Number(totalPT.toFixed(2));
+
+                //segundo trimestre
+                var _aportesSegundoTimestre = aportesSegundoTimestre * 0.9;
+                _aportesSegundoTimestre = Number(_aportesSegundoTimestre.toFixed(2));
+                var _proIntegradorFase_2 = (proIntegradorFase_2 * 0.5) / 10;
+                _proIntegradorFase_2 = Number(_proIntegradorFase_2.toFixed(2));
+                var _evaluacion_estructurada_2 = (evaluacion_estructurada_2 * 0.5) / 10;
+                _evaluacion_estructurada_2 = Number(_evaluacion_estructurada_2.toFixed(2));
+                var totalST = _aportesSegundoTimestre + _proIntegradorFase_2 + _evaluacion_estructurada_2;
+                totalST = Number(totalST.toFixed(2));
+
+                //tercer trimestre
+                var _aportesTercerTimestre = aportesTercerTimestre * 0.9;
+                _aportesTercerTimestre = Number(_aportesTercerTimestre.toFixed(2));
+                var _proIntegradorFase_3 = (proIntegradorFase_3 * 0.5) / 10;
+                _proIntegradorFase_3 = Number(_proIntegradorFase_3.toFixed(2));
+                var _evaluacion_estructurada_3 = (evaluacion_estructurada_3 * 0.5) / 10;
+                _evaluacion_estructurada_3 = Number(_evaluacion_estructurada_3.toFixed(2));
+                var totalTT = _aportesTercerTimestre + _proIntegradorFase_3 + _evaluacion_estructurada_3;
+                totalTT = Number(totalTT.toFixed(2));
+
+                if (info_Curso.nivelAcademico == 'Bachillerato' && info_Curso.gradoAcademico == 3 ||
+                    info_Curso.gradoAcademico == 10 || info_Curso.gradoAcademico == 7) {
+
+                    //proyecto final 0.5
+                    var _proyecto_Final = (proyecto_Final * 0.5) / 10;
+                    _proyecto_Final = Number(_proyecto_Final.toFixed(2));
+                    //evaluacion x nivel 0.5
+                    var _evaluacion_nivel = (evaluacion_nivel * 0.5) / 10;
+                    _evaluacion_nivel = Number(_evaluacion_nivel.toFixed(2));
+
+                    //calculo promedio total
+                    //90% total de los 3 trimestres 
+                    var total_3t = ((totalPT + totalST + totalTT) / 3) * 0.9;
+                    total_3t = Number(total_3t.toFixed(2));
+
+                    var total_Final = total_3t + _proyecto_Final + _evaluacion_nivel;
+                    total_Final = Number(total_Final.toFixed(2));
+
+                    if (total_Final >= 7) {
+
+                        const dataCalificacionT = {
+                            aportesPrimerTimestre: _aportesPrimerTimestre,
+                            proIntegradorFase_1: _proIntegradorFase_1,
+                            evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                            totalPT: totalPT,
+
+                            aportesSegundoTimestre: _aportesSegundoTimestre,
+                            proIntegradorFase_2: _proIntegradorFase_2,
+                            evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                            totalST: totalST,
+
+                            aportesTercerTimestre: _aportesTercerTimestre,
+                            proIntegradorFase_3: _proIntegradorFase_3,
+                            evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                            totalTT: totalTT,
+
+                            proyecto_Final: _proyecto_Final,
+                            evaluacion_nivel: _evaluacion_nivel,
+
+                            total_Final: total_Final,
+
+                            aprobado: 0
+                        };
+
+                        await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
+                        console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
+
+                    } else {
+
+                        const dataCalificacionT = {
+                            aportesPrimerTimestre: _aportesPrimerTimestre,
+                            proIntegradorFase_1: _proIntegradorFase_1,
+                            evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                            totalPT: totalPT,
+
+                            aportesSegundoTimestre: _aportesSegundoTimestre,
+                            proIntegradorFase_2: _proIntegradorFase_2,
+                            evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                            totalST: totalST,
+
+                            aportesTercerTimestre: _aportesTercerTimestre,
+                            proIntegradorFase_3: _proIntegradorFase_3,
+                            evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                            totalTT: totalTT,
+                            total_Final: total_Final,
+                            evaluacion_nivel: _evaluacion_nivel,
+
+                            aprobado: 1
+                        };
+
+                        await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
+                        console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
+
+                    }
+                } else {
+
+                    //proyecto final
+                    var _proyecto_Final = proyecto_Final / 10
+                    _proyecto_Final = Number(_proyecto_Final.toFixed(2));
+
+                    //calculo promedio total
+                    //90% total de los 3 trimestres 
+                    var total_3t = ((totalPT + totalST + totalTT) / 3) * 0.9;
+                    total_3t = Number(total_3t.toFixed(2));
+
+                    var total_Final = total_3t + _proyecto_Final;
+                    total_Final = Number(total_Final.toFixed(2));
+
+                    if (total_Final >= 7) {
+
+                        const dataCalificacionT = {
+                            aportesPrimerTimestre: _aportesPrimerTimestre,
+                            proIntegradorFase_1: _proIntegradorFase_1,
+                            evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                            totalPT: totalPT,
+
+                            aportesSegundoTimestre: _aportesSegundoTimestre,
+                            proIntegradorFase_2: _proIntegradorFase_2,
+                            evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                            totalST: totalST,
+
+                            aportesTercerTimestre: _aportesTercerTimestre,
+                            proIntegradorFase_3: _proIntegradorFase_3,
+                            evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                            totalTT: totalTT,
+
+                            proyecto_Final: _proyecto_Final,
+
+                            total_Final: total_Final,
+
+                            aprobado: 0
+                        };
+
+                        await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
+                        console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
+
+                    } else {
+
+                        const dataCalificacionT = {
+                            aportesPrimerTimestre: _aportesPrimerTimestre,
+                            proIntegradorFase_1: _proIntegradorFase_1,
+                            evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                            totalPT: totalPT,
+
+                            aportesSegundoTimestre: _aportesSegundoTimestre,
+                            proIntegradorFase_2: _proIntegradorFase_2,
+                            evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                            totalST: totalST,
+
+                            aportesTercerTimestre: _aportesTercerTimestre,
+                            proIntegradorFase_3: _proIntegradorFase_3,
+                            evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                            totalTT: totalTT,
+                            total_Final: total_Final,
+
+                            aprobado: 1
+                        };
+
+                        await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
+                        console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
+
+                    }
+
+                }
+            }
+
+        }
+    },
+
+
+
     /**
      * @param {*} res 
      * @returns Una lista en formato json de los estuidantes registrados
