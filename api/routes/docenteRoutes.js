@@ -8,6 +8,10 @@ router.get('/getCargaHoraria_byList_externalID', (docenteController.getCargaHora
 router.get('/get_AllCargaHoraria', (docenteController.getAllCargaHoraria));
 router.post('/create_CargaHoraria', (docenteController.createCargaHoraria));
 
+//califiaciones
+router.post('/update_Calicaciones', (docenteController.updateCalicaciones));
+
+
 //paralelos
 router.get('/getParaleloTutor_docente', (docenteController.getParaleloTutor_docente));
 router.get('/getAllmatriculas_byIdParalelo/:id_paralelo', (docenteController.getAllmatriculas_byIdParalelo));

@@ -1,5 +1,4 @@
 'use strict';
-const jwt = require('jsonwebtoken');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");

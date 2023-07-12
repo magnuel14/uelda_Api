@@ -5,7 +5,7 @@
         "dialect": "postgres"
     },
     "staging": {
-        "host": "localhost",
+        "host": "postgresql-ueldav01.alwaysdata.net",
         "dialect": "postgres"
     }
 }

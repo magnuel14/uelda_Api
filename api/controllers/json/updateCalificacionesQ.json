@@ -1,0 +1,19 @@
+{
+    "lista_externalsMateria_calificacion": [
+        {
+            "externalId": "95080b92-a8a1-428e-9d4b-f02e92ccec98",
+
+            "firstParcialPQ": "4",
+            "secondParcialPQ": "4",
+            "testPQ": "10",
+
+            "firstParcialSQ": "4",
+            "secondParcialSQ": "4",
+            "testSQ": "10",
+
+            "supletorio": "",
+            "remedial": "",
+            "gracia": ""
+        }
+    ]
+}

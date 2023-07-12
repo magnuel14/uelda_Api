@@ -1,8 +1,5 @@
 'use strict';
-const jwt = require('jsonwebtoken');
 const models = require('../models');
-const bcrypt = require('bcryptjs');
-const { Op } = require("sequelize");
 
 const Persona = models.persona;
 const AnioLectivo = models.anioLectivo;

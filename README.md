@@ -2,7 +2,7 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://res.cloudinary.com/mag-dev/image/upload/v1684731931/ueldaContainer/logo-UELDAWeb_ymadxe.png" width="320" alt="LOGO DE UELDAWeb" /></a>
 </p>
   
-  <p align="center">BackEnd para la aplicación de gestión acadamica de la <a href="#" target="_blank">Unidad Educativa Lauro Damerval Ayora</p>
+  <p align="center">BackEnd para la aplicación de gestión academica de la <a href="#" target="_blank">Unidad Educativa Lauro Damerval Ayora</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/badge/npm-8.3.1-green" alt="NPM Version" /></a>
 
@@ -115,10 +115,4 @@ Para generar la documentación del proyecto utilice
 
 ```bash
 $ npm run documentation
-```
-
-Para generar el informe del coverage del proyecto utilice 
-
-```bash
-$ npm run test:cov
 ```

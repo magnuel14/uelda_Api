@@ -1,5 +1,4 @@
 'use strict';
-const jwt = require('jsonwebtoken');
 const cloudinaryC = require('../../cloudinary');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
