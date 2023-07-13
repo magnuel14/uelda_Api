@@ -35,6 +35,45 @@ let controller = {
      * @param {*} res 
      * @returns 
      */
+    getCurso_byId: async (req, res) => {
+        const { id_curso } = req.params;
+        const curso = await Curso.findOne({
+            where: { id: id_curso }
+        });
+        return res.json({ curso });
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getParalelo_byId: async (req, res) => {
+        const { id_paralelo } = req.params;
+        const paralelo = await Paralelo.findOne({
+            where: { id: id_paralelo }
+        });
+        return res.json({ paralelo });
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getMateria_byId: async (req, res) => {
+        const { id_materia } = req.params;
+        const materia = await Materia.findAll({
+            where: { id: id_materia }
+        });
+        return res.json({ materia });
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     matricularEstudiantes: async (req, res) => {
         let {
             lista_externalid_estudiantes, id_paralelo,

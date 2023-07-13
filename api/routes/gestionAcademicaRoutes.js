@@ -19,5 +19,12 @@ router.post('/promover_Estudiante', tryCatch(gestionAcademicaController.promover
 //asigancion por subnivel
 router.post('/updateAsignacionDocente_xsubnivel', (gestionAcademicaController.createAsignacionDocente_xsubnivel));
 
+//curso
+router.get('/getCurso_byId/:id_curso', tryCatch(gestionAcademicaController.getCurso_byId));
+//paralelo
+router.get('/getParalelo_byId/:id_paralelo', tryCatch(gestionAcademicaController.getParalelo_byId));
+//materia
+router.get('/getMateria_byId/:id_materia', tryCatch(gestionAcademicaController.getMateria_byId));
+
 
 module.exports = router;
