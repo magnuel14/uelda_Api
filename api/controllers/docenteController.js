@@ -156,10 +156,25 @@ let controller = {
             });
 
             if (info_cargaHoraria) {
+                const info_paraleloTutor = [];
                 const lista_paralelo = [];
                 const lista_materia = [];
 
                 const info_paralelo_tutor = await Paralelo.findOne({ where: { id: info_cargaHoraria.id_paralelo_tutor } });
+                const info_curso_tutor = await Curso.findOne(
+                    {
+                        attributes: ['nivelAcademico', 'gradoAcademico'],
+                        where: { id: info_paralelo_tutor.id }
+                    }
+                );
+                const info_paralelo_tutor_curso = {
+                    ...info_paralelo_tutor.dataValues,
+                    nivelAcademico: info_curso_tutor.nivelAcademico,
+                    gradoAcademico: info_curso_tutor.gradoAcademico
+                };
+
+                info_paraleloTutor.push(info_paralelo_tutor_curso);
+
 
                 for (let i = 0; i < info_cargaHoraria.cargaHoraria_Paralelos.length; i++) {
                     const id_paralelo = info_cargaHoraria.cargaHoraria_Paralelos[i].id_paralelo;
@@ -174,7 +189,7 @@ let controller = {
                         ...info_paralelo_docente.dataValues,
                         nivelAcademico: info_curso.nivelAcademico,
                         gradoAcademico: info_curso.gradoAcademico
-                      };
+                    };
 
                     lista_paralelo.push(info_paralelo_con_curso);
                 }
@@ -185,7 +200,7 @@ let controller = {
                     lista_materia.push(info_materia_docente);
                 }
 
-                return res.json({ info_paralelo_tutor, lista_paralelo, lista_materia });
+                return res.json({ info_paraleloTutor, lista_paralelo, lista_materia });
             } else {
                 return res.json({ message: 'Ocurrió un error 2' });
             }
