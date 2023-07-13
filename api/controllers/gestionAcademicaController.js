@@ -266,21 +266,28 @@ let controller = {
 
                         await AsistenciaXMate.create(asistenciasXMateria_EN);
                     }
+                    else if (
+                        infoCurso.nivelAcademico == 'Básica Superior' ||
+                        infoCurso.nivelAcademico == 'Bachillerato') {
+                        for (let i = 0; i < infoCurso.materia.length; i++) {
+                            const id_materia = infoCurso.materia[i].id;
+                            const infoMateria = await Materia.findOne({ where: { id: id_materia } });
+
+                            const asistenciasXMateria = {
+                                horasClase_programadas: infoMateria.horasClase_programadas,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_materia: id_materia,
+                                id_matricula: newMatricula_estudiante.id
+                            };
+
+                            await AsistenciaXMate.create(asistenciasXMateria);
+
+                        }
+                    }
                     for (let i = 0; i < infoCurso.materia.length; i++) {
                         const { tipoCalificacion } = infoCurso.materia[i];
                         const id_materia = infoCurso.materia[i].id;
-                        const infoMateria = await Materia.findOne({ where: { id: id_materia } });
-
-                        const asistenciasXMateria = {
-                            horasClase_programadas: infoMateria.horasClase_programadas,
-                            horasClase_dictadas: '0',
-                            horasClase_asistidas: '0',
-                            id_materia: id_materia,
-                            id_matricula: newMatricula_estudiante.id
-                        };
-
-                        await AsistenciaXMate.create(asistenciasXMateria);
-
                         if (tipoCalificacion == 0) {
                             const dataCalificacionQ = {
                                 firstParcialPQ: 0, secondParcialPQ: 0,
@@ -417,12 +424,10 @@ let controller = {
                             id_matricula: newMatricula_estudiante.id
                         }
                         await AsistenciaXDia.create(asistenciaXDia);
-                        let id_materia;
-                        let tipoCalificacion;
 
                         for (let i = 0; i < infoCurso.materia.length; i++) {
-                            id_materia = infoCurso.materia[i].id;
-                            tipoCalificacion = infoCurso.materia[i].tipoCalificacion;
+                            const id_materia = infoCurso.materia[i].id;
+                            const tipoCalificacion = infoCurso.materia[i].tipoCalificacion;
 
                             await Materia.findOne({ where: { id: id_materia } });
 
@@ -3674,15 +3679,15 @@ let controller = {
                                     id_persona: id_persona,
                                     id_anioLectivo_actual: info_AnioLectivo.id
                                 }
-        
+
                                 const dataEstadoAcademico = {
                                     estadoAc: '0'
                                 }
-        
+
                                 await Persona.update(dataEstadoAcademico, { where: { id: id_persona } });
-        
+
                                 const newMatricula_estudiante = await Matricula.create(data_newMatriculaEstudiante);
-        
+
                                 const infoCurso = await Curso.findOne({
                                     include: [Materia],
                                     where: { id: info_paralelo_matricula.id_curso }
@@ -3771,15 +3776,15 @@ let controller = {
                                     id_persona: id_persona,
                                     id_anioLectivo_actual: info_AnioLectivo.id
                                 }
-        
+
                                 const dataEstadoAcademico = {
                                     estadoAc: '0'
                                 }
-        
+
                                 await Persona.update(dataEstadoAcademico, { where: { id: id_persona } });
-        
+
                                 const newMatricula_estudiante = await Matricula.create(data_newMatriculaEstudiante);
-        
+
                                 const infoCurso = await Curso.findOne({
                                     include: [Materia],
                                     where: { id: info_paralelo_matricula.id_curso }

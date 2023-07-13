@@ -48,6 +48,7 @@ const tempFolderPath = path.join(__dirname, './uploads');
 cron.schedule('0 0 * * *', () => {
     borrarTemp.borrar(tempFolderPath);
 });
+
 /**
  * antes de usar la funcion de sincronizar
  * se debe respaldar la data

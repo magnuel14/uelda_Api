@@ -10,10 +10,11 @@ router.post('/create_CargaHoraria', (docenteController.createCargaHoraria));
 
 //califiaciones
 router.post('/update_Calicaciones', (docenteController.updateCalicaciones));
-
+//asistencias
+router.post('/update_Asistencias', (docenteController.updateAsistencias));
 
 //paralelos
-router.get('/getParaleloTutor_docente', (docenteController.getParaleloTutor_docente));
+router.get('/getParaleloTutor_docente/:externalId', (docenteController.getParaleloTutor_docente));
 router.get('/getAllmatriculas_byIdParalelo/:id_paralelo', (docenteController.getAllmatriculas_byIdParalelo));
 
 

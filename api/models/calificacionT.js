@@ -78,6 +78,9 @@ module.exports = function (sequelize, DataTypes) {
         total_Final: {
             type: DataTypes.STRING(50)
         },
+        supletorio: {
+            type: DataTypes.STRING(50)
+        },
         //si esta en 0 el estudiante esta aprobado - si esta en 1 no ha sido aprobado
         aprobado: {
             type: DataTypes.INTEGER
