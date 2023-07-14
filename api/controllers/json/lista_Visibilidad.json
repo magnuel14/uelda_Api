@@ -1,0 +1,18 @@
+{
+    "externalId": "d7763ccf-82ef-4fb8-bc59-752876ca720e",
+    "titulo_Grupo": "Grupo test",
+    "ListaPersonas": [
+        {
+            "externalId": "8a912b1e-2482-4610-9a74-818923c56a0e"
+        },
+        {
+            "externalId": "c929e1f0-ce96-4efa-99b6-08518939d4e1"
+        },
+        {
+            "externalId": "fed3e97a-3bee-49fc-aacc-f7a741b0ac02"
+        },
+        {
+            "externalId": "00a6653b-269c-4c18-9dee-46aeab71c33e"
+        }
+    ]
+}

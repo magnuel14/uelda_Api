@@ -22,18 +22,18 @@ let controller = {
     * @returns 
     */
     getAllListaVisibilidad: async (req, res) => {
-        const { externalId } = req.body;
+        const { externalId } = req.params;
 
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
 
         const all_listas = await ListaVisibilidad.findAll({
             include: [
-                { model: ListaVisibilidad_persona, as: 'listaVisibilidad_persona' }
+                { model: ListaVisibilidad_persona, as: 'listaVisibilidad_personas' } // Utiliza el alias correcto
             ],
             where: { id_persona: infoPersona.id }
         });
 
-        return res.json({all_listas});
+        return res.json({ all_listas });
     },
     /**
      * 
@@ -55,10 +55,10 @@ let controller = {
         const newLista = await ListaVisibilidad.create(data_newLista);
 
         for (let i = 0; i < ListaPersonas.length; i++) {
-            const id_persona = ListaPersonas[i].id_persona;
+            const external_id_persona = ListaPersonas[i].externalId;
 
             const data_newLista_persona = {
-                id_persona: id_persona,
+                external_id_persona: external_id_persona,
                 id_listaVisibilidad: newLista.id
             };
             await ListaVisibilidad_persona.create(data_newLista_persona);
@@ -78,13 +78,13 @@ let controller = {
 
         const infoLista = await ListaVisibilidad.findOne({
             include: [
-                { model: ListaVisibilidad_persona, as: 'listaVisibilidad_persona' }
+                { model: ListaVisibilidad_persona, as: 'listaVisibilidad_personas' }
             ],
             where: { external_id: externalId }
         });
 
 
-        const lista_personas = await infoLista.getListaVisibilidad_persona();
+        const lista_personas = await infoLista.getListaVisibilidad_personas();
 
 
         for (let i = 0; i < lista_personas.length; i++) {
@@ -94,7 +94,6 @@ let controller = {
             });
 
         }
-
 
         const data_Lista = {
             titulo_Grupo: titulo_Grupo,
@@ -124,12 +123,12 @@ let controller = {
 
         const infoLista = await ListaVisibilidad.findOne({
             include: [
-                { model: ListaVisibilidad_persona, as: 'listaVisibilidad_persona' }
+                { model: ListaVisibilidad_persona, as: 'listaVisibilidad_personas' }
             ],
             where: { external_id: externalId }
         });
 
-        const lista_personas = await infoLista.getListaVisibilidad_persona();
+        const lista_personas = await infoLista.getListaVisibilidad_personas();
 
         for (let i = 0; i < lista_personas.length; i++) {
             const { id } = lista_personas[i];
@@ -141,7 +140,7 @@ let controller = {
 
         await ListaVisibilidad.destroy({ where: { id: infoLista.id } });
 
-        return res.json({ message: `Se ha actualizado el Grupo visibilidad titulado: ${infoLista.titulo_Grupo}` })
+        return res.json({ message: `Se ha eliminado el Grupo visibilidad titulado: ${infoLista.titulo_Grupo}` })
     }
 }
 /** fin Implementado try cath*/

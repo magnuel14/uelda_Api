@@ -6,7 +6,7 @@ const listaVisibilidadController = require('../controllers/listaVisibilidadContr
 router.get('/get_AllListaVisibilidad/:externalId', (listaVisibilidadController.getAllListaVisibilidad));
 router.post('/create_ListaVisibilidad', (listaVisibilidadController.createListaVisibilidad));
 router.post('/update_ListaVisibilidad', (listaVisibilidadController.updateListaVisibilidad));
-router.post('/deleteListaVisibilidad', (listaVisibilidadController.deleteListaVisibilidad));
+router.post('/delete_ListaVisibilidad', (listaVisibilidadController.deleteListaVisibilidad));
 
 
 
