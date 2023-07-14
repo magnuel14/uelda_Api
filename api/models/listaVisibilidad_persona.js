@@ -1,14 +1,10 @@
 module.exports = function (sequelize, DataTypes) {
-    var PostAcademico = require('./postAcademico')(sequelize, DataTypes);
-    var PostAca_listaVisibilidad = sequelize.define('postAca_listaVisibilidad', {
+    var ListaVisibilidad = require('./listaVisibilidad')(sequelize, DataTypes);
+    var ListaVisibilidad_persona = sequelize.define('listaVisibilidad_persona', {
         id: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
-        },
-        //Titulo del grupo de visibilidad ejemplo: junta directiva
-        titulo_Grupo: {
-            type: DataTypes.STRING(50)
         },
         // ID de la persona que puede visualizar el post academico
         id_persona: {
@@ -23,8 +19,8 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    PostAca_listaVisibilidad.belongsTo(PostAcademico, {
-        foreignKey: 'id_postAcademico'
+    ListaVisibilidad_persona.belongsTo(ListaVisibilidad, {
+        foreignKey: 'id_listaVisibilidad'
     });
-    return PostAca_listaVisibilidad;
+    return ListaVisibilidad_persona;
 };

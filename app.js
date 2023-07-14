@@ -10,6 +10,7 @@ const flash = require('connect-flash');
 const fs = require('fs-extra');
 const path = require('path');
 const borrarTemp = require('./helpers/borrarTemps');
+const cron = require('node-cron');
 const app = express();
 
 dotenv.config();
@@ -43,11 +44,10 @@ app.use(fileUpload({
 }));
 
 const tempFolderPath = path.join(__dirname, './uploads');
-const tiempoExpiracion = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
-// Función para eliminar la carpeta temporal
-setTimeout(() => {
+// Programa la tarea cron para ejecutar la función de borrado a las 12 AM cada día
+cron.schedule('0 0 * * *', () => {
     borrarTemp.borrar(tempFolderPath);
-}, tiempoExpiracion);
+});
 
 /**
  * antes de usar la funcion de sincronizar
@@ -86,14 +86,13 @@ try {
 //middleware que evita que el server se pare en caso de detectar un error
 app.use(errorHandler);
 
-
 //routes
 app.use('/uelda/user', require('./api/routes/userRoutes'))
 app.use('/uelda/personal', require('./api/routes/personalRoutes'))
 app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
 app.use('/uelda/gestion_academica', require('./api/routes/gestionAcademicaRoutes'))
 app.use('/uelda/inspector', require('./api/routes/inspectorRoutes'))
-
+app.use('/uelda/docente', require('./api/routes/docenteRoutes'))
 
 
 module.exports = app;

@@ -1,11 +1,6 @@
 'use strict';
-const jwt = require('jsonwebtoken');
 const models = require('../models');
-const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
-
-const cedulaValidator = require('../../helpers/cedulaHelper');
-const persona = require('../models/persona');
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
@@ -20,22 +15,22 @@ let controller = {
    * @returns 
    */
     getPersonal_asistencia: async (req, res) => {
-        const personal = await Persona.findAll(
-            {
-                include: [
-                    Cuenta,
-                    AsistenciaDocente
-                ],
-                where: {
-                    [Op.or]: [
-                        { id_rol: 1 },
-                        { id_rol: 2 },
-                        { id_rol: 3 },
-                        { id_rol: 4 },
-                        { id_rol: 5 }
-                    ]
+        const personal = await Persona.findAll({
+            include: [
+                {
+                    model: Cuenta,
+                    where: {
+                        estado: 0
+                    }
+                },
+                AsistenciaDocente
+            ],
+            where: {
+                id_rol: {
+                    [Op.or]: [1, 2, 3, 4, 5]
                 }
-            });
+            }
+        });
         return res.json(personal);
     },
     /**
@@ -66,16 +61,14 @@ let controller = {
     //luego de crear asistencias desactivar el boton 24 horas
     //o por fecha 
     updateAsistencia_Docente: async (req, res) => {
-
-        const { fechaRegistro, externalId, asistencia, observacion } = req.body;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        if (infoPersona) {
+        const { externalId, observacion } = req.body;
+        const infoAsistencia = await AsistenciaDocente.findOne({ where: { external_id: externalId } });
+        const infoPersona = await Persona.findOne({ where: { id: infoAsistencia.id_persona } });
+        if (infoAsistencia) {
             const dataAsistecia = {
-                asistencia: asistencia,
-                fechaRegistro: fechaRegistro,
-                observacion: observacion,
+                observacion: observacion
             }
-            await AsistenciaDocente.update(dataAsistecia, { where: {} })
+            await AsistenciaDocente.update(dataAsistecia, { where: { external_id: externalId } })
             return res.json({ message: `Se ha registrado la asistencia del docente ${infoPersona.nombre} ${infoPersona.apellido}` });
         } else {
             return res.json({ message: 'Se ha registrado la asistencia' });

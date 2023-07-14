@@ -22,6 +22,10 @@ module.exports = function (sequelize, DataTypes) {
         evaluacion_estructurada_1: {
             type: DataTypes.STRING(50)
         },
+        //total primer trimestre equivalencia se suma las 3 secciones: 10 == 3
+        totalPT: {
+            type: DataTypes.STRING(50)
+        },
         //segundo timestre 3 puntos
         //aportes 90%
         aportesSegundoTimestre: {
@@ -34,6 +38,10 @@ module.exports = function (sequelize, DataTypes) {
         },
         //Mecanismo de evaluación estructurado (5%)
         evaluacion_estructurada_2: {
+            type: DataTypes.STRING(50)
+        },
+        //total segundo trimestre equivalencia se suma las 3 secciones: 10 == 3
+        totalST: {
             type: DataTypes.STRING(50)
         },
         //segundo timestre 3 puntos
@@ -50,6 +58,10 @@ module.exports = function (sequelize, DataTypes) {
         evaluacion_estructurada_3: {
             type: DataTypes.STRING(50)
         },
+        //total tercer trimestre equivalencia se suma las 3 secciones: 10 == 3
+        totalTT: {
+            type: DataTypes.STRING(50)
+        },
         // Proyecto Final (10%)
         // 1 punto
         //para septimo - decimo - 3ro bachillerato
@@ -64,6 +76,9 @@ module.exports = function (sequelize, DataTypes) {
         },
         //Nota final (100%): suma de los trimestres - el proyecto final y si es el caso Evaluación de nivel
         total_Final: {
+            type: DataTypes.STRING(50)
+        },
+        supletorio: {
             type: DataTypes.STRING(50)
         },
         //si esta en 0 el estudiante esta aprobado - si esta en 1 no ha sido aprobado

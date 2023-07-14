@@ -29,6 +29,10 @@ module.exports = function (sequelize, DataTypes) {
         estado: {
             type: DataTypes.INTEGER,
         },
+        // ID de la lista visbilidad para comprobar la lista de personas que puede visualizar el post academico
+        id_ListaVisibilidad: {
+            type: DataTypes.INTEGER,
+        },
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
@@ -41,10 +45,5 @@ module.exports = function (sequelize, DataTypes) {
     PostAcademico.belongsTo(Persona, {
         foreignKey: 'id_persona'
     });
-    PostAcademico.associate = function (models) {
-        models.postAcademico.hasMany(models.postAca_listaVisibilidad, {
-            foreignKey: 'id_postAcademico'
-        });
-    };
     return PostAcademico;
 };

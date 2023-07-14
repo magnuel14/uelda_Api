@@ -1,0 +1,38 @@
+[
+    {
+        "inicial_4_a": [
+            {
+                "nombre": "nombre",
+                "apellido": "apellido",
+                "correoPersonal": "si tiene correro poern el correro/ si no combinar los nombres nombre1.apellido1_MAYUSCULAAPLELLIDO2 ejemplo: manuel.vicenteP",
+                "tipoDocId": "cedula o pasaporte",
+                "numeroId": "0151323862"
+            },
+            {
+                "nombre": "nombre",
+                "apellido": "apellido",
+                "correoPersonal": "si tiene correro poern el correro/ si no combinar los nombres nombre1.apellido1_MAYUSCULAAPLELLIDO2 ejemplo: manuel.vicenteP",
+                "tipoDocId": "cedula o pasaporte",
+                "numeroId": "0151323862"
+            }
+        ]
+    },
+    {
+        "inicial_4_a": [
+            {
+                "nombre": "nombre",
+                "apellido": "apellido",
+                "correoPersonal": "si tiene correro poern el correro/ si no combinar los nombres nombre1.apellido1_MAYUSCULAAPLELLIDO2 ejemplo: manuel.vicenteP",
+                "tipoDocId": "cedula o pasaporte",
+                "numeroId": "0151323862"
+            },
+            {
+                "nombre": "nombre",
+                "apellido": "apellido",
+                "correoPersonal": "si tiene correro poern el correro/ si no combinar los nombres nombre1.apellido1_MAYUSCULAAPLELLIDO2 ejemplo: manuel.vicenteP",
+                "tipoDocId": "cedula o pasaporte",
+                "numeroId": "0151323862"
+            }
+        ]
+    }
+]

@@ -1,0 +1,23 @@
+{
+    "lista_externalsMateria_calificacion": [
+        {
+            "externalId": "95080b92-a8a1-428e-9d4b-f02e92ccec98",
+
+            "aportesPrimerTimestre": "5",
+            "proIntegradorFase_1": "10",
+            "evaluacion_estructurada_1": "10",
+
+            "aportesSegundoTimestre": "6",
+            "proIntegradorFase_2": "10",
+            "evaluacion_estructurada_2": "10",
+
+            "aportesTercerTimestre": "5",
+            "proIntegradorFase_3": "10",
+            "evaluacion_estructurada_3": "10",
+
+            "proyecto_Final": "10",
+            
+            "evaluacion_nivel": ""
+        }
+    ]
+}

@@ -9,7 +9,7 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //total de numero de horas programadas por dia
+        //total de numero de horas programadas en total
         horasClase_programadas: {
             type: DataTypes.STRING(50)
         },

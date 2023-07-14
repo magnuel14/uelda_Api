@@ -8,7 +8,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         //id de la materia a cargo del docente
         id_materia: {
-            type: DataTypes.STRING(50)
+            type: DataTypes.INTEGER
         },
         external_id: {
             type: DataTypes.UUID,
