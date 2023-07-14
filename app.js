@@ -87,12 +87,13 @@ try {
 app.use(errorHandler);
 
 //routes
-app.use('/uelda/user', require('./api/routes/userRoutes'))
-app.use('/uelda/personal', require('./api/routes/personalRoutes'))
-app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
-app.use('/uelda/gestion_academica', require('./api/routes/gestionAcademicaRoutes'))
-app.use('/uelda/inspector', require('./api/routes/inspectorRoutes'))
-app.use('/uelda/docente', require('./api/routes/docenteRoutes'))
-
+app.use('/uelda/user', require('./api/routes/userRoutes'));
+app.use('/uelda/personal', require('./api/routes/personalRoutes'));
+app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'));
+app.use('/uelda/gestion_academica', require('./api/routes/gestionAcademicaRoutes'));
+app.use('/uelda/inspector', require('./api/routes/inspectorRoutes'));
+app.use('/uelda/docente', require('./api/routes/docenteRoutes'));
+app.use('/uelda/post_academico', require('./api/routes/postAcademicoRoutes'));
+app.use('/uelda/lista_visibilidad', require('./api/routes/listaVisibilidadRoutes'));
 
 module.exports = app;

@@ -16,7 +16,16 @@ module.exports = function (sequelize, DataTypes) {
         descripcion: {
             type: DataTypes.TEXT
         },
+        url_imagen: {
+            type: DataTypes.TEXT
+        },
+        public_id_imagen: {
+            type: DataTypes.TEXT
+        },
         url_archivo: {
+            type: DataTypes.TEXT
+        },
+        public_id_archivo: {
             type: DataTypes.TEXT
         },
         //validacion para comporbar quien puede visualizar el post
