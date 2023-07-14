@@ -3,22 +3,9 @@ require('dotenv').config();
 var fs = require("fs");
 var path = require("path");
 var Sequelize = require("sequelize");
-var env = process.env.NODE_ENV || "development";
-var config = require(path.join(__dirname, '..', 'config', 'config.js'))[env];
-var sequelize = new Sequelize(
-    config
-);
-/** 
-var sequelize = new Sequelize(
-    process.env.PROD_DATABASE_NAME,
-    process.env.PROD_DATABASE_USER,
-    process.env.PROD_DATABASE_PASS, 
-    {
-        host: process.env.PROD_DATABASE_HOST,
-        dialect: process.env.postgres
-    }
-);
-*/
+var env = process.env.NODE_ENV;
+var config = require('../../database/database.js')[env];
+var sequelize = new Sequelize(config);
 var db = {};
 fs
     .readdirSync(__dirname)

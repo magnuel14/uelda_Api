@@ -42,11 +42,11 @@ let controller = {
         if (newCargaHoraria) {
             for (let i = 0; i < list_paralelo.length; i++) {
                 const { id_paralelo } = list_paralelo[i];
-                const dataMateria_asignada = {
+                const dataParalelo_asignada = {
                     id_paralelo: id_paralelo,
                     id_cargaHoraria: newCargaHoraria.id
                 }
-                await CargaHoraria_Paralelos.create(dataMateria_asignada);
+                await CargaHoraria_Paralelos.create(dataParalelo_asignada);
             }
             for (let i = 0; i < list_materia.length; i++) {
                 const { id_materia } = list_materia[i];
@@ -62,6 +62,111 @@ let controller = {
         }
     },
     /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    updateCargaHoraria: async (req, res) => {
+        const { externalId, id_paralelo_tutor, horas_asignadas, list_paralelo, list_materia } = req.body;
+        const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+
+        const info_cargaHoraria = await CargaHoraria.findOne({
+            include: [
+                { model: CargaHoraria_Paralelos, as: 'cargaHoraria_Paralelos' },
+                { model: CargaHoraria_Materias, as: 'cargaHoraria_Materias' }
+            ],
+            where: {
+                external_id: externalId,
+                id_anioLectivo_actual: info_AnioLectivo.id
+            }
+        });
+
+        const lista_paralelos = await info_cargaHoraria.getCargaHoraria_Paralelos();
+        const lista_materia = await info_cargaHoraria.getCargaHoraria_Materias();
+
+
+        for (let i = 0; i < lista_paralelos.length; i++) {
+            const { id } = lista_paralelos[i];
+            await CargaHoraria_Paralelos.destroy({
+                where: { id: id }
+            });
+
+        }
+        for (let i = 0; i < lista_materia.length; i++) {
+            const { id } = lista_materia[i];
+            await CargaHoraria_Materias.destroy({
+                where: { id: id }
+            });
+        }
+
+        const dataCargaHoraria = {
+            id_paralelo_tutor: id_paralelo_tutor,
+            horas_asignadas: horas_asignadas,
+        };
+
+        await CargaHoraria.update(dataCargaHoraria, { where: { id: info_cargaHoraria.id } });
+
+        for (let i = 0; i < list_paralelo.length; i++) {
+            const { id_paralelo } = list_paralelo[i];
+            const dataParalelo_asignada = {
+                id_paralelo: id_paralelo,
+                id_cargaHoraria: info_cargaHoraria.id
+            }
+            await CargaHoraria_Paralelos.create(dataParalelo_asignada);
+        }
+        for (let i = 0; i < list_materia.length; i++) {
+            const { id_materia } = list_materia[i];
+            const dataMateria_asignada = {
+                id_materia: id_materia,
+                id_cargaHoraria: info_cargaHoraria.id
+            }
+            await CargaHoraria_Materias.create(dataMateria_asignada);
+        }
+        return res.json({ message: 'Se ha asignado la carga horaria', info_cargaHoraria });
+
+
+    },
+    /**
+    * 
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+    getCargaHoraria_by_externalID: async (req, res) => {
+
+        const { externalId } = req.body;
+        const cargaHoraria_docente = await Persona.findOne({
+            attributes: [
+                'id',
+                'nombre',
+                'apellido',
+                'numeroId'
+            ],
+            include: [
+                {
+                    model: Cuenta,
+                    attributes: ['id', 'correo'],
+                    where: {
+                        estado: 0
+                    }
+                },
+                {
+                    model: CargaHoraria,
+                    include: [
+                        CargaHoraria_Materias,
+                        CargaHoraria_Paralelos
+                    ]
+                }
+            ],
+            where: {
+                external_id: externalId
+            }
+        });
+
+        return res.json({ cargaHoraria_docente })
+    },
+    /**
     * 
     * @param {*} req 
     * @param {*} res 
@@ -71,7 +176,7 @@ let controller = {
         const { list_personal } = req.body;
         let personal = []
         for (let i = 0; i < list_personal.length; i++) {
-            const { externalId } = list_personal[i];
+            const { externalId } = req.body;
             const persona = await Persona.findOne({
                 include: [
                     {
@@ -97,11 +202,11 @@ let controller = {
         return res.json({ personal })
     },
     /**
-  * 
-  * @param {*} req 
-  * @param {*} res 
-  * @returns 
-  */
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     getAllCargaHoraria: async (req, res) => {
         const personal = await Persona.findAll({
             include: [
@@ -260,19 +365,24 @@ let controller = {
 
             if (info_anioLectivo.tipoCalificacion == 0) {
 
+                const { externalId,
+                    firstParcialPQ,
+                    secondParcialPQ,
+                    testPQ,
+
+                    firstParcialSQ,
+                    secondParcialSQ,
+                    testSQ,
+
+                    notaFinal,
+                    aprobado,
+
+                    supletorio,
+                    remedial,
+                    gracia
+                } = lista_externalsMateria_calificacion[i];
+
                 if (tipo_asignacionNota == 0) {
-                    const { externalId,
-                        firstParcialPQ,
-                        secondParcialPQ,
-                        testPQ,
-
-                        firstParcialSQ,
-                        secondParcialSQ,
-                        testSQ,
-
-                        notaFinal,
-                        aprobado,
-                    } = lista_externalsMateria_calificacion[i];
 
                     const dataCalificacionQ = {
                         firstParcialPQ: firstParcialPQ,
@@ -292,19 +402,6 @@ let controller = {
                     console.log({ dataCalificacionQ });
 
                 } else {
-                    const { externalId,
-                        firstParcialPQ,
-                        secondParcialPQ,
-                        testPQ,
-
-                        firstParcialSQ,
-                        secondParcialSQ,
-                        testSQ,
-
-                        supletorio,
-                        remedial,
-                        gracia
-                    } = lista_externalsMateria_calificacion[i];
 
                     //primer quimestre
                     var _subTotalPQ = (firstParcialPQ * 0.8 + secondParcialPQ * 0.8) / 2;
@@ -373,7 +470,8 @@ let controller = {
 
             } else {
 
-                const { externalId,
+                const {
+                    externalId,
                     aportesPrimerTimestre,
                     proIntegradorFase_1,
                     evaluacion_estructurada_1,
@@ -388,7 +486,8 @@ let controller = {
 
                     proyecto_Final,
                     evaluacion_nivel,
-                    aprobado } = lista_externalsMateria_calificacion[i];
+                    aprobado
+                } = lista_externalsMateria_calificacion[i];
 
                 const info_calificacionT = await CalificacionT.findOne(
                     {
@@ -407,7 +506,6 @@ let controller = {
                         attributes: ['nivelAcademico', 'gradoAcademico'],
                         where: { id: info_Materia.id_curso }
                     });
-
                 if (info_Curso.nivelAcademico == "Inicial 3 años"
                     || info_Curso.nivelAcademico == "Inicial 4 años"
                     || info_Curso.nivelAcademico == "Básica Preparatoria") {
@@ -429,21 +527,19 @@ let controller = {
                 } else if (info_Curso.nivelAcademico == "Básica Elemental") {
 
                     const dataCalificacionT = {
-                        aportesPrimerTimestre: _aportesPrimerTimestre,
-                        proIntegradorFase_1: _proIntegradorFase_1,
-                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                        aportesPrimerTimestre: aportesPrimerTimestre,
+                        proIntegradorFase_1: proIntegradorFase_1,
+                        evaluacion_estructurada_1: evaluacion_estructurada_1,
 
-                        aportesSegundoTimestre: _aportesSegundoTimestre,
-                        proIntegradorFase_2: _proIntegradorFase_2,
-                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                        aportesSegundoTimestre: aportesSegundoTimestre,
+                        proIntegradorFase_2: proIntegradorFase_2,
+                        evaluacion_estructurada_2: evaluacion_estructurada_2,
 
-                        aportesTercerTimestre: _aportesTercerTimestre,
-                        proIntegradorFase_3: _proIntegradorFase_3,
-                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                        aportesTercerTimestre: aportesTercerTimestre,
+                        proIntegradorFase_3: proIntegradorFase_3,
+                        evaluacion_estructurada_3: evaluacion_estructurada_3,
 
-                        proyecto_Final: _proyecto_Final,
-
-                        total_Final: total_Final,
+                        proyecto_Final: proyecto_Final,
 
                         aprobado: aprobado
                     };
@@ -474,7 +570,7 @@ let controller = {
                                 proIntegradorFase_3: proIntegradorFase_3,
                                 evaluacion_estructurada_3: evaluacion_estructurada_3,
 
-                                proyecto_Final: _proyproyecto_Finalcto_Final,
+                                proyecto_Final: proyecto_Final,
                                 evaluacion_nivel: evaluacion_nivel,
 
                                 aprobado: aprobado
@@ -687,6 +783,7 @@ let controller = {
                 }
 
             }
+
         }
         return res.json({ message: 'Se han actualizado las calificaciones exitosamente' });
     },

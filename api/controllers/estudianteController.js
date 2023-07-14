@@ -34,7 +34,7 @@ let controller = {
         const estudiantes = await Persona.findAll(
             {
                 attributes: ['external_id'],
-                where: { id_rol: 6 }
+                where: { id_rol: 6, estadoAc: null }
             });
         res.json(estudiantes);
     },
