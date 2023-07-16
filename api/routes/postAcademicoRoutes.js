@@ -3,12 +3,11 @@ const { tryCatch } = require('../../utils/tryCatch');
 const router = express.Router();
 const postAcademicoController = require('../controllers/postAcademicoController');
 
-//estudiante
-//router.get('/getCargaHoraria_byList_externalID', (postAcademicoController.getCargaHoraria_byList_externalID));
-//router.get('/getCargaHoraria_by_externalID', (postAcademicoController.getCargaHoraria_by_externalID));
-//router.post('/update_CargaHoraria', (postAcademicoController.updateCargaHoraria));
-router.post('/create_postAcademico', (postAcademicoController.createpostAcademico));
-
+router.get('/get_AllpostAcademico', tryCatch(postAcademicoController.getAllpostAcademico));
+router.post('/create_postAcademico', tryCatch(postAcademicoController.createpostAcademico));
+router.post('/update_postAcademico', tryCatch(postAcademicoController.updatepostAcademico));
+router.post('/update_Estado_postAcademico', tryCatch(postAcademicoController.update_Estado_postAcademico));
+router.post('/delete_postAcademico', tryCatch(postAcademicoController.deletepostAcademico));
 
 module.exports = router;
 

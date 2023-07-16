@@ -1,13 +1,7 @@
 'use strict';
-const jwt = require('jsonwebtoken');
 const models = require('../models');
-const bcrypt = require('bcryptjs');
-const cloudinaryC = require('../../cloudinary');
-const fs = require('fs-extra');
 
 const Persona = models.persona;
-const Cuenta = models.cuenta;
-const Rol = models.rol;
 const ListaVisibilidad = models.listaVisibilidad;
 const ListaVisibilidad_persona = models.listaVisibilidad_persona;
 
@@ -142,6 +136,6 @@ let controller = {
 
         return res.json({ message: `Se ha eliminado el Grupo visibilidad titulado: ${infoLista.titulo_Grupo}` })
     }
+    /** fin Implementado try cath*/
 }
-/** fin Implementado try cath*/
 module.exports = controller;

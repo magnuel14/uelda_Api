@@ -5,14 +5,11 @@ const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
 const fs = require('fs-extra');
 
-
-
 const cedulaValidator = require('../../helpers/cedulaHelper');
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
 const InfoMedica = models.infoMedica;
-const Rol = models.rol;
 const PerfilProfesional = models.perfilProfesional;
 const TituloProfesional = models.tituloProfesional;
 

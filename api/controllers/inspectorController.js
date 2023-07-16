@@ -35,7 +35,7 @@ let controller = {
     },
     /**
      * @param {*} res 
-     * @returns Una lista en formato json de los estuidantes registrados
+     * @returns 
      */
     createAsistencia_Docentes: async (req, res) => {
         const { fechaRegistro, list_personal, asistencia } = req.body;
@@ -54,9 +54,9 @@ let controller = {
         }
         return res.json({ message: 'Se ha registrado la asistencia' });
     },
-    /**updateRol_auxilar: Funcion para actulizar el rol auxiliar al personal
+    /**
      * @param {*} res 
-     * @returns Una lista en formato json de los estuidantes registrados
+     * @returns 
      */
     //luego de crear asistencias desactivar el boton 24 horas
     //o por fecha 
@@ -109,8 +109,7 @@ let controller = {
         else {
             return res.json({ message: 'Este rol auxiliar no existe' });
         }
-    },
-
+    }
     /**Fin funciones validadas */
 }
 

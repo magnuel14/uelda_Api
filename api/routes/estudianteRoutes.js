@@ -10,8 +10,8 @@ router.get('/getEstudiantesExternal', tryCatch(estudianteController.getEstudiant
 router.get('/getEstudianteByEx/:externalId', tryCatch(estudianteController.getEstudianteByEx));
 router.post('/update_infoEstudiante', tryCatch(estudianteController.updateEstudiante));
 
-router.post('/registrar_estudiante', (estudianteController.createEstudiante));
-router.post('/registrar_lista_estudiantes', (estudianteController.registroEstudiantes));
+router.post('/registrar_estudiante', tryCatch(estudianteController.createEstudiante));
+router.post('/registrar_lista_estudiantes', tryCatch(estudianteController.registroEstudiantes));
 
 //representante
 router.get('/getRepresentanteByEx/:externalId', tryCatch(estudianteController.getRepresentantesByEx));

@@ -3,13 +3,13 @@ const morgan = require("morgan");
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const dotenv = require('dotenv');
-const models = require('./api/models');
 const errorHandler = require('./middleware/errorHandler');
 const session = require('express-session');
 const flash = require('connect-flash');
 const fs = require('fs-extra');
 const path = require('path');
 const borrarTemp = require('./helpers/borrarTemps');
+const funcionesBD = require('./helpers/funcionesBD');
 const cron = require('node-cron');
 const app = express();
 
@@ -19,7 +19,7 @@ dotenv.config();
 app.set('port', process.env.PORT || 4000);
 //app.use(cors({origin:"http://localhost:4200/"}))
 app.use(session({
-    secret: 'Manuel',
+    secret: 'Ueldaweb',
     resave: true,
     saveUninitialized: true
 }));
@@ -57,32 +57,14 @@ cron.schedule('0 0 * * *', () => {
  * models.sequelize.sync({force: true}).then(() => {
  */
 //sincronizacion de los modelos de la bd
-/** 
-try {
-   // base de datos 
-   models.sequelize.sync({force: true}).then(() => {
-       console.log('Base de Datos sincronizada');
-   }).catch(err => {
-       console.log(err, "No se sincronizada a la BD");
-   });
-} catch (error) {
-   console.error('Unable to connect to the server ', error);
-}
- */
+//funcionesBD.sincronizarBd();
+
 //insertar rol para usuarios
 //require('./api/controllers/dataRol/insert_rol');
 
 // Middleware para verificar la conexión a la base de datos
-try {
-    // base de datos 
-    models.sequelize.authenticate().then(() => {
-        console.log('Base de Datos conectada');
-    }).catch(err => {
-        console.log(err, "No se conecto a la BD");
-    });
-} catch (error) {
-    console.error('Unable to connect to the server ', error);
-}
+funcionesBD.coneccionBd();
+
 //middleware que evita que el server se pare en caso de detectar un error
 app.use(errorHandler);
 

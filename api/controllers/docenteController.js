@@ -307,10 +307,10 @@ let controller = {
 
                 return res.json({ info_paraleloTutor, lista_paralelo, lista_materia });
             } else {
-                return res.json({ message: 'Ocurrió un error' });
+                return res.json({ message: 'Ocurrió un error 1' });
             }
         } else {
-            return res.json({ message: 'Ocurrió un error' });
+            return res.json({ message: 'Ocurrió un error 2' });
         }
     },
     /**
