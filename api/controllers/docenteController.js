@@ -269,7 +269,7 @@ let controller = {
                 const info_curso_tutor = await Curso.findOne(
                     {
                         attributes: ['nivelAcademico', 'gradoAcademico'],
-                        where: { id: info_paralelo_tutor.id }
+                        where: { id: info_paralelo_tutor.id_curso }
                     }
                 );
                 const info_paralelo_tutor_curso = {
