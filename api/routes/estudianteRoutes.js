@@ -23,6 +23,8 @@ router.post('/delete_infoRepresentante', tryCatch(estudianteController.deleteRep
 router.get('/getHermanosByEx/:externalId', tryCatch(estudianteController.getAllhermanos));
 router.post('/registrar_hermano', tryCatch(estudianteController.addHermano));
 router.post('/delete_hermano', tryCatch(estudianteController.deleteHermano));
+//calificaciones - asistencias
+router.get('/getCalifiaciones_asistencias/:externalId', (estudianteController.getCalifiaciones_asistencias));
 
 module.exports = router;
 

@@ -23,5 +23,7 @@ router.get('/getCurso_byId/:id_curso', tryCatch(gestionAcademicaController.getCu
 router.get('/getParalelo_byId/:id_paralelo', tryCatch(gestionAcademicaController.getParalelo_byId));
 //materia
 router.get('/getMateria_byId/:id_materia', tryCatch(gestionAcademicaController.getMateria_byId));
+//promocion estudiante
+router.post('/comprobarPromocionEstudiante', (gestionAcademicaController.comprobarPromocionEstudiante));
 
 module.exports = router;

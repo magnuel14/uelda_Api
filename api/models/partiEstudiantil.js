@@ -6,6 +6,12 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
+        titulo_campoAccion: {
+            type: DataTypes.STRING(50)
+        },
+        descripcion: {
+            type: DataTypes.TEXT
+        },
         //1ro 80 horas -2do 120 horas
         numHoras: {
             type: DataTypes.STRING(50)
@@ -14,13 +20,13 @@ module.exports = function (sequelize, DataTypes) {
         calificacion: {
             type: DataTypes.STRING(50)
         },
+        //observaciones o casos especiales
+        observacion: {
+            type: DataTypes.STRING(250)
+        },
         //aprobado
         aprobado: {
             type: DataTypes.INTEGER
-        },
-        //observaciones ocasos especiales
-        observacion: {
-            type: DataTypes.STRING(250)
         },
         external_id: {
             type: DataTypes.UUID,

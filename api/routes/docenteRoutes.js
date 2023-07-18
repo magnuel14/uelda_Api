@@ -19,6 +19,8 @@ router.post('/update_Asistencias', tryCatch(docenteController.updateAsistencias)
 //paralelos
 router.get('/getParaleloTutor_docente/:externalId', tryCatch(docenteController.getParaleloTutor_docente));
 router.get('/getAllmatriculas_byIdParalelo/:id_paralelo', tryCatch(docenteController.getAllmatriculas_byIdParalelo));
+//promover estudiantes
+router.post('/comprobarPromocionEstudiante_byParalelo', (docenteController.comprobarPromocionEstudiante_byParalelo));
 
 module.exports = router;
 

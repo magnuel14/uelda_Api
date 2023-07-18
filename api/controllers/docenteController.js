@@ -324,32 +324,115 @@ let controller = {
 
         const all_matriculas = await Matricula.findAll({
             where: { id_paralelo: id_paralelo },
-            include: [
-                { model: AsistenciaXDia, order: [['id', 'ASC']] },
-                { model: AsistenciaXMate, order: [['id', 'ASC']] },
-                { model: CalificacionQ, order: [['id', 'ASC']] },
-                { model: CalificacionT, order: [['id', 'ASC']] }
-            ]
         });
+        let lista_personas_matricula = [];
 
-        // Obtener los id_persona de las matrículas
-        const id_personas = all_matriculas.map(matricula => matricula.id_persona);
+        for (let i = 0; i < all_matriculas.length; i++) {
+            const id_persona = all_matriculas[i].id_persona;
+            const id = all_matriculas[i].id;
 
-        // Consultar los datos de las personas asociadas a las matrículas
-        const personas = await Persona.findAll({ where: { id: id_personas } });
 
-        // Agregar la información de la persona a cada matrícula
-        const matriculas_con_personas = all_matriculas.map(matricula => {
-            const persona = personas.find(p => p.id === matricula.id_persona);
-            return {
-                ...matricula.toJSON(),
-                persona: persona.toJSON()
+            let lista_calificaionesQ = [];
+            let lista_calificaionesT = [];
+            let lista_asistenciasXmateria = [];
+            let info_Matricula = [];
+
+
+            const info_estudiante = await Persona.findOne({
+                attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+                where: { id: id_persona }
+            });
+
+            const info_matricula_actual = await Matricula.findOne({
+                where: {
+                    id: id
+                }
+            });
+            const info_paralelo = await Paralelo.findOne({
+                attributes: ['id', 'titulo', 'id_curso'],
+                where: { id: info_matricula_actual.id_paralelo }
+            });
+            const info_curso = await Curso.findOne({
+                attributes: ['id', 'nivelAcademico', 'gradoAcademico'],
+                where: { id: info_paralelo.id_curso }
+            });
+
+            const info_matricula = {
+                ...info_matricula_actual.dataValues,
+                titulo_paralelo: info_paralelo.titulo,
+                id_curso: info_curso.id,
+                nivelAcademico: info_curso.nivelAcademico,
+                gradoAcademico: info_curso.gradoAcademico,
             };
-        });
+            info_Matricula.push(info_matricula)
 
-        // Devolver el resultado
-        res.json({ all_matriculas: matriculas_con_personas });
+            const info_AsistenciaXDia = await AsistenciaXDia.findOne({ where: { id_matricula: info_matricula_actual.id } })
+            const info_AsistenciaXMate = await AsistenciaXMate.findAll({ where: { id_matricula: info_matricula_actual.id } })
+            const info_calificacionT = await CalificacionT.findAll({ where: { id_matricula: info_matricula_actual.id } })
+            const info_CalificacionQ = await CalificacionQ.findAll({ where: { id_matricula: info_matricula_actual.id } })
 
+
+
+            for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+                const id = info_AsistenciaXMate[i].id;
+                const id_materia = info_AsistenciaXMate[i].id_materia;
+
+                const asistenciaXmateria = await AsistenciaXMate.findOne({ where: { id: id } });
+                const info_materia = await Materia.findOne({
+                    attributes: ['nombre', 'area'],
+                    where: { id: id_materia }
+                });
+                const info_asistenciaXmateria = {
+                    ...asistenciaXmateria.dataValues,
+                    area: info_materia.area,
+                    nombre: info_materia.nombre
+                };
+                lista_asistenciasXmateria.push(info_asistenciaXmateria);
+            }
+            for (let i = 0; i < info_calificacionT.length; i++) {
+                const id = info_calificacionT[i].id;
+                const id_materia = info_calificacionT[i].id_materia;
+
+                const calificacionT = await CalificacionT.findOne({ where: { id: id } });
+                const info_materia = await Materia.findOne({
+                    attributes: ['nombre', 'area'],
+                    where: { id: id_materia }
+                });
+                const info_CalificacionT = {
+                    ...calificacionT.dataValues,
+                    area: info_materia.area,
+                    nombre: info_materia.nombre
+                };
+                lista_calificaionesT.push(info_CalificacionT);
+            }
+            for (let i = 0; i < info_CalificacionQ.length; i++) {
+                const id = info_CalificacionQ[i].id;
+                const id_materia = info_CalificacionQ[i].id_materia;
+
+                const calificacionQ = await CalificacionQ.findOne({ where: { id: id } });
+                const info_materia = await Materia.findOne({
+                    attributes: ['nombre', 'area'],
+                    where: { id: id_materia }
+                });
+                const info_calificacionQ = {
+                    ...calificacionQ.dataValues,
+                    area: info_materia.area,
+                    nombre: info_materia.nombre
+                };
+                lista_calificaionesQ.push(info_calificacionQ);
+            }
+
+
+            lista_personas_matricula.push({
+                info_estudiante,
+                info_Matricula,
+                lista_asistenciasXmateria,
+                info_AsistenciaXDia,
+                lista_calificaionesT,
+                lista_calificaionesQ
+            })
+        }
+        return res.json({ lista_personas_matricula });
     },
     /**
     * 
@@ -444,26 +527,50 @@ let controller = {
 
                     } else {
 
-                        const dataCalificacionQ = {
-                            firstParcialPQ: firstParcialPQ,
-                            secondParcialPQ: secondParcialPQ,
-                            subTotalPQ: _subTotalPQ,
-                            testPQ: _testPQ,
-                            totalPQ: _totalPQ,
+                        if (supletorio >= 7 || remedial >= 7 || gracia >= 7) {
 
-                            firstParcialSQ: firstParcialSQ,
-                            secondParcialSQ: secondParcialSQ,
-                            subTota2PQ: _subTota2PQ,
-                            testSQ: _testSQ,
-                            totalSQ: _totalSQ,
+                            const dataCalificacionQ = {
+                                firstParcialPQ: firstParcialPQ,
+                                secondParcialPQ: secondParcialPQ,
+                                subTotalPQ: _subTotalPQ,
+                                testPQ: _testPQ,
+                                totalPQ: _totalPQ,
 
-                            notaFinal: _notaFinal,
+                                firstParcialSQ: firstParcialSQ,
+                                secondParcialSQ: secondParcialSQ,
+                                subTota2PQ: _subTota2PQ,
+                                testSQ: _testSQ,
+                                totalSQ: _totalSQ,
 
-                            aprobado: 1
-                        };
+                                notaFinal: _notaFinal,
 
-                        await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                        console.log({ dataCalificacionQ })
+                                aprobado: 0
+                            };
+
+                            await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
+                            console.log({ dataCalificacionQ })
+                        } else {
+                            const dataCalificacionQ = {
+                                firstParcialPQ: firstParcialPQ,
+                                secondParcialPQ: secondParcialPQ,
+                                subTotalPQ: _subTotalPQ,
+                                testPQ: _testPQ,
+                                totalPQ: _totalPQ,
+
+                                firstParcialSQ: firstParcialSQ,
+                                secondParcialSQ: secondParcialSQ,
+                                subTota2PQ: _subTota2PQ,
+                                testSQ: _testSQ,
+                                totalSQ: _totalSQ,
+
+                                notaFinal: _notaFinal,
+
+                                aprobado: 1
+                            };
+
+                            await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
+                            console.log({ dataCalificacionQ })
+                        }
 
                     }
                 }
@@ -486,7 +593,8 @@ let controller = {
 
                     proyecto_Final,
                     evaluacion_nivel,
-                    aprobado
+                    aprobado,
+                    supletorio
                 } = lista_externalsMateria_calificacion[i];
 
                 const info_calificacionT = await CalificacionT.findOne(
@@ -683,29 +791,55 @@ let controller = {
 
                             } else {
 
-                                const dataCalificacionT = {
-                                    aportesPrimerTimestre: _aportesPrimerTimestre,
-                                    proIntegradorFase_1: _proIntegradorFase_1,
-                                    evaluacion_estructurada_1: _evaluacion_estructurada_1,
-                                    totalPT: totalPT,
+                                if (supletorio >= 7) {
+                                    const dataCalificacionT = {
+                                        aportesPrimerTimestre: _aportesPrimerTimestre,
+                                        proIntegradorFase_1: _proIntegradorFase_1,
+                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        totalPT: totalPT,
 
-                                    aportesSegundoTimestre: _aportesSegundoTimestre,
-                                    proIntegradorFase_2: _proIntegradorFase_2,
-                                    evaluacion_estructurada_2: _evaluacion_estructurada_2,
-                                    totalST: totalST,
+                                        aportesSegundoTimestre: _aportesSegundoTimestre,
+                                        proIntegradorFase_2: _proIntegradorFase_2,
+                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        totalST: totalST,
 
-                                    aportesTercerTimestre: _aportesTercerTimestre,
-                                    proIntegradorFase_3: _proIntegradorFase_3,
-                                    evaluacion_estructurada_3: _evaluacion_estructurada_3,
-                                    totalTT: totalTT,
-                                    total_Final: total_Final,
-                                    evaluacion_nivel: _evaluacion_nivel,
+                                        aportesTercerTimestre: _aportesTercerTimestre,
+                                        proIntegradorFase_3: _proIntegradorFase_3,
+                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        totalTT: totalTT,
+                                        total_Final: total_Final,
+                                        evaluacion_nivel: _evaluacion_nivel,
 
-                                    aprobado: 1
-                                };
+                                        aprobado: 0
+                                    };
 
-                                await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                                console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
+                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
+                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
+                                } else {
+                                    const dataCalificacionT = {
+                                        aportesPrimerTimestre: _aportesPrimerTimestre,
+                                        proIntegradorFase_1: _proIntegradorFase_1,
+                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        totalPT: totalPT,
+
+                                        aportesSegundoTimestre: _aportesSegundoTimestre,
+                                        proIntegradorFase_2: _proIntegradorFase_2,
+                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        totalST: totalST,
+
+                                        aportesTercerTimestre: _aportesTercerTimestre,
+                                        proIntegradorFase_3: _proIntegradorFase_3,
+                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        totalTT: totalTT,
+                                        total_Final: total_Final,
+                                        evaluacion_nivel: _evaluacion_nivel,
+
+                                        aprobado: 1
+                                    };
+
+                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
+                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
+                                }
 
                             }
                         } else {
@@ -751,29 +885,53 @@ let controller = {
                                 console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
 
                             } else {
+                                if (supletorio >= 7) {
+                                    const dataCalificacionT = {
+                                        aportesPrimerTimestre: _aportesPrimerTimestre,
+                                        proIntegradorFase_1: _proIntegradorFase_1,
+                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        totalPT: totalPT,
 
-                                const dataCalificacionT = {
-                                    aportesPrimerTimestre: _aportesPrimerTimestre,
-                                    proIntegradorFase_1: _proIntegradorFase_1,
-                                    evaluacion_estructurada_1: _evaluacion_estructurada_1,
-                                    totalPT: totalPT,
+                                        aportesSegundoTimestre: _aportesSegundoTimestre,
+                                        proIntegradorFase_2: _proIntegradorFase_2,
+                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        totalST: totalST,
 
-                                    aportesSegundoTimestre: _aportesSegundoTimestre,
-                                    proIntegradorFase_2: _proIntegradorFase_2,
-                                    evaluacion_estructurada_2: _evaluacion_estructurada_2,
-                                    totalST: totalST,
+                                        aportesTercerTimestre: _aportesTercerTimestre,
+                                        proIntegradorFase_3: _proIntegradorFase_3,
+                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        totalTT: totalTT,
+                                        total_Final: total_Final,
 
-                                    aportesTercerTimestre: _aportesTercerTimestre,
-                                    proIntegradorFase_3: _proIntegradorFase_3,
-                                    evaluacion_estructurada_3: _evaluacion_estructurada_3,
-                                    totalTT: totalTT,
-                                    total_Final: total_Final,
+                                        aprobado: 0
+                                    };
 
-                                    aprobado: 1
-                                };
+                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
+                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
+                                } else {
+                                    const dataCalificacionT = {
+                                        aportesPrimerTimestre: _aportesPrimerTimestre,
+                                        proIntegradorFase_1: _proIntegradorFase_1,
+                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        totalPT: totalPT,
 
-                                await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                                console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
+                                        aportesSegundoTimestre: _aportesSegundoTimestre,
+                                        proIntegradorFase_2: _proIntegradorFase_2,
+                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        totalST: totalST,
+
+                                        aportesTercerTimestre: _aportesTercerTimestre,
+                                        proIntegradorFase_3: _proIntegradorFase_3,
+                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        totalTT: totalTT,
+                                        total_Final: total_Final,
+
+                                        aprobado: 1
+                                    };
+
+                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
+                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
+                                }
 
                             }
 
@@ -829,7 +987,8 @@ let controller = {
                     console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas, _horasClase_asistidas })
 
                 } else if (info_AsistenciaXMate) {
-                    const _horasClase_programadas = info_AsistenciaXMate.horasClase_programadas;
+                    const info_materia = await AsistenciaXMate.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
+                    const _horasClase_programadas = info_materia.horasClase_programadas;
                     var _horasClase_dictadas = parseInt(info_AsistenciaXMate.horasClase_dictadas, 10) + periodosAcademicos_dictados;
                     var _horasClase_asistidas = parseInt(info_AsistenciaXMate.horasClase_asistidas, 10) + periodosAcademicos_dictados;
 
@@ -858,7 +1017,8 @@ let controller = {
                     console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas })
 
                 } else if (info_AsistenciaXMate) {
-                    const _horasClase_programadas = info_AsistenciaXMate.horasClase_programadas;
+                    const info_materia = await AsistenciaXMate.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
+                    const _horasClase_programadas = info_materia.horasClase_programadas;
                     var _horasClase_dictadas = parseInt(info_AsistenciaXMate.horasClase_dictadas, 10) + periodosAcademicos_dictados;
 
                     const data_Asistencia = {
@@ -876,12 +1036,150 @@ let controller = {
         return res.json({ message: 'Se han actualizado las asistencias exitosamente' });
 
     },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    comprobarPromocionEstudiante_byParalelo: async (req, res) => {
+        const { id_paralelo } = req.body;
+        const matriculas_byParalelo = await Matricula.findAll(
+            {
+                where: { id_paralelo: id_paralelo }
+            });
+        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
 
+        for (let i = 0; i < matriculas_byParalelo.length; i++) {
+            const id_persona = matriculas_byParalelo[i].id_persona;
+
+            const info_matricula_actual = await Matricula.findOne({
+                where: {
+                    id_persona: id_persona,
+                    id_anioLectivo_actual: info_anioLectivo.id
+                }
+            });
+
+            var contador_materias = 0;
+            var contador_AsistenciaxMateria = 0;
+            var boolAsistenciaxDia = false;
+
+            const info_AsistenciaXDia = await AsistenciaXDia.findOne({ where: { id_matricula: info_matricula_actual.id } })
+            const info_AsistenciaXMate = await AsistenciaXMate.findAll({ where: { id_matricula: info_matricula_actual.id } })
+            const info_calificacionT = await CalificacionT.findAll({ where: { id_matricula: info_matricula_actual.id } })
+            const info_CalificacionQ = await CalificacionQ.findAll({ where: { id_matricula: info_matricula_actual.id } })
+
+            if (info_AsistenciaXDia) {
+                const horasClase_programadas = info_AsistenciaXDia.horasClase_programadas;
+                const horasClase_programadasEntero = parseInt(horasClase_programadas, 10);
+                const horasClase_programadas90porciento = Math.floor(horasClase_programadasEntero * 0.9);
+
+                const horasClase_asistidas = info_AsistenciaXDia.horasClase_asistidas;
+                const horasClase_asistidasEntero = parseInt(horasClase_asistidas, 10);
+                if (horasClase_asistidasEntero >= horasClase_programadas90porciento) {
+                    boolAsistenciaxDia = true;
+                }
+
+                for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+                    const id_materia = info_AsistenciaXMate[i].id_materia;
+                    const materia = await Materia.findOne({ where: { id: id_materia } });
+                    const horasClase_programadas = materia.horasClase_programadas;
+                    const horasClase_programadasEntero = parseInt(horasClase_programadas, 10);
+                    const horasClase_programadas90porciento = Math.floor(horasClase_programadasEntero * 0.9);
+
+                    const horasClase_asistidas = info_AsistenciaXMate[i].horasClase_asistidas;
+                    const horasClase_asistidasEntero = parseInt(horasClase_asistidas, 10);
+                    if (horasClase_asistidasEntero < horasClase_programadas90porciento) {
+                        contador_AsistenciaxMateria += 1;
+                    }
+                }
+
+                if (info_anioLectivo.tipoCalificacion === 0) {
+                    for (let i = 0; i < info_CalificacionQ.length; i++) {
+                        const aprobado = info_CalificacionQ[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < info_calificacionT.length; i++) {
+                        const aprobado = info_calificacionT[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                }
+
+                if (contador_materias === 0 &&
+                    contador_AsistenciaxMateria === 0 &&
+                    boolAsistenciaxDia === true
+                ) {
+                    const data_promocion = {
+                        estadoAc: 1
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                } else {
+                    const data_promocion = {
+                        estadoAc: 2
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                }
+
+            } else {
+                for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+                    const id_materia = info_AsistenciaXMate[i].id_materia;
+                    const materia = await Materia.findOne({ where: { id: id_materia } });
+                    const horasClase_programadas = materia.horasClase_programadas;
+                    const horasClase_programadasEntero = parseInt(horasClase_programadas, 10);
+                    const horasClase_programadas90porciento = Math.floor(horasClase_programadasEntero * 0.9);
+
+                    const horasClase_asistidas = info_AsistenciaXMate[i].horasClase_asistidas;
+                    const horasClase_asistidasEntero = parseInt(horasClase_asistidas, 10);
+                    if (horasClase_asistidasEntero < horasClase_programadas90porciento) {
+                        contador_AsistenciaxMateria += 1;
+                    }
+                }
+
+                if (info_anioLectivo.tipoCalificacion === 0) {
+                    for (let i = 0; i < info_CalificacionQ.length; i++) {
+                        const aprobado = info_CalificacionQ[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < info_calificacionT.length; i++) {
+                        const aprobado = info_calificacionT[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                }
+
+                if (contador_materias === 0 &&
+                    contador_AsistenciaxMateria === 0
+                ) {
+                    const data_promocion = {
+                        estadoAc: 1
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                } else {
+                    const data_promocion = {
+                        estadoAc: 2
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                }
+            }
+
+        }
+        return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
+
+    },
 
 
     /**
      * @param {*} res 
-     * @returns Una lista en formato json de los estuidantes registrados
+     * @returns 
      */
     createAsistencia_Docentes: async (req, res) => {
         const { fechaRegistro, list_personal, asistencia } = req.body;
@@ -899,31 +1197,6 @@ let controller = {
             }
         }
         return res.json({ message: 'Se ha registrado la asistencia' });
-    },
-    /**
-    * 
-    * @param {*} req 
-    * @param {*} res 
-    * @returns 
-    */
-    getCalicaciones: async (req, res) => {
-        const personal = await Persona.findAll({
-            include: [
-                {
-                    model: Cuenta,
-                    where: {
-                        estado: 0
-                    }
-                },
-                AsistenciaDocente
-            ],
-            where: {
-                id_rol: {
-                    [Op.or]: [1, 2, 3, 4, 5]
-                }
-            }
-        });
-        return res.json(personal);
     },
 
     /**Fin funciones validadas */

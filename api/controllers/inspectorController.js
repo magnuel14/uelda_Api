@@ -109,6 +109,38 @@ let controller = {
         else {
             return res.json({ message: 'Este rol auxiliar no existe' });
         }
+    },
+     /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+     createAsignacionDocente_xsubnivel: async (req, res) => {
+        const { list_personal, subnivel_asignado } = req.body;
+        for (let i = 0; i < list_personal.length; i++) {
+            const { externalId } = list_personal[i];
+            const dataAsignacion_subnivel = { subnivel_asignado: subnivel_asignado }
+            await Persona.update(dataAsignacion_subnivel, { where: { external_id: externalId } })
+        }
+        if (subnivel_asignado == 0) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de inicial' })
+        }
+        if (subnivel_asignado == 1) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica preparatoria' })
+        }
+        if (subnivel_asignado == 2) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica elemental' })
+        }
+        if (subnivel_asignado == 3) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica media' })
+        }
+        if (subnivel_asignado == 4) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica superior' })
+        }
+        if (subnivel_asignado == 5) {
+            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de bachillerato' })
+        }
     }
     /**Fin funciones validadas */
 }

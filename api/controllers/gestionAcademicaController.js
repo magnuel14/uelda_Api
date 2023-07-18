@@ -142,24 +142,6 @@ let controller = {
                         }
                         await AsistenciaXDia.create(asistenciaXDia);
 
-                        const info_materia_ECA = await Materia.findOne(
-                            {
-                                where: {
-                                    nombre: 'Educación Cultural y Artística',
-                                    id_curso: infoCurso.id
-                                }
-                            }
-                        );
-                        const asistenciasXMateria_ECA = {
-                            horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                            horasClase_dictadas: '0',
-                            horasClase_asistidas: '0',
-                            id_materia: info_materia_ECA.id,
-                            id_matricula: newMatricula_estudiante.id
-                        };
-
-                        await AsistenciaXMate.create(asistenciasXMateria_ECA);
-
                         const info_materia_EF = await Materia.findOne(
                             {
                                 where: {
@@ -187,24 +169,6 @@ let controller = {
                             id_matricula: newMatricula_estudiante.id
                         }
                         await AsistenciaXDia.create(asistenciaXDia);
-
-                        const info_materia_ECA = await Materia.findOne(
-                            {
-                                where: {
-                                    nombre: 'Educación Cultural y Artística',
-                                    id_curso: infoCurso.id
-                                }
-                            }
-                        );
-                        const asistenciasXMateria_ECA = {
-                            horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                            horasClase_dictadas: '0',
-                            horasClase_asistidas: '0',
-                            id_materia: info_materia_ECA.id,
-                            id_matricula: newMatricula_estudiante.id
-                        };
-
-                        await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                         const info_materia_EF = await Materia.findOne(
                             {
@@ -250,24 +214,6 @@ let controller = {
                             id_matricula: newMatricula_estudiante.id
                         }
                         await AsistenciaXDia.create(asistenciaXDia);
-
-                        const info_materia_ECA = await Materia.findOne(
-                            {
-                                where: {
-                                    nombre: 'Educación Cultural y Artística',
-                                    id_curso: infoCurso.id
-                                }
-                            }
-                        );
-                        const asistenciasXMateria_ECA = {
-                            horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                            horasClase_dictadas: '0',
-                            horasClase_asistidas: '0',
-                            id_materia: info_materia_ECA.id,
-                            id_matricula: newMatricula_estudiante.id
-                        };
-
-                        await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                         const info_materia_EF = await Materia.findOne(
                             {
@@ -534,30 +480,12 @@ let controller = {
                         });
 
                         const asistenciaXDia = {
-                            periodo_academicos_Programados: "900",
+                            periodo_academicos_Programados: "972",
                             horasClase_dictadas: '0',
                             horasClase_asistidas: '0',
                             id_matricula: newMatricula_estudiante.id
                         }
                         await AsistenciaXDia.create(asistenciaXDia);
-
-                        const info_materia_ECA = await Materia.findOne(
-                            {
-                                where: {
-                                    nombre: 'Educación Cultural y Artística',
-                                    id_curso: infoCurso.id
-                                }
-                            }
-                        );
-                        const asistenciasXMateria_ECA = {
-                            horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                            horasClase_dictadas: '0',
-                            horasClase_asistidas: '0',
-                            id_materia: info_materia_ECA.id,
-                            id_matricula: newMatricula_estudiante.id
-                        };
-
-                        await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                         const info_materia_EF = await Materia.findOne(
                             {
@@ -649,30 +577,12 @@ let controller = {
                         });
 
                         const asistenciaXDia = {
-                            horasClase_programadas: '792',
+                            horasClase_programadas: '864',
                             horasClase_dictadas: '0',
                             horasClase_asistidas: '0',
                             id_matricula: newMatricula_estudiante.id
                         }
                         await AsistenciaXDia.create(asistenciaXDia);
-
-                        const info_materia_ECA = await Materia.findOne(
-                            {
-                                where: {
-                                    nombre: 'Educación Cultural y Artística',
-                                    id_curso: infoCurso.id
-                                }
-                            }
-                        );
-                        const asistenciasXMateria_ECA = {
-                            horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                            horasClase_dictadas: '0',
-                            horasClase_asistidas: '0',
-                            id_materia: info_materia_ECA.id,
-                            id_matricula: newMatricula_estudiante.id
-                        };
-
-                        await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                         const info_materia_EF = await Materia.findOne(
                             {
@@ -783,30 +693,13 @@ let controller = {
                             });
 
                             const asistenciaXDia = {
-                                horasClase_programadas: '792',
+                                horasClase_programadas: '864',
                                 horasClase_dictadas: '0',
                                 horasClase_asistidas: '0',
                                 id_matricula: newMatricula_estudiante.id
                             }
                             await AsistenciaXDia.create(asistenciaXDia);
 
-                            const info_materia_ECA = await Materia.findOne(
-                                {
-                                    where: {
-                                        nombre: 'Educación Cultural y Artística',
-                                        id_curso: infoCurso.id
-                                    }
-                                }
-                            );
-                            const asistenciasXMateria_ECA = {
-                                horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: info_materia_ECA.id,
-                                id_matricula: newMatricula_estudiante.id
-                            };
-
-                            await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                             const info_materia_EF = await Materia.findOne(
                                 {
@@ -916,30 +809,12 @@ let controller = {
                             });
 
                             const asistenciaXDia = {
-                                horasClase_programadas: '792',
+                                horasClase_programadas: '864',
                                 horasClase_dictadas: '0',
                                 horasClase_asistidas: '0',
                                 id_matricula: newMatricula_estudiante.id
                             }
                             await AsistenciaXDia.create(asistenciaXDia);
-
-                            const info_materia_ECA = await Materia.findOne(
-                                {
-                                    where: {
-                                        nombre: 'Educación Cultural y Artística',
-                                        id_curso: infoCurso.id
-                                    }
-                                }
-                            );
-                            const asistenciasXMateria_ECA = {
-                                horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: info_materia_ECA.id,
-                                id_matricula: newMatricula_estudiante.id
-                            };
-
-                            await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                             const info_materia_EF = await Materia.findOne(
                                 {
@@ -1049,30 +924,12 @@ let controller = {
                             });
 
                             const asistenciaXDia = {
-                                horasClase_programadas: '792',
+                                horasClase_programadas: '864',
                                 horasClase_dictadas: '0',
                                 horasClase_asistidas: '0',
                                 id_matricula: newMatricula_estudiante.id
                             }
                             await AsistenciaXDia.create(asistenciaXDia);
-
-                            const info_materia_ECA = await Materia.findOne(
-                                {
-                                    where: {
-                                        nombre: 'Educación Cultural y Artística',
-                                        id_curso: infoCurso.id
-                                    }
-                                }
-                            );
-                            const asistenciasXMateria_ECA = {
-                                horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: info_materia_ECA.id,
-                                id_matricula: newMatricula_estudiante.id
-                            };
-
-                            await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                             const info_materia_EF = await Materia.findOne(
                                 {
@@ -1184,30 +1041,12 @@ let controller = {
                             });
 
                             const asistenciaXDia = {
-                                horasClase_programadas: '792',
+                                horasClase_programadas: '864',
                                 horasClase_dictadas: '0',
                                 horasClase_asistidas: '0',
                                 id_matricula: newMatricula_estudiante.id
                             }
                             await AsistenciaXDia.create(asistenciaXDia);
-
-                            const info_materia_ECA = await Materia.findOne(
-                                {
-                                    where: {
-                                        nombre: 'Educación Cultural y Artística',
-                                        id_curso: infoCurso.id
-                                    }
-                                }
-                            );
-                            const asistenciasXMateria_ECA = {
-                                horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: info_materia_ECA.id,
-                                id_matricula: newMatricula_estudiante.id
-                            };
-
-                            await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                             const info_materia_EF = await Materia.findOne(
                                 {
@@ -1314,30 +1153,12 @@ let controller = {
                             });
 
                             const asistenciaXDia = {
-                                horasClase_programadas: '792',
+                                horasClase_programadas: '864',
                                 horasClase_dictadas: '0',
                                 horasClase_asistidas: '0',
                                 id_matricula: newMatricula_estudiante.id
                             }
                             await AsistenciaXDia.create(asistenciaXDia);
-
-                            const info_materia_ECA = await Materia.findOne(
-                                {
-                                    where: {
-                                        nombre: 'Educación Cultural y Artística',
-                                        id_curso: infoCurso.id
-                                    }
-                                }
-                            );
-                            const asistenciasXMateria_ECA = {
-                                horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: info_materia_ECA.id,
-                                id_matricula: newMatricula_estudiante.id
-                            };
-
-                            await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                             const info_materia_EF = await Materia.findOne(
                                 {
@@ -2425,30 +2246,12 @@ let controller = {
                             });
 
                             const asistenciaXDia = {
-                                periodo_academicos_Programados: "900",
+                                periodo_academicos_Programados: "972",
                                 horasClase_dictadas: '0',
                                 horasClase_asistidas: '0',
                                 id_matricula: newMatricula_estudiante.id
                             }
                             await AsistenciaXDia.create(asistenciaXDia);
-
-                            const info_materia_ECA = await Materia.findOne(
-                                {
-                                    where: {
-                                        nombre: 'Educación Cultural y Artística',
-                                        id_curso: infoCurso.id
-                                    }
-                                }
-                            );
-                            const asistenciasXMateria_ECA = {
-                                horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                horasClase_dictadas: '0',
-                                horasClase_asistidas: '0',
-                                id_materia: info_materia_ECA.id,
-                                id_matricula: newMatricula_estudiante.id
-                            };
-
-                            await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                             const info_materia_EF = await Materia.findOne(
                                 {
@@ -2541,30 +2344,12 @@ let controller = {
                                 });
 
                                 const asistenciaXDia = {
-                                    horasClase_programadas: '792',
+                                    horasClase_programadas: '864',
                                     horasClase_dictadas: '0',
                                     horasClase_asistidas: '0',
                                     id_matricula: newMatricula_estudiante.id
                                 }
                                 await AsistenciaXDia.create(asistenciaXDia);
-
-                                const info_materia_ECA = await Materia.findOne(
-                                    {
-                                        where: {
-                                            nombre: 'Educación Cultural y Artística',
-                                            id_curso: infoCurso.id
-                                        }
-                                    }
-                                );
-                                const asistenciasXMateria_ECA = {
-                                    horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                    horasClase_dictadas: '0',
-                                    horasClase_asistidas: '0',
-                                    id_materia: info_materia_ECA.id,
-                                    id_matricula: newMatricula_estudiante.id
-                                };
-
-                                await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                                 const info_materia_EF = await Materia.findOne(
                                     {
@@ -2674,30 +2459,12 @@ let controller = {
                                 });
 
                                 const asistenciaXDia = {
-                                    horasClase_programadas: '792',
+                                    horasClase_programadas: '864',
                                     horasClase_dictadas: '0',
                                     horasClase_asistidas: '0',
                                     id_matricula: newMatricula_estudiante.id
                                 }
                                 await AsistenciaXDia.create(asistenciaXDia);
-
-                                const info_materia_ECA = await Materia.findOne(
-                                    {
-                                        where: {
-                                            nombre: 'Educación Cultural y Artística',
-                                            id_curso: infoCurso.id
-                                        }
-                                    }
-                                );
-                                const asistenciasXMateria_ECA = {
-                                    horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                    horasClase_dictadas: '0',
-                                    horasClase_asistidas: '0',
-                                    id_materia: info_materia_ECA.id,
-                                    id_matricula: newMatricula_estudiante.id
-                                };
-
-                                await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                                 const info_materia_EF = await Materia.findOne(
                                     {
@@ -2807,30 +2574,12 @@ let controller = {
                                 });
 
                                 const asistenciaXDia = {
-                                    horasClase_programadas: '792',
+                                    horasClase_programadas: '864',
                                     horasClase_dictadas: '0',
                                     horasClase_asistidas: '0',
                                     id_matricula: newMatricula_estudiante.id
                                 }
                                 await AsistenciaXDia.create(asistenciaXDia);
-
-                                const info_materia_ECA = await Materia.findOne(
-                                    {
-                                        where: {
-                                            nombre: 'Educación Cultural y Artística',
-                                            id_curso: infoCurso.id
-                                        }
-                                    }
-                                );
-                                const asistenciasXMateria_ECA = {
-                                    horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                    horasClase_dictadas: '0',
-                                    horasClase_asistidas: '0',
-                                    id_materia: info_materia_ECA.id,
-                                    id_matricula: newMatricula_estudiante.id
-                                };
-
-                                await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                                 const info_materia_EF = await Materia.findOne(
                                     {
@@ -2942,30 +2691,12 @@ let controller = {
                                 });
 
                                 const asistenciaXDia = {
-                                    horasClase_programadas: '792',
+                                    horasClase_programadas: '864',
                                     horasClase_dictadas: '0',
                                     horasClase_asistidas: '0',
                                     id_matricula: newMatricula_estudiante.id
                                 }
                                 await AsistenciaXDia.create(asistenciaXDia);
-
-                                const info_materia_ECA = await Materia.findOne(
-                                    {
-                                        where: {
-                                            nombre: 'Educación Cultural y Artística',
-                                            id_curso: infoCurso.id
-                                        }
-                                    }
-                                );
-                                const asistenciasXMateria_ECA = {
-                                    horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                    horasClase_dictadas: '0',
-                                    horasClase_asistidas: '0',
-                                    id_materia: info_materia_ECA.id,
-                                    id_matricula: newMatricula_estudiante.id
-                                };
-
-                                await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                                 const info_materia_EF = await Materia.findOne(
                                     {
@@ -3075,30 +2806,12 @@ let controller = {
                                 });
 
                                 const asistenciaXDia = {
-                                    horasClase_programadas: '792',
+                                    horasClase_programadas: '864',
                                     horasClase_dictadas: '0',
                                     horasClase_asistidas: '0',
                                     id_matricula: newMatricula_estudiante.id
                                 }
                                 await AsistenciaXDia.create(asistenciaXDia);
-
-                                const info_materia_ECA = await Materia.findOne(
-                                    {
-                                        where: {
-                                            nombre: 'Educación Cultural y Artística',
-                                            id_curso: infoCurso.id
-                                        }
-                                    }
-                                );
-                                const asistenciasXMateria_ECA = {
-                                    horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                    horasClase_dictadas: '0',
-                                    horasClase_asistidas: '0',
-                                    id_materia: info_materia_ECA.id,
-                                    id_matricula: newMatricula_estudiante.id
-                                };
-
-                                await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                                 const info_materia_EF = await Materia.findOne(
                                     {
@@ -3208,30 +2921,12 @@ let controller = {
                                 });
 
                                 const asistenciaXDia = {
-                                    horasClase_programadas: '792',
+                                    horasClase_programadas: '864',
                                     horasClase_dictadas: '0',
                                     horasClase_asistidas: '0',
                                     id_matricula: newMatricula_estudiante.id
                                 }
                                 await AsistenciaXDia.create(asistenciaXDia);
-
-                                const info_materia_ECA = await Materia.findOne(
-                                    {
-                                        where: {
-                                            nombre: 'Educación Cultural y Artística',
-                                            id_curso: infoCurso.id
-                                        }
-                                    }
-                                );
-                                const asistenciasXMateria_ECA = {
-                                    horasClase_programadas: info_materia_ECA.horasClase_programadas,
-                                    horasClase_dictadas: '0',
-                                    horasClase_asistidas: '0',
-                                    id_materia: info_materia_ECA.id,
-                                    id_matricula: newMatricula_estudiante.id
-                                };
-
-                                await AsistenciaXMate.create(asistenciasXMateria_ECA);
 
                                 const info_materia_EF = await Materia.findOne(
                                     {
@@ -4526,32 +4221,144 @@ let controller = {
         const updateAnioLectivo = await AnioLectivo.update(dataAnioLectivo, { where: { external_id: external_id } });
         return res.json({ message: 'El año lectivo actual ha finalizado', updateAnioLectivo });
     },
-    createAsignacionDocente_xsubnivel: async (req, res) => {
-        const { list_personal, subnivel_asignado } = req.body;
-        for (let i = 0; i < list_personal.length; i++) {
-            const { externalId } = list_personal[i];
-            const dataAsignacion_subnivel = { subnivel_asignado: subnivel_asignado }
-            await Persona.update(dataAsignacion_subnivel, { where: { external_id: externalId } })
+    /**
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    comprobarPromocionEstudiante: async (req, res) => {
+        const estudiantes = await Persona.findAll(
+            {
+                where: { id_rol: 6, estadoAc: 0 }
+            });
+        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
+
+        for (let i = 0; i < estudiantes.length; i++) {
+            const id_persona = estudiantes[i].id;
+
+            const info_matricula_actual = await Matricula.findOne({
+                where: {
+                    id_persona: id_persona,
+                    id_anioLectivo_actual: info_anioLectivo.id
+                }
+            });
+
+            var contador_materias = 0;
+            var contador_AsistenciaxMateria = 0;
+            var boolAsistenciaxDia = false;
+
+            const info_AsistenciaXDia = await AsistenciaXDia.findOne({ where: { id_matricula: info_matricula_actual.id } })
+            const info_AsistenciaXMate = await AsistenciaXMate.findAll({ where: { id_matricula: info_matricula_actual.id } })
+            const info_calificacionT = await CalificacionT.findAll({ where: { id_matricula: info_matricula_actual.id } })
+            const info_CalificacionQ = await CalificacionQ.findAll({ where: { id_matricula: info_matricula_actual.id } })
+
+            if (info_AsistenciaXDia) {
+                const horasClase_programadas = info_AsistenciaXDia.horasClase_programadas;
+                const horasClase_programadasEntero = parseInt(horasClase_programadas, 10);
+                const horasClase_programadas90porciento = Math.floor(horasClase_programadasEntero * 0.9);
+
+                const horasClase_asistidas = info_AsistenciaXDia.horasClase_asistidas;
+                const horasClase_asistidasEntero = parseInt(horasClase_asistidas, 10);
+                if (horasClase_asistidasEntero >= horasClase_programadas90porciento) {
+                    boolAsistenciaxDia = true;
+                }
+
+                for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+                    const id_materia = info_AsistenciaXMate[i].id_materia;
+                    const materia = await Materia.findOne({ where: { id: id_materia } });
+                    const horasClase_programadas = materia.horasClase_programadas;
+                    const horasClase_programadasEntero = parseInt(horasClase_programadas, 10);
+                    const horasClase_programadas90porciento = Math.floor(horasClase_programadasEntero * 0.9);
+
+                    const horasClase_asistidas = info_AsistenciaXMate[i].horasClase_asistidas;
+                    const horasClase_asistidasEntero = parseInt(horasClase_asistidas, 10);
+                    if (horasClase_asistidasEntero < horasClase_programadas90porciento) {
+                        contador_AsistenciaxMateria += 1;
+                    }
+                }
+
+                if (info_anioLectivo.tipoCalificacion === 0) {
+                    for (let i = 0; i < info_CalificacionQ.length; i++) {
+                        const aprobado = info_CalificacionQ[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < info_calificacionT.length; i++) {
+                        const aprobado = info_calificacionT[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                }
+
+                if (contador_materias === 0 &&
+                    contador_AsistenciaxMateria === 0 &&
+                    boolAsistenciaxDia === true
+                ) {
+                    const data_promocion = {
+                        estadoAc: 1
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                } else {
+                    const data_promocion = {
+                        estadoAc: 2
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                }
+
+            } else {
+                for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+                    const id_materia = info_AsistenciaXMate[i].id_materia;
+                    const materia = await Materia.findOne({ where: { id: id_materia } });
+                    const horasClase_programadas = materia.horasClase_programadas;
+                    const horasClase_programadasEntero = parseInt(horasClase_programadas, 10);
+                    const horasClase_programadas90porciento = Math.floor(horasClase_programadasEntero * 0.9);
+
+                    const horasClase_asistidas = info_AsistenciaXMate[i].horasClase_asistidas;
+                    const horasClase_asistidasEntero = parseInt(horasClase_asistidas, 10);
+                    if (horasClase_asistidasEntero < horasClase_programadas90porciento) {
+                        contador_AsistenciaxMateria += 1;
+                    }
+                }
+
+                if (info_anioLectivo.tipoCalificacion === 0) {
+                    for (let i = 0; i < info_CalificacionQ.length; i++) {
+                        const aprobado = info_CalificacionQ[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < info_calificacionT.length; i++) {
+                        const aprobado = info_calificacionT[i].aprobado;
+                        if (aprobado === 1) {
+                            contador_materias += 1;
+                        }
+                    }
+                }
+
+                if (contador_materias === 0 &&
+                    contador_AsistenciaxMateria === 0 
+                ) {
+                    const data_promocion = {
+                        estadoAc: 1
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                } else {
+                    const data_promocion = {
+                        estadoAc: 2
+                    };
+                    await Persona.update(data_promocion, { where: { id: id_persona } });
+                }
+            }
+
         }
-        if (subnivel_asignado == 0) {
-            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de inicial' })
-        }
-        if (subnivel_asignado == 1) {
-            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica preparatoria' })
-        }
-        if (subnivel_asignado == 2) {
-            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica elemental' })
-        }
-        if (subnivel_asignado == 3) {
-            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica media' })
-        }
-        if (subnivel_asignado == 4) {
-            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de básica superior' })
-        }
-        if (subnivel_asignado == 5) {
-            return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de bachillerato' })
-        }
-    }
+        return res.json({message:'Se han promovido a los estudiantes que cumplen con los requisitos'});
+
+    },
+
     /**Fin funciones validadas */
 }
 
