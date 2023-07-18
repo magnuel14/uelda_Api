@@ -10,6 +10,17 @@ const Representante = models.representante;
 const Hermano = models.hermano;
 const Cuenta = models.cuenta;
 const InfoMedica = models.infoMedica;
+const AnioLectivo = models.anioLectivo;
+const Matricula = models.matricula;
+const Materia = models.materia;
+const AsistenciaXDia = models.asistenciaXDia;
+const AsistenciaXMate = models.asistenciaXMate;
+const CalificacionQ = models.calificacionQ;
+const CalificacionT = models.calificacionT;
+const Paralelo = models.paralelo;
+const Curso = models.curso;
+
+
 
 let controller = {
     /** Implementado try cath*/
@@ -558,6 +569,116 @@ let controller = {
         }
         return res.json({ message: 'Se han registrado los estudiantes' })
     },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getCalifiaciones_asistencias: async (req, res) => {
+        const { externalId } = req.params;
+        let lista_calificaionesQ = [];
+        let lista_calificaionesT = [];
+        let lista_asistenciasXmateria = [];
+        let info_Matricula = [];
+
+
+        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
+        const info_estudiante = await Persona.findOne({ where: { external_id: externalId } });
+
+        const info_matricula_actual = await Matricula.findOne({
+            where: {
+                id_persona: info_estudiante.id,
+                id_anioLectivo_actual: info_anioLectivo.id
+            }
+        });
+        const info_paralelo = await Paralelo.findOne({
+            attributes: ['id', 'titulo','id_curso'],
+            where: { id: info_matricula_actual.id_paralelo }
+        });
+        console.log(info_paralelo)
+
+        const info_curso = await Curso.findOne({
+            attributes: ['id', 'nivelAcademico', 'gradoAcademico',],
+            where: { id: info_paralelo.id_curso }
+        });
+        console.log(info_curso)
+
+        const info_matricula = {
+            ...info_matricula_actual.dataValues,
+            titulo_paralelo: info_paralelo.titulo,
+            id_curso: info_curso.id,
+            nivelAcademico: info_curso.nivelAcademico,
+            gradoAcademico: info_curso.gradoAcademico,
+        };
+        info_Matricula.push(info_matricula)
+
+        const info_AsistenciaXDia = await AsistenciaXDia.findOne({ where: { id_matricula: info_matricula_actual.id } })
+        const info_AsistenciaXMate = await AsistenciaXMate.findAll({ where: { id_matricula: info_matricula_actual.id } })
+        const info_calificacionT = await CalificacionT.findAll({ where: { id_matricula: info_matricula_actual.id } })
+        const info_CalificacionQ = await CalificacionQ.findAll({ where: { id_matricula: info_matricula_actual.id } })
+
+
+
+        for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+            const id = info_AsistenciaXMate[i].id;
+            const id_materia = info_AsistenciaXMate[i].id_materia;
+
+            const asistenciaXmateria = await AsistenciaXMate.findOne({ where: { id: id } });
+            const info_materia = await Materia.findOne({
+                attributes: ['nombre', 'area'],
+                where: { id: id_materia }
+            });
+            const info_asistenciaXmateria = {
+                ...asistenciaXmateria.dataValues,
+                area: info_materia.area,
+                nombre: info_materia.nombre
+            };
+            lista_asistenciasXmateria.push(info_asistenciaXmateria);
+        }
+        for (let i = 0; i < info_calificacionT.length; i++) {
+            const id = info_calificacionT[i].id;
+            const id_materia = info_calificacionT[i].id_materia;
+
+            const calificacionT = await CalificacionT.findOne({ where: { id: id } });
+            const info_materia = await Materia.findOne({
+                attributes: ['nombre', 'area'],
+                where: { id: id_materia }
+            });
+            const info_CalificacionT = {
+                ...calificacionT.dataValues,
+                area: info_materia.area,
+                nombre: info_materia.nombre
+            };
+            lista_calificaionesT.push(info_CalificacionT);
+        }
+        for (let i = 0; i < info_CalificacionQ.length; i++) {
+            const id = info_CalificacionQ[i].id;
+            const id_materia = info_CalificacionQ[i].id_materia;
+
+            const calificacionQ = await CalificacionQ.findOne({ where: { id: id } });
+            const info_materia = await Materia.findOne({
+                attributes: ['nombre', 'area'],
+                where: { id: id_materia }
+            });
+            const info_calificacionQ = {
+                ...calificacionQ.dataValues,
+                area: info_materia.area,
+                nombre: info_materia.nombre
+            };
+            lista_calificaionesQ.push(info_calificacionQ);
+        }
+
+        return res.json({
+            info_Matricula,
+            lista_asistenciasXmateria,
+            info_AsistenciaXDia,
+            lista_calificaionesT,
+            lista_calificaionesQ
+        });
+
+
+    }
     /**Fin funciones validadas */
 }
 

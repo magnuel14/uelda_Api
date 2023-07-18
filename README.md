@@ -79,21 +79,18 @@ DATABASE_NAME = ueldaWebBD
 ```
 <i>**NOTE**</i>.- Para sincronizar los modelos generados por Sequelize, debe descomentar  el siguiente fragmento de [NodeJs](https://github.com/magnuel14/uelda_Api/blob/main/app.js). Luego descomente la el codigo para generar los roles para los usuarios.
 ```
-/** 
-//sincronizacion dde los modelos de la bd
-try {
-    // basede dtatos 
-    models.sequelize.sync().then(() => {
-        console.log('Base de Datos conectada');
-    }).catch(err => {
-        console.log(err, "No se conecto a la BD");
-    });
-} catch (error) {
-    console.error('Unable to connect to the server ', error);
-}
-//rol de usuarios
-require('./api/controllers/dataRol/insert_rol');
-*/
+/**
+ * antes de usar la funcion de sincronizar
+ * se debe respaldar la data
+ * usar force: true solo en caso de sincronizar cambios en una bd con tablas
+ * sync({force: true})
+ * models.sequelize.sync({force: true}).then(() => {
+ */
+//sincronizacion de los modelos de la bd
+//funcionesBD.sincronizarBd();
+
+//insertar rol para usuarios
+//require('./api/controllers/dataRol/insert_rol');
 ```
 
 ## Test

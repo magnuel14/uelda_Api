@@ -16,7 +16,16 @@ module.exports = function (sequelize, DataTypes) {
         descripcion: {
             type: DataTypes.TEXT
         },
+        url_imagen: {
+            type: DataTypes.TEXT
+        },
+        public_id_imagen: {
+            type: DataTypes.TEXT
+        },
         url_archivo: {
+            type: DataTypes.TEXT
+        },
+        public_id_archivo: {
             type: DataTypes.TEXT
         },
         //validacion para comporbar quien puede visualizar el post
@@ -25,9 +34,13 @@ module.exports = function (sequelize, DataTypes) {
         visibilidad: {
             type: DataTypes.INTEGER,
         },
-        //si esta en 0 el contenido estara disponible - si esta en 1 el contenido estaba oculto.
+        //si esta en 0 el contenido estara disponible - si esta en 1 el contenido estara oculto.
         estado: {
             type: DataTypes.INTEGER,
+        },
+        //id del año lectivo actual
+        id_anioLectivo_actual: {
+            type: DataTypes.INTEGER
         },
         // ID de la lista visbilidad para comprobar la lista de personas que puede visualizar el post academico
         id_ListaVisibilidad: {

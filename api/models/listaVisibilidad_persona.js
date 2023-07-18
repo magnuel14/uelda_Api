@@ -7,8 +7,8 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER
         },
         // ID de la persona que puede visualizar el post academico
-        id_persona: {
-            type: DataTypes.INTEGER,
+        external_id_persona: {
+            type: DataTypes.STRING(100)
         },
         external_id: {
             type: DataTypes.UUID,

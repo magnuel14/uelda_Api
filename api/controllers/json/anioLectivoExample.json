@@ -30,7 +30,7 @@
     "num_paralelo8B": 3,
     "bool9B": true,
     "num_paralelo9B": 2,
-    "bool10B":true,
+    "bool10B": true,
     "num_paralelo10B": 2,
     "bool1S": true,
     "num_paralelo1S": 2,
@@ -42,37 +42,37 @@
         {
             "area": "Desarrollo Personal y Social",
             "nombre": "Identidad y autonomía",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Desarrollo Personal y Social",
             "nombre": "Convivencia",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Descubrimiento del Medio Natural y Cultural",
             "nombre": "Relaciones con el Medio Natural y Cultural",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Descubrimiento del Medio Natural y Cultural",
             "nombre": "Relaciones Lógico / Matemáticas",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         },
         {
             "area": "Expresión y Comunicación",
             "nombre": "Comprensión y Expresión del Lenguaje",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         },
         {
             "area": "Expresión y Comunicación",
             "nombre": "Expresión Artística",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Expresión y Comunicación",
             "nombre": "Exploración Corporal y Motricidad",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         }
     ],
     "preparatoria": [

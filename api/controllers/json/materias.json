@@ -3,79 +3,79 @@
         {
             "area": "Desarrollo Personal y Social",
             "nombre": "Identidad y autonomía",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Desarrollo Personal y Social",
             "nombre": "Convivencia",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Descubrimiento del Medio Natural y Cultural",
             "nombre": "Relaciones con el Medio Natural y Cultural",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Descubrimiento del Medio Natural y Cultural",
             "nombre": "Relaciones Lógico / Matemáticas",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         },
         {
             "area": "Expresión y Comunicación",
             "nombre": "Comprensión y Expresión del Lenguaje",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         },
         {
             "area": "Expresión y Comunicación",
             "nombre": "Expresión Artística",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Expresión y Comunicación",
             "nombre": "Exploración Corporal y Motricidad",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "180"
         }
     ],
     "preparatoria": [
         {
             "area": "Currículo Integrador por ámbitos de aprendizaje",
             "nombre": "Identidad",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Currículo Integrador por ámbitos de aprendizaje",
             "nombre": "Convivencia",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Currículo Integrador por ámbitos de aprendizaje",
             "nombre": "Descubrimiento del medio natural",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "144"
         },
         {
             "area": "Currículo Integrador por ámbitos de aprendizaje",
             "nombre": "Relaciones lógico-matemáticas",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "216"
         },
         {
             "area": "Currículo Integrador por ámbitos de aprendizaje",
             "nombre": "Comprensión y expresión oral y escrita",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "216"
         },
         {
             "area": "Currículo Integrador por ámbitos de aprendizaje",
             "nombre": "Expresión corporal",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         },
         {
             "area": "Educación Cultural y Artística",
             "nombre": "Educación Cultural y Artística",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "72"
         },
         {
             "area": "Educación Física",
             "nombre": "Educación Física",
-            "horasClase_programadas": ""
+            "horasClase_programadas": "108"
         }
     ],
     "elemental": [

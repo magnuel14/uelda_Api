@@ -148,6 +148,6 @@ let controller = {
             apellido: infoPersona.apellido, nombre: infoPersona.nombre
         });
     }
+    /** fin Implementado try cath*/
 }
-/** fin Implementado try cath*/
 module.exports = controller;
