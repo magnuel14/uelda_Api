@@ -496,8 +496,12 @@ let controller = {
                 id_rol: "6",
                 correoPersonal: correoPersonal,
             }
-            const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
-            console.log(tipoDocId)
+            const searchPersona = await Persona.findOne({
+                where: {
+                    [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
+                }
+            });
+            //console.log(tipoDocId)
             if (!searchPersona) {
                 if (tipoDocId == 'pasaporte') {
                     const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
@@ -531,34 +535,31 @@ let controller = {
                 } else {
                     const cedulaValida = cedulaValidator.validator(numeroId);
                     if (cedulaValida.flag == 3) {
-                        const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
-                        if (!infoEstudianteCuenta) {
-                            const estudiante = await Persona.create(estudianteData);
-                            const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
-                            var salt = bcrypt.genSaltSync(10);
-                            let password = bcrypt.hashSync(numeroId, salt);
-                            const dataCuenta = {
-                                correo: correoPersonal,
-                                clave: password,
-                                estado: 0,
-                                id_persona: newEstudiante.id,
-                            };
-                            const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-                            if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
-                            const dataInfoMed = {
-                                id_persona: newEstudiante.id,
-                                discapacidad: "1",
-                                tipoDiscapacidad: "N/A",
-                                porcentajeDiscapacidad: "N/A",
-                                nCarnetDiscapacidad: "N/A",
-                                enfermedadCatastrofica: "1",
-                                tipoEnfermedadCatastrofica: "N/A"
-                            };
-                            const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                            console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
-                        } else {
-                            console.log({ message: 'Ya existe un estudiante con ese correo' });
-                        }
+                        //const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+                        const estudiante = await Persona.create(estudianteData);
+                        const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
+                        var salt = bcrypt.genSaltSync(10);
+                        let password = bcrypt.hashSync(numeroId, salt);
+                        const dataCuenta = {
+                            correo: correoPersonal,
+                            clave: password,
+                            estado: 0,
+                            id_persona: newEstudiante.id,
+                        };
+                        const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+                        if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
+                        const dataInfoMed = {
+                            id_persona: newEstudiante.id,
+                            discapacidad: "1",
+                            tipoDiscapacidad: "N/A",
+                            porcentajeDiscapacidad: "N/A",
+                            nCarnetDiscapacidad: "N/A",
+                            enfermedadCatastrofica: "1",
+                            tipoEnfermedadCatastrofica: "N/A"
+                        };
+                        const newInfoMedica = await InfoMedica.create(dataInfoMed);
+                        console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
+
                     } else {
                         console.log({ message: cedulaValida.message });
                     }
@@ -593,7 +594,7 @@ let controller = {
             }
         });
         const info_paralelo = await Paralelo.findOne({
-            attributes: ['id', 'titulo','id_curso'],
+            attributes: ['id', 'titulo', 'id_curso'],
             where: { id: info_matricula_actual.id_paralelo }
         });
         console.log(info_paralelo)

@@ -9,7 +9,7 @@ const config = {
     username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASS
   },
-  staging: {
+  production: {
     host: process.env.PROD_DATABASE_HOST,
     dialect: process.env.PROD_DATABASE_DIALECT,
     database: process.env.PROD_DATABASE_NAME,
