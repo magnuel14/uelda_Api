@@ -1,0 +1,26 @@
+service: ueldaApi
+
+frameworkVersion: '3'
+
+configValidationMode: error
+
+useDotenv: true
+deprecationNotificationMode: warn:summary
+
+provider:
+  name: aws
+  stage: production
+  region: sa-east-1
+  runtime: nodejs18.x
+  httpApi:
+    name: httpUeldaApi
+    payload: '2.0'
+    cors: true
+
+functions:
+  app:
+    handler: app.handler
+    events:
+      - http:
+          path: /
+          method: any

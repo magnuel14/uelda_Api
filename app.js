@@ -11,6 +11,8 @@ const path = require('path');
 const borrarTemp = require('./helpers/borrarTemps');
 const funcionesBD = require('./helpers/funcionesBD');
 const cron = require('node-cron');
+const serverless = require('serverless-http')
+
 const app = express();
 
 dotenv.config();
@@ -78,4 +80,7 @@ app.use('/uelda/docente', require('./api/routes/docenteRoutes'));
 app.use('/uelda/post_academico', require('./api/routes/postAcademicoRoutes'));
 app.use('/uelda/lista_visibilidad', require('./api/routes/listaVisibilidadRoutes'));
 
-module.exports = app;
+app.listen(app.get('port'));
+console.log('server on port', app.get('port'));
+
+module.exports.handler = serverless(app);
