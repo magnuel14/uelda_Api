@@ -11,11 +11,8 @@ router.post('/update_AnioLectivo', tryCatch(gestionAcademicaController.updateAni
 router.post('/update_EstadoAnioLectivo', tryCatch(gestionAcademicaController.updateEstadoAnioLectivo));
 
 //gestion de matricula o promociones de estudiantes
-router.post('/matricular_Estudiante', tryCatch(gestionAcademicaController.matricularEstudiantes));
+router.post('/matricular_Estudiante', (gestionAcademicaController.matricularEstudiantes));
 router.post('/promover_Estudiante', tryCatch(gestionAcademicaController.promoverEstudiantes));
-
-//asigancion por subnivel
-router.post('/updateAsignacionDocente_xsubnivel', tryCatch(gestionAcademicaController.createAsignacionDocente_xsubnivel));
 
 //curso
 router.get('/getCurso_byId/:id_curso', tryCatch(gestionAcademicaController.getCurso_byId));

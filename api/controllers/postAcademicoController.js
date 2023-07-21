@@ -27,6 +27,11 @@ let controller = {
             const visibilidad = all_postAcademicos[i].visibilidad;
             const id_ListaVisibilidad = all_postAcademicos[i].id_ListaVisibilidad;
             const estado = all_postAcademicos[i].estado;
+            const idPersona = all_postAcademicos[i].id_persona;
+            const inforPersona = await Persona.findOne({
+                attributes: ['nombre', 'apellido', 'foto', 'external_id'],
+                where: { id: idPersona }
+            });
             if (estado === 0) {
 
                 if (visibilidad === 0) {
@@ -36,7 +41,7 @@ let controller = {
                     });
                     post.push(all_postAcademicos[i]);
                     lista_postAca_personas.push({
-                        post, personas
+                        post, inforPersona, personas
                     });
 
                 } else if (visibilidad === 1) {
@@ -56,7 +61,7 @@ let controller = {
                     all_postAcademicos[i].personas = personas;
                     post.push(all_postAcademicos[i]);
                     lista_postAca_personas.push({
-                        post, personas
+                        post, inforPersona, personas
                     });
 
                 } else if (visibilidad === 2) {
@@ -79,9 +84,9 @@ let controller = {
 
                     }
 
-                    lista_postAca_personas.push({
-                        post, personas
-                    });
+                    lista_postAca_personas.push(
+                        post, inforPersona, personas
+                    );
                 }
             }
         }
