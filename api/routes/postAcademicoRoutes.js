@@ -4,6 +4,7 @@ const router = express.Router();
 const postAcademicoController = require('../controllers/postAcademicoController');
 
 router.get('/get_AllpostAcademico', tryCatch(postAcademicoController.getAllpostAcademico));
+router.get('/get_AllpostAcademico/:externalId', tryCatch(postAcademicoController.getAllpostAcademicoByExternal));
 router.post('/create_postAcademico', tryCatch(postAcademicoController.createpostAcademico));
 router.post('/update_postAcademico', tryCatch(postAcademicoController.updatepostAcademico));
 router.post('/update_Estado_postAcademico', tryCatch(postAcademicoController.update_Estado_postAcademico));

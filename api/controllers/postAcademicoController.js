@@ -32,65 +32,80 @@ let controller = {
                 attributes: ['nombre', 'apellido', 'foto', 'external_id'],
                 where: { id: idPersona }
             });
-            if (estado === 0) {
 
-                if (visibilidad === 0) {
-                    let post = [];
-                    const personas = await Persona.findAll({
-                        attributes: ['external_id'],
-                    });
-                    post.push(all_postAcademicos[i]);
-                    lista_postAca_personas.push({
-                        post, inforPersona, personas
-                    });
+            if (visibilidad === 0) {
+                let post = [];
+                const personas = await Persona.findAll({
+                    attributes: ['external_id'],
+                });
+                post.push(all_postAcademicos[i]);
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
 
-                } else if (visibilidad === 1) {
-                    let post = [];
-                    const personas = await Persona.findAll({
-                        attributes: ['external_id'],
-                        where: {
-                            [Op.or]: [
-                                { id_rol: 1 },
-                                { id_rol: 2 },
-                                { id_rol: 3 },
-                                { id_rol: 4 },
-                                { id_rol: 5 }
-                            ]
-                        }
-                    });
-                    all_postAcademicos[i].personas = personas;
-                    post.push(all_postAcademicos[i]);
-                    lista_postAca_personas.push({
-                        post, inforPersona, personas
-                    });
-
-                } else if (visibilidad === 2) {
-                    let post = [];
-                    let personas = [];
-
-                    const info_lista = await ListaVisibilidad.findOne({
-                        include: [
-                            { model: ListaVisibilidad_persona }
-                        ],
-                        where: { id: id_ListaVisibilidad }
-                    });
-                    all_postAcademicos[i].personas = info_lista.listaVisibilidad_personas;
-
-                    post.push(all_postAcademicos[i]);
-
-                    for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
-                        const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
-                        personas.push({ external_id: external_id });
-
+            } else if (visibilidad === 1) {
+                let post = [];
+                const personas = await Persona.findAll({
+                    attributes: ['external_id'],
+                    where: {
+                        [Op.or]: [
+                            { id_rol: 1 },
+                            { id_rol: 2 },
+                            { id_rol: 3 },
+                            { id_rol: 4 },
+                            { id_rol: 5 }
+                        ]
                     }
+                });
+                all_postAcademicos[i].personas = personas;
+                post.push(all_postAcademicos[i]);
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
 
-                    lista_postAca_personas.push(
-                        post, inforPersona, personas
-                    );
+            } else if (visibilidad === 2) {
+                let post = [];
+                let personas = [];
+
+                const info_lista = await ListaVisibilidad.findOne({
+                    include: [
+                        { model: ListaVisibilidad_persona }
+                    ],
+                    where: { id: id_ListaVisibilidad }
+                });
+                all_postAcademicos[i].personas = info_lista.listaVisibilidad_personas;
+
+                post.push(all_postAcademicos[i]);
+
+                for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
+                    const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
+                    personas.push({ external_id: external_id });
+
                 }
+
+                lista_postAca_personas.push(
+                    post, inforPersona, personas
+                );
             }
         }
         return res.json(lista_postAca_personas);
+    },
+    /**
+   * 
+   * @param {*} req 
+   * @param {*} res 
+   * @returns 
+   */
+    getAllpostAcademicoByExternal: async (req, res) => {
+        const { externalId } = req.params;
+        const info_PostAcademico = await PostAcademico.findOne({ where: { external_id: externalId } });
+
+        if (info_PostAcademico) {
+            return res.json(info_PostAcademico);
+        } else {
+            return res.json({ message: 'Ocurrio un problema' });
+        }
+
     },
     /** Implementado try cath*/
     /**
@@ -223,24 +238,63 @@ let controller = {
 
         const info_PostAcademica = await PostAcademico.findOne({ where: { external_id: externalId } });
 
-        if (req.files) {
-            if (req.files?.foto && !req.files?.doc) {
-                if (info_PostAcademica.public_id_imagen != null) {
+        if (info_PostAcademica) {
+
+            if (req.files) {
+                if (req.files?.foto) {
+                    if (info_PostAcademica.public_id_imagen) {
+
+                        await cloudinaryC.deleteFile(info_PostAcademica.public_id_imagen);
+
+                        const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
+
+                        const data_updatePost = {
+                            titulo: titulo,
+                            tipoArchivo: tipoArchivo,
+                            descripcion: descripcion,
+                            visibilidad: visibilidad,
+
+                            url_imagen: resultFoto.secure_url,
+                            public_id_imagen: resultFoto.public_id,
+
+                            url_archivo: urlArchivo,
+                            id_ListaVisibilidad: id_ListaVisibilidad,
+                        };
+
+                        const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
+                        return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
+                    } else {
+
+                        const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
+
+                        const data_updatePost = {
+                            titulo: titulo,
+                            tipoArchivo: tipoArchivo,
+                            descripcion: descripcion,
+                            visibilidad: visibilidad,
+
+                            url_imagen: resultFoto.secure_url,
+                            public_id_imagen: resultFoto.public_id,
+
+                            url_archivo: urlArchivo,
+                            id_ListaVisibilidad: id_ListaVisibilidad,
+                        };
+
+                        const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
+                        return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
+                    }
+                }
+            } else {
+
+                if (info_PostAcademica.public_id_imagen) {
 
                     await cloudinaryC.deleteFile(info_PostAcademica.public_id_imagen);
-
-                    const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
-                    //const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
 
                     const data_updatePost = {
                         titulo: titulo,
                         tipoArchivo: tipoArchivo,
                         descripcion: descripcion,
                         visibilidad: visibilidad,
-
-                        url_imagen: resultFoto.secure_url,
-                        public_id_imagen: resultFoto.public_id,
-
                         url_imagen: urlImagen,
                         url_archivo: urlArchivo,
                         id_ListaVisibilidad: id_ListaVisibilidad,
@@ -249,137 +303,24 @@ let controller = {
                     const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
                     return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
                 } else {
-
-                    const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
-                    //const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
+                    console.log('3')
 
                     const data_updatePost = {
                         titulo: titulo,
                         tipoArchivo: tipoArchivo,
                         descripcion: descripcion,
                         visibilidad: visibilidad,
-
-                        url_imagen: resultFoto.secure_url,
-                        public_id_imagen: resultFoto.public_id,
-
                         url_imagen: urlImagen,
                         url_archivo: urlArchivo,
                         id_ListaVisibilidad: id_ListaVisibilidad,
                     };
-
-                    const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
-                    return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
-                }
-
-            } else if (req.files?.doc && !req.files?.foto) {
-                //const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
-                if (info_PostAcademica.public_id_archivo != null) {
-                    await cloudinaryC.deleteFile(info_PostAcademica.public_id_archivo);
-
-                    const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
-
-                    const data_updatePost = {
-                        titulo: titulo,
-                        tipoArchivo: tipoArchivo,
-                        descripcion: descripcion,
-                        visibilidad: visibilidad,
-
-                        url_imagen: urlImagen,
-
-                        url_archivo: resultDoc.secure_url,
-                        public_id_archivo: resultDoc.public_id,
-
-                        id_ListaVisibilidad: id_ListaVisibilidad,
-                    };
-
-                    const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
-                    return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
-                } else {
-                    const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
-
-                    const data_updatePost = {
-                        titulo: titulo,
-                        tipoArchivo: tipoArchivo,
-                        descripcion: descripcion,
-                        visibilidad: visibilidad,
-
-                        url_imagen: urlImagen,
-
-                        url_archivo: resultDoc.secure_url,
-                        public_id_archivo: resultDoc.public_id,
-
-                        id_ListaVisibilidad: id_ListaVisibilidad,
-                    };
-
-                    const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
-                    return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
-                }
-
-            } else if (req.files?.foto && req.files?.doc) {
-                if (info_PostAcademica.public_id_imagen != null && info_PostAcademica.public_id_archivo != null) {
-                    await cloudinaryC.deleteFile(info_PostAcademica.public_id_imagen);
-                    await cloudinaryC.deleteFile(info_PostAcademica.public_id_archivo);
-
-                    const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
-                    const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
-
-                    const data_updatePost = {
-                        titulo: titulo,
-                        tipoArchivo: tipoArchivo,
-                        descripcion: descripcion,
-                        visibilidad: visibilidad,
-
-                        url_imagen: resultFoto.secure_url,
-                        public_id_imagen: resultFoto.public_id,
-
-                        url_archivo: resultDoc.secure_url,
-                        public_id_archivo: resultDoc.public_id,
-
-                        id_ListaVisibilidad: id_ListaVisibilidad,
-                    };
-
-                    const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
-                    return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
-                } else {
-                    const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
-                    const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
-
-                    const data_updatePost = {
-                        titulo: titulo,
-                        tipoArchivo: tipoArchivo,
-                        descripcion: descripcion,
-                        visibilidad: visibilidad,
-
-                        url_imagen: resultFoto.secure_url,
-                        public_id_imagen: resultFoto.public_id,
-
-                        url_archivo: resultDoc.secure_url,
-                        public_id_archivo: resultDoc.public_id,
-
-                        id_ListaVisibilidad: id_ListaVisibilidad,
-                    };
-
                     const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
                     return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
                 }
             }
         } else {
-
-            const data_updatePost = {
-                titulo: titulo,
-                tipoArchivo: tipoArchivo,
-                descripcion: descripcion,
-                visibilidad: visibilidad,
-                url_imagen: urlImagen,
-                url_archivo: urlArchivo,
-
-                id_ListaVisibilidad: id_ListaVisibilidad,
-            };
-
-            const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
-            return res.json({ message: 'Se ha actualizado el post Académico', updatePost });
+            return res.json({ message: 'Ocurrio un error' })
         }
-
     },
     /**
      * 
@@ -393,13 +334,16 @@ let controller = {
 
         const info_PostAcademica = await PostAcademico.findOne({ where: { external_id: externalId } });
 
+        if (info_PostAcademica) {
+            const data_updatePost = {
+                estado: estado
+            };
 
-        const data_updatePost = {
-            estado: estado
-        };
-
-        const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
-        return res.json({ message: 'Se ha actualizado el estado del post Académico', updatePost });
+            const updatePost = await PostAcademico.update(data_updatePost, { where: { id: info_PostAcademica.id } });
+            return res.json({ message: 'Se ha actualizado el estado del post Académico', updatePost, flag: 0 });
+        } else {
+            return res.json({ message: 'Ocurrio un error', updatePost, flag: 1 });
+        }
     },
     /**
     * 
@@ -408,20 +352,23 @@ let controller = {
     * @returns 
     */
     deletepostAcademico: async (req, res) => {
-        const { externalId } = req.body;
+        const { externalId_post } = req.body;
 
-        const info_PostAcademica = await PostAcademico.findOne({ where: { external_id: externalId } });
-
-        if (info_PostAcademica.public_id_imagen != null && info_PostAcademica.public_id_archivo != null) {
-            await cloudinaryC.deleteFile(info_PostAcademica.public_id_imagen);
-            await cloudinaryC.deleteFile(info_PostAcademica.public_id_archivo);
-
-            const updatePost = await PostAcademico.destroy({ where: { id: info_PostAcademica.id } });
-            return res.json({ message: 'Se ha eleminado el post Académico', updatePost });
+        const info_PostAcademica = await PostAcademico.findOne({ where: { external_id: externalId_post } });
+        if (!info_PostAcademica) {
+            return res.json({ message: 'Ha ocurrido un error', flag: 1 });
         } else {
-            const updatePost = await PostAcademico.destroy({ where: { id: info_PostAcademica.id } });
-            return res.json({ message: 'Se ha eleminado el post Académico', updatePost });
+            if (info_PostAcademica.public_id_imagen != null && info_PostAcademica.public_id_archivo != null) {
+                await cloudinaryC.deleteFile(info_PostAcademica.public_id_imagen);
+                await cloudinaryC.deleteFile(info_PostAcademica.public_id_archivo);
+                const updatePost = await PostAcademico.destroy({ where: { id: info_PostAcademica.id } });
+                return res.json({ message: 'Se ha eleminado el post Académico', updatePost, updatePost, flag: 0 });
+            } else {
+                const updatePost = await PostAcademico.destroy({ where: { id: info_PostAcademica.id } });
+                return res.json({ message: 'Se ha eleminado el post Académico', updatePost, flag: 0 });
+            }
         }
+
     }
     /** fin Implementado try cath*/
 }
