@@ -952,12 +952,12 @@ let controller = {
     * @returns 
     */
     updateAsistencias: async (req, res) => {
-        const { lista_externalAsistencias } = req.body;
+        const { lista_externalAsistencias, periodosAcademicos_dictados } = req.body;
         const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } })
 
         for (let i = 0; i < lista_externalAsistencias.length; i++) {
             const {
-                externalId, asistencia, periodosAcademicos_dictados
+                externalId, asistencia
             } = lista_externalAsistencias[i];
 
             const info_AsistenciaXDia = await AsistenciaXDia.findOne(
