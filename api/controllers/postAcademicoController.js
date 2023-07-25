@@ -73,10 +73,7 @@ let controller = {
                     ],
                     where: { id: id_ListaVisibilidad }
                 });
-                all_postAcademicos[i].personas = info_lista.listaVisibilidad_personas;
-
-                post.push(all_postAcademicos[i]);
-
+               
                 for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
                     const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
                     personas.push({ external_id: external_id });
@@ -84,7 +81,7 @@ let controller = {
                 }
 
                 lista_postAca_personas.push(
-                    post, inforPersona, personas
+                    { post, inforPersona, personas }
                 );
             }
         }

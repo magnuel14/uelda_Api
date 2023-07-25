@@ -175,40 +175,117 @@ let controller = {
             estadoPadres, listaHogar,
             estadoAc
         } = req.body;
-        const upateEstudianteData = {
-            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-            provincia: provincia, fechaNaci: fechaNaci, edad: edad, correoPersonal: correoPersonal,
-            celular: celular, telefono: telefono,
-            etnia: etnia, tipoGenero: tipoGenero,
-            parroquia: parroquia, barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
-            calleSecond: calleSecond,
-            codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
-            estadoAc: estadoAc
-        };
+
         const dataCuenta = {
             correo: correoPersonal,
         };
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
         const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
         if (infoPersona) {
-            console.log('1', infoPersona.id == infoEstudianteCuenta)
-            if (infoEstudianteCuenta) {
-                console.log('2:', infoPersona.id == infoEstudianteCuenta.id)
-                if (infoPersona.id == infoEstudianteCuenta.id) {
+            if (!req.files) {
+                const upateEstudianteData = {
+                    nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
+                    provincia: provincia, fechaNaci: fechaNaci, edad: edad, correoPersonal: correoPersonal,
+                    celular: celular, telefono: telefono,
+                    etnia: etnia, tipoGenero: tipoGenero,
+                    parroquia: parroquia, barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
+                    calleSecond: calleSecond,
+                    codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
+                    estadoAc: estadoAc
+                };
+                if (infoEstudianteCuenta) {
+                    if (infoPersona.id == infoEstudianteCuenta.id) {
+                        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+                        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+                        //console.log('datos: ', upateEstudianteData)
+                        await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+                        return res.json({ message: 'Se ha actualizado la información del estudiante' });
+                    } else {
+                        return res.json({ message: 'Este correo esta ligado a otra cuenta' });
+                    }
+                } else {
                     const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
                     await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
                     //console.log('datos: ', upateEstudianteData)
                     await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
                     return res.json({ message: 'Se ha actualizado la información del estudiante' });
-                } else {
-                    return res.json({ message: 'Este correo esta ligado a otra cuenta' });
                 }
             } else {
-                const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-                await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-                //console.log('datos: ', upateEstudianteData)
-                await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
-                return res.json({ message: 'Se ha actualizado la información del estudiante' });
+                if (infoEstudianteCuenta) {
+                    if (infoPersona.public_id_documentos != null) {
+                        await cloudinaryC.deleteFile(infoPersona.public_id_documentos);
+                        if (req.files?.url_documentos_identificacion) {
+                            const result = await cloudinaryC.uploadFile(
+                                req.files.url_documentos_identificacion.tempFilePath,
+                                { resource_type: 'raw' });
+
+                            const upateEstudianteData = {
+                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
+                                provincia: provincia, fechaNaci: fechaNaci, edad: edad, correoPersonal: correoPersonal,
+                                celular: celular, telefono: telefono,
+                                etnia: etnia, tipoGenero: tipoGenero,
+                                parroquia: parroquia, barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
+                                calleSecond: calleSecond,
+                                codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
+                                estadoAc: estadoAc,
+                                url_documentos_identificacion: result.secure_url,
+                                public_id_documentos: result.public_id
+                            };
+                            const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
+                            if (searchCuentaByEmail) {
+                                if (infoCuenta.id == searchCuentaByEmail.id) {
+
+                                    await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
+
+                                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                                    await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+                                    return res.json({ message: 'Se ha actualizado la información de usuario' });
+                                } else {
+                                    return res.json({ message: 'Este correo esta ligado a otro usuario' });
+                                }
+                            } else if (!searchCuentaByEmail) {
+                                await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                                await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+                                return res.json({ message: 'Se ha actualizado la información de usuario' });
+                            }
+                        }
+                    } else {
+                        const result = await cloudinaryC.uploadFile(
+                            req.files.url_documentos_identificacion.tempFilePath,
+                            { resource_type: 'raw' });
+                        const upateEstudianteData = {
+                            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
+                            provincia: provincia, fechaNaci: fechaNaci, edad: edad, correoPersonal: correoPersonal,
+                            celular: celular, telefono: telefono,
+                            etnia: etnia, tipoGenero: tipoGenero,
+                            parroquia: parroquia, barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
+                            calleSecond: calleSecond,
+                            codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
+                            estadoAc: estadoAc,
+                            url_documentos_identificacion: result.secure_url,
+                            public_id_documentos: result.public_id
+                        };
+                        const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
+                        if (searchCuentaByEmail) {
+                            if (infoCuenta.id == searchCuentaByEmail.id) {
+
+                                await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
+
+                                await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                                await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+                                return res.json({ message: 'Se ha actualizado la información de usuario' });
+                            } else {
+                                return res.json({ message: 'Este correo esta ligado a otro usuario' });
+                            }
+                        } else if (!searchCuentaByEmail) {
+                            await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+                            await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
+                            return res.json({ message: 'Se ha actualizado la información de usuario' });
+                        }
+                    }
+                } else {
+                    return res.json({ message: 'No existe un usuario con esa información' });
+                }
             }
         } else {
             return res.json({ message: 'No existe un estudiante con esta información' });

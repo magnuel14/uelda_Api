@@ -41,6 +41,8 @@ let controller = {
             titulo_Grupo, ListaPersonas } = req.body;
 
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        ListaPersonas.splice(1, 0, { externalId: infoPersona.external_id });
+
 
         const data_newLista = {
             id_persona: infoPersona.id,
@@ -77,16 +79,17 @@ let controller = {
             where: { external_id: externalId }
         });
 
+        const infoPersona = await Persona.findOne({ where: { id: infoLista.id_persona } });
 
         const lista_personas = await infoLista.getListaVisibilidad_personas();
 
+        ListaPersonas.splice(1, 0, { externalId: infoPersona.external_id });
 
         for (let i = 0; i < lista_personas.length; i++) {
             const { id } = lista_personas[i];
             await ListaVisibilidad_persona.destroy({
                 where: { id: id }
             });
-
         }
 
         const data_Lista = {
@@ -95,12 +98,13 @@ let controller = {
 
         await ListaVisibilidad.update(data_Lista, { where: { id: infoLista.id } });
         for (let i = 0; i < ListaPersonas.length; i++) {
-            const id_persona = ListaPersonas[i].id_persona;
+            const external_id_persona = ListaPersonas[i].externalId;
 
             const data_newLista_persona = {
-                id_persona: id_persona,
+                external_id_persona: external_id_persona,
                 id_listaVisibilidad: infoLista.id
             };
+         
             await ListaVisibilidad_persona.create(data_newLista_persona);
         }
 
