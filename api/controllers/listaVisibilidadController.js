@@ -20,14 +20,42 @@ let controller = {
 
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
 
+        let lista_postAca_personas = [];
+
         const all_listas = await ListaVisibilidad.findAll({
-            include: [
-                { model: ListaVisibilidad_persona, as: 'listaVisibilidad_personas' } // Utiliza el alias correcto
-            ],
             where: { id_persona: infoPersona.id }
         });
 
-        return res.json({ all_listas });
+        for (let i = 0; i < all_listas.length; i++) {
+            const id = all_listas[i].id;
+            let personas = [];
+
+            const info_lista = await ListaVisibilidad.findOne({
+                include: [
+                    { model: ListaVisibilidad_persona }
+                ],
+                where: { id: id }
+            });
+
+            for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
+                const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
+                const info_personaLista = await Persona.findOne({
+                    attributes: ['nombre', 'apellido', 'numeroId', 'external_id'],
+                    where: { external_id: external_id }
+                });
+
+                personas.push(info_personaLista);
+
+            }
+
+            lista_postAca_personas.push({
+                info_lista, infoPersona, personas
+            });
+
+        }
+
+        return res.json(lista_postAca_personas);
+
     },
     /**
      * 
@@ -57,7 +85,7 @@ let controller = {
             };
             await ListaVisibilidad_persona.create(data_newLista_persona);
         }
-        return res.json({ message: `Se ha creado el Grupo visibilidad titulado: ${titulo_Grupo}` })
+        return res.json({ message: `Se ha creado el Grupo visibilidad titulado: ${titulo_Grupo}` });
     },
     /**
     * 

@@ -26,6 +26,8 @@ let controller = {
         for (let i = 0; i < all_postAcademicos.length; i++) {
             const visibilidad = all_postAcademicos[i].visibilidad;
             const id_ListaVisibilidad = all_postAcademicos[i].id_ListaVisibilidad;
+
+
             const estado = all_postAcademicos[i].estado;
             const idPersona = all_postAcademicos[i].id_persona;
             const inforPersona = await Persona.findOne({
@@ -82,15 +84,97 @@ let controller = {
                         const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
                         personas.push({ external_id: external_id });
 
+
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
+            }
+        }
+        return res.json( lista_postAca_personas );
+    },
+    /** Implementado try cath*/
+    /**
+    * 
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+    getAllpostAcademicoByExternalId: async (req, res) => {
+        const { externalId } = req.params;
+        const infoPostAcademico = await PostAcademico.findOne({ where: { external_id: externalId } });
+
+
+        if (infoPostAcademico) {
+            const visibilidad = infoPostAcademico.visibilidad;
+            const id_ListaVisibilidad = infoPostAcademico.id_ListaVisibilidad;
+            const id_persona = infoPostAcademico.id_persona;
+            const inforPersona = await Persona.findOne({ where: { id: id_persona } });
+
+            if (visibilidad === 0) {
+                let post = [];
+                const personas = await Persona.findAll({
+                    attributes: ['external_id'],
+                });
+                post.push(infoPostAcademico);
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
+
+            } else if (visibilidad === 1) {
+                let post = [];
+                const personas = await Persona.findAll({
+                    attributes: ['external_id'],
+                    where: {
+                        [Op.or]: [
+                            { id_rol: 1 },
+                            { id_rol: 2 },
+                            { id_rol: 3 },
+                            { id_rol: 4 },
+                            { id_rol: 5 }
+                        ]
                     }
+                });
+                infoPostAcademico.personas = personas;
+                post.push(infoPostAcademico);
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
+
+            } else if (visibilidad === 2) {
+                let post = [];
+                let personas = [];
+
+                const info_lista = await ListaVisibilidad.findOne({
+                    include: [
+                        { model: ListaVisibilidad_persona }
+                    ],
+                    where: { id: id_ListaVisibilidad }
+                });
+                infoPostAcademico.personas = info_lista.listaVisibilidad_personas;
+
+                post.push(infoPostAcademico);
+
+                for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
+                    const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
+                    personas.push({ external_id: external_id });
+
 
                     lista_postAca_personas.push(
                         post, inforPersona, personas
                     );
                 }
+
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
             }
+            return res.json(lista_postAca_personas);
+
+        } else {
+            return res.json({ message: 'Ocurrio un error' });
+
         }
-        return res.json(lista_postAca_personas);
+
     },
     /** Implementado try cath*/
     /**

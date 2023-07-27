@@ -952,19 +952,19 @@ let controller = {
     * @returns 
     */
     updateAsistencias: async (req, res) => {
-        const { lista_externalAsistencias } = req.body;
+        const { lista_externalAsistencias, periodosAcademicos_dictados } = req.body;
         const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } })
 
         for (let i = 0; i < lista_externalAsistencias.length; i++) {
             const {
-                externalId, asistencia, periodosAcademicos_dictados
-            } = lista_externalAsistencias[i];
+                externalId, asistencia
+            } = lista_externalAsistencias[i];            
 
             const info_AsistenciaXDia = await AsistenciaXDia.findOne(
                 {
                     where: { external_id: externalId }
                 });
-
+                
             const info_AsistenciaXMate = await AsistenciaXMate.findOne(
                 {
                     where: { external_id: externalId }
@@ -987,7 +987,7 @@ let controller = {
                     console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas, _horasClase_asistidas })
 
                 } else if (info_AsistenciaXMate) {
-                    const info_materia = await AsistenciaXMate.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
+                    const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
                     const _horasClase_programadas = info_materia.horasClase_programadas;
                     var _horasClase_dictadas = parseInt(info_AsistenciaXMate.horasClase_dictadas, 10) + periodosAcademicos_dictados;
                     var _horasClase_asistidas = parseInt(info_AsistenciaXMate.horasClase_asistidas, 10) + periodosAcademicos_dictados;
@@ -1017,7 +1017,7 @@ let controller = {
                     console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas })
 
                 } else if (info_AsistenciaXMate) {
-                    const info_materia = await AsistenciaXMate.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
+                    const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });                    
                     const _horasClase_programadas = info_materia.horasClase_programadas;
                     var _horasClase_dictadas = parseInt(info_AsistenciaXMate.horasClase_dictadas, 10) + periodosAcademicos_dictados;
 
