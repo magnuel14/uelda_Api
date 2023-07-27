@@ -82,23 +82,22 @@ let controller = {
             periodo_academicos_Programados_elemental,
             periodo_academicos_Programados_media,
         } = req.body
+        const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+        const infoParalelo = await Paralelo.findOne({
+            where: { id: id_paralelo }
+        });
+
+        const infoCurso = await Curso.findOne({
+            include: [Materia],
+            where: { id: infoParalelo.id_curso }
+        });
 
         for (let i = 0; i < lista_externalid_estudiantes.length; i++) {
             const { externalId } = lista_externalid_estudiantes[i];
 
-            const infoParalelo = await Paralelo.findOne({
-                where: { id: id_paralelo }
-            });
-
-            const infoCurso = await Curso.findOne({
-                include: [Materia],
-                where: { id: infoParalelo.id_curso }
-            });
-
             const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
 
             if (infoEstudiante.estadoAc !== '0' || infoEstudiante.estadoAc === null) {
-                const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
 
                 const data_newMatriculaEstudiante = {
                     id_paralelo: id_paralelo,
@@ -4340,7 +4339,7 @@ let controller = {
                 }
 
                 if (contador_materias === 0 &&
-                    contador_AsistenciaxMateria === 0 
+                    contador_AsistenciaxMateria === 0
                 ) {
                     const data_promocion = {
                         estadoAc: 1
@@ -4355,7 +4354,7 @@ let controller = {
             }
 
         }
-        return res.json({message:'Se han promovido a los estudiantes que cumplen con los requisitos'});
+        return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
 
