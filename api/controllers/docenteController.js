@@ -958,13 +958,13 @@ let controller = {
         for (let i = 0; i < lista_externalAsistencias.length; i++) {
             const {
                 externalId, asistencia
-            } = lista_externalAsistencias[i];
+            } = lista_externalAsistencias[i];            
 
             const info_AsistenciaXDia = await AsistenciaXDia.findOne(
                 {
                     where: { external_id: externalId }
                 });
-
+                
             const info_AsistenciaXMate = await AsistenciaXMate.findOne(
                 {
                     where: { external_id: externalId }
@@ -987,7 +987,7 @@ let controller = {
                     console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas, _horasClase_asistidas })
 
                 } else if (info_AsistenciaXMate) {
-                    const info_materia = await AsistenciaXMate.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
+                    const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
                     const _horasClase_programadas = info_materia.horasClase_programadas;
                     var _horasClase_dictadas = parseInt(info_AsistenciaXMate.horasClase_dictadas, 10) + periodosAcademicos_dictados;
                     var _horasClase_asistidas = parseInt(info_AsistenciaXMate.horasClase_asistidas, 10) + periodosAcademicos_dictados;
@@ -1017,7 +1017,7 @@ let controller = {
                     console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas })
 
                 } else if (info_AsistenciaXMate) {
-                    const info_materia = await AsistenciaXMate.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
+                    const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });                    
                     const _horasClase_programadas = info_materia.horasClase_programadas;
                     var _horasClase_dictadas = parseInt(info_AsistenciaXMate.horasClase_dictadas, 10) + periodosAcademicos_dictados;
 
