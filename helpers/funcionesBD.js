@@ -17,7 +17,9 @@ let funcionesBd = {
         try {
             // base de datos 
             models.sequelize.authenticate().then(() => {
-                console.log('Base de Datos conectada');
+                // Obtener el nombre de la base de datos
+                const dbName = models.sequelize.getDatabaseName();
+                console.log('Base de Datos conectada:', dbName);
             }).catch(err => {
                 console.log(err, "No se conecto a la BD");
             });
