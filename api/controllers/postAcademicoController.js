@@ -34,67 +34,68 @@ let controller = {
                 attributes: ['nombre', 'apellido', 'foto', 'external_id'],
                 where: { id: idPersona }
             });
-            if (estado === 0) {
 
-                if (visibilidad === 0) {
-                    let post = [];
-                    const personas = await Persona.findAll({
-                        attributes: ['external_id'],
-                    });
-                    post.push(all_postAcademicos[i]);
-                    lista_postAca_personas.push({
-                        post, inforPersona, personas
-                    });
-
-                } else if (visibilidad === 1) {
-                    let post = [];
-                    const personas = await Persona.findAll({
-                        attributes: ['external_id'],
-                        where: {
-                            [Op.or]: [
-                                { id_rol: 1 },
-                                { id_rol: 2 },
-                                { id_rol: 3 },
-                                { id_rol: 4 },
-                                { id_rol: 5 }
-                            ]
-                        }
-                    });
-                    all_postAcademicos[i].personas = personas;
-                    post.push(all_postAcademicos[i]);
-                    lista_postAca_personas.push({
-                        post, inforPersona, personas
-                    });
-
-                } else if (visibilidad === 2) {
-                    let post = [];
-                    let personas = [];
-
-                    const info_lista = await ListaVisibilidad.findOne({
-                        include: [
-                            { model: ListaVisibilidad_persona }
-                        ],
-                        where: { id: id_ListaVisibilidad }
-                    });
-                    all_postAcademicos[i].personas = info_lista.listaVisibilidad_personas;
-
-                    post.push(all_postAcademicos[i]);
-
-                    for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
-                        const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
-                        personas.push({ external_id: external_id });
-
-
+            if (visibilidad === 0) {
+                let post = [];
+                const personas = await Persona.findAll({
+                    attributes: ['external_id'],
+                });
+                post.push(all_postAcademicos[i]);
                 lista_postAca_personas.push({
                     post, inforPersona, personas
                 });
+
+            } else if (visibilidad === 1) {
+                let post = [];
+                const personas = await Persona.findAll({
+                    attributes: ['external_id'],
+                    where: {
+                        [Op.or]: [
+                            { id_rol: 1 },
+                            { id_rol: 2 },
+                            { id_rol: 3 },
+                            { id_rol: 4 },
+                            { id_rol: 5 }
+                        ]
+                    }
+                });
+                all_postAcademicos[i].personas = personas;
+                post.push(all_postAcademicos[i]);
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
+
+            } else if (visibilidad === 2) {
+                let post = [];
+                let personas = [];
+
+                const info_lista = await ListaVisibilidad.findOne({
+                    include: [
+                        { model: ListaVisibilidad_persona }
+                    ],
+                    where: { id: id_ListaVisibilidad }
+                });
+                all_postAcademicos[i].personas = info_lista.listaVisibilidad_personas;
+
+                post.push(all_postAcademicos[i]);
+
+                for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
+                    const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
+                    personas.push({ external_id: external_id });
+
+
+                    lista_postAca_personas.push({
+                        post, inforPersona, personas
+                    });
+                }
             }
+            return res.json(lista_postAca_personas);
+
         }
-        return res.json( lista_postAca_personas );
     },
     /** Implementado try cath*/
     /**
-    * 
+    * s
     * @param {*} req 
     * @param {*} res 
     * @returns 
