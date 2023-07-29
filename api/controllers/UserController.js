@@ -9,7 +9,7 @@ const Rol = models.rol;
 let controller = {
     /** Implementado try cath*/
     getUsers: async (req, res) => {
-        const users = await Persona.findAll();
+        const users = await Personas.findAll();
         res.json(users);
     },
     /**
