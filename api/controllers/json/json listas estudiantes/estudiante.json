@@ -1,0 +1,1258 @@
+[
+    {
+        "primero_A": [
+            {
+                "nombre": "ANGEL ANDRES",
+                "apellido": "ACEVEDO JIMENEZ",
+                "correoPersonal": "acjianan11117657@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "0706673530"
+            },
+            {
+                "nombre": "ANTHONY VICENTE",
+                "apellido": "BERMEO PINEDA ",
+                "correoPersonal": "bepianvi546051@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150930434"
+            },
+            {
+                "nombre": " DENISSE GABRIELA",
+                "apellido": "CASTRO GONZAGA",
+                "correoPersonal": "cagodega1075760@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105735250"
+            },
+            {
+                "nombre": " JAIR ALEXANDER",
+                "apellido": "CHILA IMAICELA",
+                "correoPersonal": "chimjaal13800603@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1751141183"
+            },
+            {
+                "nombre": " JOSTIN LEONEL",
+                "apellido": "CHILA IMAICELA",
+                "correoPersonal": "chimjole13800602@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1751141282"
+            },
+            {
+                "nombre": "ESPINOSA CHUBA",
+                "apellido": "JONY ELIZABETH",
+                "correoPersonal": "eschjoel531383@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150758082"
+            },
+            {
+                "nombre": " VERLY NORAIMA",
+                "apellido": "GODOY JIMENEZ",
+                "correoPersonal": "gojiveno1074165@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150653275"
+            },
+            {
+                "nombre": "RENE DANIEL",
+                "apellido": "PEREZ TAMBO",
+                "correoPersonal": "petareda581437@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105617698"
+            },
+            {
+                "nombre": "JULIANA ELIZABETH",
+                "apellido": "POMA MEDINA",
+                "correoPersonal": "pomejuel8305204@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150013967 "
+            },
+            {
+                "nombre": "MELVIN JOEL",
+                "apellido": "QUILCA UCHUARI",
+                "correoPersonal": "pomejuel8305204@estudiantes.edu.ec ",
+                "tipoDocId": "cedula",
+                "numeroId": "1106087586"
+            },
+            {
+                "nombre": "LUIS ALBERTO",
+                "apellido": "QUIMBITA PUGLLA",
+                "correoPersonal": "qupulual563495@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150544466"
+            },
+            {
+                "nombre": "JESSICA GABRIELA",
+                "apellido": "QUITUIZACA SARANGO",
+                "correoPersonal": "qusajega1028351@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105641888"
+            },
+            {
+                "nombre": "NAYELI LIZBETH",
+                "apellido": "QUIZHPE QUIZHPE",
+                "correoPersonal": "ququnali9862267@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105828683"
+            },
+            {
+                "nombre": "SEGUNDO MANUEL",
+                "apellido": "QUIZHPE TORRES",
+                "correoPersonal": "qutosema741599@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105765588"
+            },
+            {
+                "nombre": "JANDRY ISMAEL",
+                "apellido": "RAMIREZ CARRANZA",
+                "correoPersonal": "racajais566536@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105861395"
+            },
+            {
+                "nombre": "NEYCER ALEJANDRO",
+                "apellido": "RAMIREZ MENENDEZ",
+                "correoPersonal": "rameneal9262094@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105533085"
+            },
+            {
+                "nombre": "EDISON CAMILO",
+                "apellido": "RODRIGUEZ ORELLANA",
+                "correoPersonal": "rooredca11444154@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1900881119"
+            },
+            {
+                "nombre": "MARIA DEL CISNE",
+                "apellido": "ROMERO ACARO",
+                "correoPersonal": "roacmadeci1080324@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150231718"
+            },
+            {
+                "nombre": "PABLO GABRIEL",
+                "apellido": "ROSILLO SAMANIEGO",
+                "correoPersonal": "rosapaga771085@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106056037"
+            },
+            {
+                "nombre": "MATEO SEBASTIAN",
+                "apellido": "SALINAS ROMAN",
+                "correoPersonal": "saromase1073996@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150067831"
+            },
+            {
+                "nombre": "CAMILA ALEJANDRA",
+                "apellido": "SAMANIEGO LASO",
+                "correoPersonal": "salacaal12891180@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150553822"
+            },
+            {
+                "nombre": "NATHALY NICOL",
+                "apellido": "SANCHEZ PASACA",
+                "correoPersonal": "sapanani2982712@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105989873"
+            },
+            {
+                "nombre": "BRYAN ALEJANDRO",
+                "apellido": "SARANGO CORREA",
+                "correoPersonal": "sacobral314933@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150154852"
+            },
+            {
+                "nombre": "LUIS JEAMPHIERE",
+                "apellido": "SAUCA YUPANGUI",
+                "correoPersonal": "sayuluje923687@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1900840578"
+            },
+            {
+                "nombre": " BRITHANY DAYANARA",
+                "apellido": "SUIN AGUILAR",
+                "correoPersonal": "suagbrda1074257@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150241832"
+            },
+            {
+                "nombre": "JOSE LUIS",
+                "apellido": "SUQUILANDA DAVILA",
+                "correoPersonal": "sudajolu4366018@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150617106"
+            },
+            {
+                "nombre": "DAVID ALEXANDER",
+                "apellido": " TAPIA TAPIA",
+                "correoPersonal": "tatadaal623869@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150844197"
+            },
+            {
+                "nombre": "EDWIN ANTHONY",
+                "apellido": "TINISARAY DAVILA",
+                "correoPersonal": "tidaedan1074013@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105825978"
+            },
+            {
+                "nombre": "SAMARA DEL CARMEN",
+                "apellido": "TOLEDO JIMENEZ",
+                "correoPersonal": "tojisadeca13748949@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105876765"
+            },
+            {
+                "nombre": "DERLY ALEJANDRO",
+                "apellido": "TORRES SARANGO",
+                "correoPersonal": "tosadeal11268952@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150527115"
+            },
+            {
+                "nombre": "JOSUE SEBASTIAN",
+                "apellido": "UCHUARI UCHUARI",
+                "correoPersonal": "ucucjose8322078@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105600926"
+            },
+            {
+                "nombre": "DAVID ALEJANDRO",
+                "apellido": "VALDEZ HUANCA",
+                "correoPersonal": "vahudaal11117616@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106257932"
+            },
+            {
+                "nombre": "LEANDRO JESUS",
+                "apellido": "VALDEZ PARDO",
+                "correoPersonal": "vapaleje8305228@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105757452"
+            },
+            {
+                "nombre": "JONATHAN ANDRES",
+                "apellido": "VALENCIA SANMARTIN",
+                "correoPersonal": "vasajoan1079355@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105321374"
+            },
+            {
+                "nombre": "ANAHI SALOME",
+                "apellido": "VELASQUEZ CUEVA",
+                "correoPersonal": "vecuansa737527@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1900857622"
+            },
+            {
+                "nombre": "ALEX DARIO",
+                "apellido": "VIVANCO AZUERO",
+                "correoPersonal": "viazalda8296809@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105903452"
+            }
+        ]
+    },
+    {
+        "primero_b": [
+            {
+                "nombre": "JOSE ANDRES",
+                "apellido": "ABRIGO CUENCA",
+                "correoPersonal": "abcujoan8305157@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150649950"
+            },
+            {
+                "nombre": "EMILY SOFIA",
+                "apellido": "AGUINZACA LASO",
+                "correoPersonal": "aglaemso12926800@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150550794"
+            },
+            {
+                "nombre": " JEIMY FERNANDA",
+                "apellido": "ALVARADO CABRERA",
+                "correoPersonal": "alcajefe751648@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150718110"
+            },
+            {
+                "nombre": "JENNIFER NATALIA",
+                "apellido": "ALVARADO LOJAN",
+                "correoPersonal": "allojena582381@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105748154"
+            },
+            {
+                "nombre": "JOBA SALOME",
+                "apellido": "ARMIJOS LOZANO",
+                "correoPersonal": "arlojosa629385@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105953994"
+            },
+            {
+                "nombre": "LUCAS SEBASTIAN",
+                "apellido": "ARMIJOS SANCHEZ",
+                "correoPersonal": "arsaluse1075603@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150329900"
+            },
+            {
+                "nombre": "ARIEL PATRICIO",
+                "apellido": "AYORA HERRERA",
+                "correoPersonal": "ayhearpa7105233@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150835906"
+            },
+            {
+                "nombre": "NATHALY DEL CARMEN",
+                "apellido": "BERMEO PINEDA",
+                "correoPersonal": "bepinadeca1074111@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150930426"
+            },
+            {
+                "nombre": "CHARLIE JOEL",
+                "apellido": "CABRERA ERRAEZ",
+                "correoPersonal": "caerchjo9505547@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1900901701"
+            },
+            {
+                "nombre": "ADONIS ELIAN",
+                "apellido": "CADENA CARRION",
+                "correoPersonal": "cacaadel8257366@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1804712923"
+            },
+            {
+                "nombre": "LUIS EDUARDO",
+                "apellido": "CALVA CALVA",
+                "correoPersonal": "cacalued8359288@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150363412"
+            },
+            {
+                "nombre": "ANGIE NATASHA",
+                "apellido": "CAMACHO LEON",
+                "correoPersonal": "caleanna11311336@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150701488"
+            },
+            {
+                "nombre": "GREGORI ISMAEL",
+                "apellido": "CAMPOVERDE ORTIZ",
+                "correoPersonal": "caorgris8356294@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150649133"
+            },
+            {
+                "nombre": "RICARDO EMANUEL",
+                "apellido": "CASTILLO FLORES",
+                "correoPersonal": "caflriem520522@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105854689"
+            },
+            {
+                "nombre": "YULISA YUMALAI",
+                "apellido": "CASTILLO GAONA",
+                "correoPersonal": "cagayuyu9495570@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150386595"
+            },
+            {
+                "nombre": "PAOLA ALEJANDRA",
+                "apellido": "CHAVEZ GUALAN",
+                "correoPersonal": "chgupaal521910@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150683025"
+            },
+            {
+                "nombre": "ASHLEY MAOLY",
+                "apellido": "CURIMILMA MORENO",
+                "correoPersonal": "cumoasma1073861@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150238184"
+            },
+            {
+                "nombre": "XIMENA ALEXANDRA",
+                "apellido": "ERAS GUAMAN",
+                "correoPersonal": "erguxial1073870@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150541041"
+            },
+            {
+                "nombre": "HUGO ALBERTO",
+                "apellido": "ERAZO CALVAS",
+                "correoPersonal": "ercahual982231@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106226747"
+            },
+            {
+                "nombre": "GEORGE JOEL",
+                "apellido": "GALLEGOS FLORES",
+                "correoPersonal": "gaflgejo1393965@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150932620"
+            },
+            {
+                "nombre": "ALEJANDRO ISMAEL",
+                "apellido": "GONZALEZ DURAZNO",
+                "correoPersonal": "godualis550932@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105802407"
+            },
+            {
+                "nombre": "LEYDI VANESA",
+                "apellido": "GONZALEZ LATORRE",
+                "correoPersonal": "golaleva9817145@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "8170992468"
+            },
+            {
+                "nombre": "NICOLE ALEJANDRA",
+                "apellido": "GUAILLAS AMAY",
+                "correoPersonal": "guamnial979751@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150939195"
+            },
+            {
+                "nombre": "ANDREA ALEXANDRA",
+                "apellido": "GUAMAN GUAMAN",
+                "correoPersonal": "guguanal1074193@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150412029"
+            },
+            {
+                "nombre": "CARLOS SEBASTIAN",
+                "apellido": "GUAMAN JARAMILLO",
+                "correoPersonal": "gujacase1074204@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105840555"
+            },
+            {
+                "nombre": "LEANDRO GERMAN",
+                "apellido": "GUAMAN ORDOÑEZ",
+                "correoPersonal": "guorlege2916325@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "0750186884"
+            },
+            {
+                "nombre": "ARIANA MICHELLE",
+                "apellido": "GUAMAN SUCUNUTA",
+                "correoPersonal": "gusuarmi131633@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106048372"
+            },
+            {
+                "nombre": "BRAYAN FERNANDO",
+                "apellido": "GUILLEN ALLAUCA",
+                "correoPersonal": "gualbrfe1074216@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150813192"
+            },
+            {
+                "nombre": "YOSTIN STIVEN",
+                "apellido": "GUILLEN ALLAUCA",
+                "correoPersonal": "gualyost617188@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150813150"
+            },
+            {
+                "nombre": "EMILIO JOEL",
+                "apellido": "HERNANDEZ VALDEZ",
+                "correoPersonal": "hevaemjo11116241@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150844221"
+            },
+            {
+                "nombre": "ANGELA JANINA",
+                "apellido": "HERRERA CONTENTO",
+                "correoPersonal": "hecoanja11116233@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105803223"
+            },
+            {
+                "nombre": "JHOSUE STIVEN",
+                "apellido": "LALANGUI LEON",
+                "correoPersonal": "lalejhst924257@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150542825"
+            },
+            {
+                "nombre": "LENIN JOSE",
+                "apellido": "LEON UCHUARI",
+                "correoPersonal": "leuclejo314606@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150863809"
+            },
+            {
+                "nombre": "ALEJANDRO JOSUE",
+                "apellido": "MALLA MONTAÑO",
+                "correoPersonal": "mamoaljo1073929@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150021366"
+            },
+            {
+                "nombre": "MILENA JISHELL",
+                "apellido": "PARRAGA PASACA",
+                "correoPersonal": "papamiji8359205@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150374674"
+            },
+            {
+                "nombre": "ROSA MARGARITA",
+                "apellido": "YANZA LOJA",
+                "correoPersonal": "yaloroma1074280@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105067274"
+            }
+        ]
+    },
+    {
+        "primero_c": [
+            {
+                "nombre": "YANELA BRIGGETTE",
+                "apellido": "DURAZNO ACARO",
+                "correoPersonal": "duacyabr12041849@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150988143"
+            },
+            {
+                "nombre": "ARIANA NICOLE",
+                "apellido": "GUAMAN CONTENTO",
+                "correoPersonal": "gucoarni442395@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150635579"
+            },
+            {
+                "nombre": "DANIEL ALEJANDRO",
+                "apellido": "JAPON OCHOA",
+                "correoPersonal": "jaocdaal10272583@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106256207"
+            },
+            {
+                "nombre": "ARIEL SEBASTIAN",
+                "apellido": "JARA CARRION",
+                "correoPersonal": "jacaarse565024@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106078395"
+            },
+            {
+                "nombre": "WILMER SEBASTIAN",
+                "apellido": "JARAMILLO POMA",
+                "correoPersonal": "japowise762332@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105616823"
+            },
+            {
+                "nombre": "AARON ISMAEL",
+                "apellido": "JIMBO ALBERCA",
+                "correoPersonal": "jialaais306723@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150592507"
+            },
+            {
+                "nombre": "KAREN ANAHI",
+                "apellido": "JIMENEZ QUEVEDO",
+                "correoPersonal": "jiqukaan8299095@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150840260"
+            },
+            {
+                "nombre": "LEILANY CAMILA",
+                "apellido": "JUMBO CORDOVA",
+                "correoPersonal": "jucoleca1073902@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150545745"
+            },
+            {
+                "nombre": "PABLO ALEXANDER",
+                "apellido": "LAFEBRE PASACA",
+                "correoPersonal": "lapapaal1077011@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105729428"
+            },
+            {
+                "nombre": "ARELIS NICOLE",
+                "apellido": "LALANGUI SANCHEZ",
+                "correoPersonal": "lasaarni924717@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150545786"
+            },
+            {
+                "nombre": "ANGELINA YULIETH",
+                "apellido": "LOJAN GUALAN",
+                "correoPersonal": "loguanyu11278792@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105385445"
+            },
+            {
+                "nombre": "UBALDINA MATILDE",
+                "apellido": "LOPEZ SARANGO",
+                "correoPersonal": "losaubma8305188@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105874240"
+            },
+            {
+                "nombre": "MOISES GABRIEL",
+                "apellido": "LOZANO LOJAN",
+                "correoPersonal": "lolomoga13645147@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150022604"
+            },
+            {
+                "nombre": "ANTHONY LIONEL",
+                "apellido": "MALDONADO UYAGUARI",
+                "correoPersonal": "mauyanli1077279@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106071192"
+            },
+            {
+                "nombre": "YOSTIN ALEXANDER",
+                "apellido": "MALLA CAJAMARCA",
+                "correoPersonal": "macayoal536993@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105593709"
+            },
+            {
+                "nombre": "ALEXIS PAUL",
+                "apellido": "MAZA RAMON",
+                "correoPersonal": "maraalpa8306305@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150665832"
+            },
+            {
+                "nombre": "JOSE DANIEL",
+                "apellido": "MEDINA JIMENEZ",
+                "correoPersonal": "mejijoda8306350@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150915849"
+            },
+            {
+                "nombre": "CLARA ELENA",
+                "apellido": "MEDINA MATAILO",
+                "correoPersonal": "memaclel11030797@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105050163"
+            },
+            {
+                "nombre": "DARIO JAVIER",
+                "apellido": "MERIZALDE GUAMAN",
+                "correoPersonal": "megudaja8384156@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150270419"
+            },
+            {
+                "nombre": "CRISTIAN MATEO",
+                "apellido": "MONTOYA GONZALEZ",
+                "correoPersonal": "mogocrma559968@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105755753"
+            },
+            {
+                "nombre": "WENDY ANABELA",
+                "apellido": "MORENO GUACHIZACA",
+                "correoPersonal": "moguwean12899574@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105863607"
+            },
+            {
+                "nombre": "KEVIN PAUL",
+                "apellido": "MOROCHO LOJAN",
+                "correoPersonal": "molokepa1077822@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106077348"
+            },
+            {
+                "nombre": "DEIMY NARELY",
+                "apellido": "MUÑOZ COSTA",
+                "correoPersonal": "mucodena1079468@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105852634"
+            },
+            {
+                "nombre": "LISBETH CAROLINA",
+                "apellido": "NUGRA ROJAS",
+                "correoPersonal": "nurolica1401127@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1753802170"
+            },
+            {
+                "nombre": "MARIA DE LOS ANGELES",
+                "apellido": "OCAMPO RAMIREZ",
+                "correoPersonal": "ocramadeloan1077978@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150489720"
+            },
+            {
+                "nombre": "DANIEL ALEJANDRO",
+                "apellido": "OCAMPO ROBLES",
+                "correoPersonal": "ocrodaal7120377@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106063637"
+            },
+            {
+                "nombre": "AIDA MARIANELA",
+                "apellido": "OCAMPOS TENE",
+                "correoPersonal": "octeaima1261675@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1900758507"
+            },
+            {
+                "nombre": "SCARLETH JULIET",
+                "apellido": "ORDOÑEZ JIMBO",
+                "correoPersonal": "scarleth.ordoñez.j@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106022427"
+            },
+            {
+                "nombre": "JUAN FERNANDO",
+                "apellido": "PACHECO VELESACA",
+                "correoPersonal": "pavejufe1078093@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150232757"
+            },
+            {
+                "nombre": "XIOMARA YAMILET ",
+                "apellido": "PAUCAR NERO",
+                "correoPersonal": "panexiya971933@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105536906"
+            },
+            {
+                "nombre": "LISSETH YAJAIRA",
+                "apellido": "PINTADO MENDOZA",
+                "correoPersonal": "pimeliya5994328@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1900750918"
+            },
+            {
+                "nombre": "DAYANA NIKOL",
+                "apellido": "POMA LIMA",
+                "correoPersonal": "polidani8322529@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105931636"
+            },
+            {
+                "nombre": "JONATHAN SEBASTIAN",
+                "apellido": "SILVA CEDEÑO",
+                "correoPersonal": "sicejose8314325@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150534798"
+            },
+            {
+                "nombre": "ANGEL ISRAEL",
+                "apellido": "YAURI TILLAGUANGO",
+                "correoPersonal": "yatianis1074289@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105941494"
+            },
+            {
+                "nombre": "DANIEL ALEXANDER",
+                "apellido": "ZUMBA SALINAS",
+                "correoPersonal": "zusadaal457446@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105321333"
+            }
+        ]
+    },
+    {
+        "segundo_a": [
+            {
+                "nombre": "OSCAR ISRAEL",
+                "apellido": "AZUERO RUIZ",
+                "correoPersonal": "azruosis1113836@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150812855"
+            },
+            {
+                "nombre": "KEVIN RENATO",
+                "apellido": "BARRERA CASTILLO",
+                "correoPersonal": "bacakere10219250@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106063629"
+            },
+            {
+                "nombre": "SEBASTIAN ALEXANDER",
+                "apellido": "BENITEZ GUAMAN",
+                "correoPersonal": "beguseal437176@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150731055"
+            },
+            {
+                "nombre": "DAYANNA LIZBETH",
+                "apellido": "BRIONES FLORES",
+                "correoPersonal": "brfldali11266670@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "0151582533"
+            },
+            {
+                "nombre": "JOSUE MARTIN",
+                "apellido": "CAMPOVERDE ORTIZ",
+                "correoPersonal": "caorjoma8357275@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150649190"
+            },
+            {
+                "nombre": "GENESIS DENISSE",
+                "apellido": "CANGO CEVALLOS",
+                "correoPersonal": "cacegede6016971@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150937322"
+            },
+            {
+                "nombre": "DOMENICA CRISLY",
+                "apellido": "CHACON CHACON",
+                "correoPersonal": "chchdocr7355035@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150762746"
+            },
+            {
+                "nombre": "JENNIFER ADRIANA",
+                "apellido": "GONZALEZ GORDILLO",
+                "correoPersonal": "gogojead8306262@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105939720"
+            },
+            {
+                "nombre": "EVELYN NATALY",
+                "apellido": "GONZALEZ PAZ",
+                "correoPersonal": "gopaevna13828909@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150258026"
+            },
+            {
+                "nombre": "JONATHAN DANIEL",
+                "apellido": "GUTIERRES ROMAN",
+                "correoPersonal": "gurojoda533896@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105606543"
+            },
+            {
+                "nombre": "JHONY ALONSO",
+                "apellido": "JIMENEZ JIMENEZ",
+                "correoPersonal": "jijijhal10407684@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105717407"
+            },
+            {
+                "nombre": "BIANCA DAYRIZ",
+                "apellido": "JIMENEZ TILLAGUANGO",
+                "correoPersonal": "jitibida1589705@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105260960"
+            },
+            {
+                "nombre": "LEONARDO FRANCISCO",
+                "apellido": "MASACHE ORELLANA",
+                "correoPersonal": "maorlefr4397405@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150674206"
+            },
+            {
+                "nombre": "ASHLEY DENISSE",
+                "apellido": "MEDINA ORDOÑEZ",
+                "correoPersonal": "meorasde441516@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150543807"
+            },
+            {
+                "nombre": " MERCEDES",
+                "apellido": "MENA JIMENEZ",
+                "correoPersonal": "mejime1147958@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105744799"
+            },
+            {
+                "nombre": "JOSSELYN DANIELA",
+                "apellido": "MUÑOZ COSTA",
+                "correoPersonal": "mucojoda4504121@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105852626"
+            },
+            {
+                "nombre": "LEONELA ALEXANDRA",
+                "apellido": "PEREZ SARANGO",
+                "correoPersonal": "pesaleal7721187@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105046526"
+            },
+            {
+                "nombre": "YORDY DAVID",
+                "apellido": "PUGO PUGO",
+                "correoPersonal": "pupuyoda771071@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105744161"
+            },
+            {
+                "nombre": "LUIS FERNANDO",
+                "apellido": "REDROVAN CABRERA",
+                "correoPersonal": "recalufe7105258@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150229555"
+            },
+            {
+                "nombre": "ODALIS CAMILA",
+                "apellido": "ROSILLO GAONA",
+                "correoPersonal": "rogaodca819065@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150712873"
+            },
+            {
+                "nombre": "CRISTOPHER ANDRES",
+                "apellido": "URGILES JUAREZ",
+                "correoPersonal": "urjucran947395@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150966438"
+            },
+            {
+                "nombre": "KEYLA ANABELLE",
+                "apellido": "VASQUEZ CASTILLO",
+                "correoPersonal": "vacakean10288055@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105663767"
+            },
+            {
+                "nombre": "JENNY YAJAIRA",
+                "apellido": "VELEZ POMA",
+                "correoPersonal": "vepojeya8317210@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150673026"
+            }
+        ]
+    },
+    {
+        "segundo_b": [
+            {
+                "nombre": "LINDA IVANOVA ",
+                "apellido": "ALVAREZ MENDIETA",
+                "correoPersonal": "almeliiv518717@estudiantes.edu.ec ",
+                "tipoDocId": "cedula",
+                "numeroId": "1900673433"
+            },
+            {
+                "nombre": "JOSTIN DAVID",
+                "apellido": "CHAMBA CRUZ",
+                "correoPersonal": "chcrjoda290495@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150973129"
+            },
+            {
+                "nombre": "GEOVANNY PATRICIO",
+                "apellido": "CHICA GUERRERO",
+                "correoPersonal": "chgugepa523888@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105496606"
+            },
+            {
+                "nombre": "EMILY DANIELA",
+                "apellido": "COELLO JIMENEZ",
+                "correoPersonal": "cojiemda526378@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105777419"
+            },
+            {
+                "nombre": "JENNIFER ANABEL",
+                "apellido": "CONZA NARVAEZ",
+                "correoPersonal": "conajean12072821@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105360760"
+            },
+            {
+                "nombre": "KAREN BETZABET",
+                "apellido": "CRUZ CHUNCHO",
+                "correoPersonal": "crchkabe729452@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105802142"
+            },
+            {
+                "nombre": "ANAHI SHIVANY",
+                "apellido": "ERIGOYA ROBLEZ",
+                "correoPersonal": "erroansh554607@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150519955"
+            },
+            {
+                "nombre": "JHON ANDRES",
+                "apellido": "ESCOBAR CASTRO",
+                "correoPersonal": "escajhan529832@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105867376"
+            },
+            {
+                "nombre": "CINDY ALEXANDRA",
+                "apellido": "HERRERA SAMANIEGO",
+                "correoPersonal": "hesacial7295530@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105849796"
+            },
+            {
+                "nombre": "KEVIN JACSON",
+                "apellido": "JIMENEZ AMARI",
+                "correoPersonal": "jiamkeja932867@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1900949866"
+            },
+            {
+                "nombre": "JIMENEZ JIMENEZ",
+                "apellido": "DIEGO FERNANDO",
+                "correoPersonal": "jijidife8322581@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105970824"
+            },
+            {
+                "nombre": "JIMMY ALEJANDRO",
+                "apellido": "JIMENEZ JIMENEZ",
+                "correoPersonal": "jijijial10407628@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105717415"
+            },
+            {
+                "nombre": "JOSE STEVEN",
+                "apellido": "LLIVISACA ZARITAMA",
+                "correoPersonal": "llzajost10385588@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105589376"
+            },
+            {
+                "nombre": "DANIEL ANDRES",
+                "apellido": "LOJA BRICEÑO",
+                "correoPersonal": "lobrdaan12041956@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150625703"
+            },
+            {
+                "nombre": "FRANKLIN ALEXANDER",
+                "apellido": "LOPEZ BURI",
+                "correoPersonal": "lobufral538196@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150707162"
+            },
+            {
+                "nombre": "JUAN DIEGO",
+                "apellido": "MALDONADO TORO",
+                "correoPersonal": "matojudi536436@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150400883"
+            },
+            {
+                "nombre": "EVELIN NICOLE",
+                "apellido": "MATAILO ZHAPA",
+                "correoPersonal": "mazhevni618203@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105236598"
+            },
+            {
+                "nombre": "DAVID EMILIANO",
+                "apellido": "MONTAÑO SABALA",
+                "correoPersonal": "mosadaem1179389@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105720781"
+            },
+            {
+                "nombre": "ELIZABETH",
+                "apellido": "NARANJO PAUTE SONIA",
+                "correoPersonal": "napasoel8317155@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150651758"
+            },
+            {
+                "nombre": "DARIO JOSUE",
+                "apellido": "ROJAS BALBUCA",
+                "correoPersonal": "robadajo910867@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105652331"
+            },
+            {
+                "nombre": "BRYAN LEODAN",
+                "apellido": "SALDAÑA ALVARADO",
+                "correoPersonal": "saalbrle8314704@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1104930431"
+            },
+            {
+                "nombre": "JANDRY FRANCISCO",
+                "apellido": "SIGCHO LOJAN",
+                "correoPersonal": "silojafr541211@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150754347"
+            },
+            {
+                "nombre": "ALEXIA LINDSAY",
+                "apellido": "TORRES MORA",
+                "correoPersonal": "tomoalli1064470@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1751979053"
+            },
+            {
+                "nombre": "JORGE LUIS",
+                "apellido": "UCHUARI ORTIZ",
+                "correoPersonal": "ucorjolu315374@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150455838"
+            },
+            {
+                "nombre": "KRISTHAL STEFANIA ",
+                "apellido": "ZARUMA CORDOVA",
+                "correoPersonal": "zacokrst4440130@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105835555"
+            }
+        ]
+    },
+    {
+        "segundo_c": [
+            {
+                "nombre": "DAYANA LISSETH",
+                "apellido": "ALVARADO LOJAN ",
+                "correoPersonal": "allodali541899@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105748147"
+            },
+            {
+                "nombre": "IGNACIO ALEJANDRO",
+                "apellido": "CAMACHO QUIMIS",
+                "correoPersonal": "caquigal547224@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105602310"
+            },
+            {
+                "nombre": "JOSUE DAVID",
+                "apellido": "CHAMBA TUQUERES",
+                "correoPersonal": "chtujoda6098803@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105742462"
+            },
+            {
+                "nombre": "AARON ALEJANDRO",
+                "apellido": "CUENCA TORRES",
+                "correoPersonal": "cutoaaal978057@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105651275"
+            },
+            {
+                "nombre": "WAGNER JAREN",
+                "apellido": "CURIMILMA MORENO",
+                "correoPersonal": "cumowaja560966@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150238192"
+            },
+            {
+                "nombre": "ANGHELA ABIGAIL",
+                "apellido": "ENCARNACION YANZA",
+                "correoPersonal": "enyaanab529056@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150677225"
+            },
+            {
+                "nombre": "MARILYN DAYANNA",
+                "apellido": "ESPEJO GONZALEZ",
+                "correoPersonal": "esgomada550114@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150544227"
+            },
+            {
+                "nombre": "JHOAN CHIKINKIRA",
+                "apellido": "ESPINOZA PINZON",
+                "correoPersonal": "espijhch12812210@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150361366"
+            },
+            {
+                "nombre": "MARIA MERCEDES",
+                "apellido": "GALLARDO BORJA",
+                "correoPersonal": "gabomame550431@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105330821 "
+            },
+            {
+                "nombre": "SOFIA TRINIDAD",
+                "apellido": "GONZALEZ MEDINA",
+                "correoPersonal": "gomesotr738555@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150931200"
+            },
+            {
+                "nombre": "ALEX DAVID",
+                "apellido": "GUAMAN ARMIJOS",
+                "correoPersonal": "guaralda713065@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150937868"
+            },
+            {
+                "nombre": "ALEX GEOVANNY",
+                "apellido": "GUERRERO PUGLLA",
+                "correoPersonal": "gupualge553455@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106245705"
+            },
+            {
+                "nombre": "CRISTHIAN ANDRES",
+                "apellido": "JIMENES CASTILLO",
+                "correoPersonal": "jicacran831250@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1104984974"
+            },
+            {
+                "nombre": "HECTOR ORLANDO",
+                "apellido": "MALDONADO GUAMAN",
+                "correoPersonal": "maguheor11870236@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150646204"
+            },
+            {
+                "nombre": "JONATHAN FABRICIO ",
+                "apellido": "MAZA MEDINA",
+                "correoPersonal": "mamejofa857618@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105996639"
+            },
+            {
+                "nombre": "JHOSUE JAHIR",
+                "apellido": "RIOS CASTRO",
+                "correoPersonal": "ricajhja565113@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105775546"
+            },
+            {
+                "nombre": "SHIRLEY ANABEL",
+                "apellido": "ROMAN ERREYES",
+                "correoPersonal": "roershan8427972@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1754897104"
+            },
+            {
+                "nombre": "DANNY ANTONIO",
+                "apellido": "ROMERO ACARO",
+                "correoPersonal": "roacdaan565567@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1106073891"
+            },
+            {
+                "nombre": "SANTIAGO ALEJANDRO",
+                "apellido": "SANCHEZ SOLANO",
+                "correoPersonal": "sasosaal566240@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105930794"
+            },
+            {
+                "nombre": "TERESA ELIZABETH ",
+                "apellido": "VALENCIA SANMARTIN",
+                "correoPersonal": "vasateel568081@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105321382"
+            },
+            {
+                "nombre": "ANTHONY DAVID ",
+                "apellido": "VASQUEZ TOLEDO",
+                "correoPersonal": "vatoanda7337967@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1105909376"
+            }
+        ]
+    }
+]

@@ -1,7 +1,6 @@
 
 module.exports = function (sequelize, DataTypes) {
-    var perfilProfesional = require('./perfilProfesional');
-    var PerfilProfesional = new perfilProfesional(sequelize, DataTypes);
+    var PerfilProfesional = require('./perfilProfesional')(sequelize, DataTypes);
     var TituloProfesional = sequelize.define('tituloProfesional', {
         id: {
             autoIncrement: true,

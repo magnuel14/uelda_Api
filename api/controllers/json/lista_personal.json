@@ -1,0 +1,461 @@
+{
+    "lista_Personal": [
+        {
+            "nombre": "SONNIA JULIANA",
+            "apellido": "AGUILAR MALDONADO",
+            "correoPersonal": "jhulyaguilarmaldonado@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1900634278",
+            "id_rol": 5
+        },
+        {
+            "nombre": "EDWIN ANTONIO",
+            "apellido": "ALEJANDRO CAÑAR",
+            "correoPersonal": "edwin041988@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103891139",
+            "id_rol": 5
+        },
+        {
+            "nombre": "VERONICA MONSERRATH",
+            "apellido": "ALVARADO JUELA",
+            "correoPersonal": "monc_2987@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104601008",
+            "id_rol": 5
+        },
+        {
+            "nombre": "JOSE ADALBERTO",
+            "apellido": "ARMIJOS JUMBO",
+            "correoPersonal": "josearmijos1963@yahoo.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1707800833",
+            "id_rol": 5
+        },
+        {
+            "nombre": "CECILIA DEL CISNE",
+            "apellido": "ARMIJOS TAPIA",
+            "correoPersonal": "ceciliaarmijostapia@yahoo.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1103443733",
+            "id_rol": 5
+        },
+        {
+            "nombre": "NANCY PIEDAD",
+            "apellido": "AUQUILLA GALAN",
+            "correoPersonal": "nancytaagg@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102537022",
+            "id_rol": 5
+        },
+        {
+            "nombre": "PATRICIO DAVID",
+            "apellido": "BAROJA TOLEDO",
+            "correoPersonal": "baroja_83@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104179385",
+            "id_rol": 3
+        },
+        {
+            "nombre": "TANNIA ELIZABETH",
+            "apellido": "BURI REMACHE",
+            "correoPersonal": "taeli14@yahoo.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1104739337",
+            "id_rol": 5
+        },
+        {
+            "nombre": "ALIANA RICARDINA",
+            "apellido": "CABRERA JARAMILLO",
+            "correoPersonal": "alianacabrera@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103182802",
+            "id_rol": 5
+        },
+        {
+            "nombre": "CARMEN SONIA",
+            "apellido": "CARPIO TOLEDO",
+            "correoPersonal": "sonia_car16@hotmail.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1101481263",
+            "id_rol": 5
+        },
+        {
+            "nombre": "CARMEN LUCIA",
+            "apellido": "CANGO FLORES",
+            "correoPersonal": "carmencangof@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102624259",
+            "id_rol": 5
+        },
+        {
+            "nombre": "HAYDEE MARISOL ",
+            "apellido": "CASTILLO CUENCA",
+            "correoPersonal": "aydc858@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103647309",
+            "id_rol": 2
+        },
+        {
+            "nombre": "ANA LUCIA",
+            "apellido": "CONDOR ESPARZA",
+            "correoPersonal": "ana.condor2021@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104092943",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MARIA CECILIA",
+            "apellido": "CUENCA SALAZAR",
+            "correoPersonal": "mceciliacuencas20@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104326234",
+            "id_rol": 5
+        },
+        {
+            "nombre": "CARMEN SUSANA",
+            "apellido": "ESPAÑA MINGA",
+            "correoPersonal": "susi4369@yahoo.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1103011100",
+            "id_rol": 5
+        },
+        {
+            "nombre": "CARMELA ANTONIA",
+            "apellido": "ESPINOZA CARRION",
+            "correoPersonal": "espinozaantonia@yahoo.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1101951604",
+            "id_rol": 5
+        },
+        {
+            "nombre": "ROSA ESPERANZA",
+            "apellido": "GANAZHAPA PLASCENCIA",
+            "correoPersonal": "rosa_ganazhapa@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102925938",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MARIELA DE JESUS",
+            "apellido": "GONZALEZ AGUIRRE",
+            "correoPersonal": "mariela_majego@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102080460",
+            "id_rol": 5
+        },
+        {
+            "nombre": "BERNARDA",
+            "apellido": "GONZALEZ TORRES",
+            "correoPersonal": "bernardagonzalez1972@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102926399",
+            "id_rol": 5
+        },
+        {
+            "nombre": "YENNY PATRICIA",
+            "apellido": "GUAMAN GONZALEZ",
+            "correoPersonal": "yenpat18@yahoo.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1103885818",
+            "id_rol": 5
+        },
+        {
+            "nombre": "GRACIELA ELIZABETH",
+            "apellido": "GUAMAN LUDEÑA",
+            "correoPersonal": "gracielaguaman_l@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102709902",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MANUEL JOSE",
+            "apellido": "HURTADO VIDAL",
+            "correoPersonal": "manueljosehu@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104267511",
+            "id_rol": 5
+        },
+        {
+            "nombre": "VERONICA PATRICIA",
+            "apellido": "JIMENEZ ACARO",
+            "correoPersonal": "veritojimenez13@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1105143562",
+            "id_rol": 5
+        },
+        {
+            "nombre": "LAURO FERNANDO",
+            "apellido": "JIMENEZ CUENCA",
+            "correoPersonal": "laurocuenca@yahoo.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102505987",
+            "id_rol": 5
+        },
+        {
+            "nombre": "LUCIA ARGENTINA",
+            "apellido": "LUNA HERRERA",
+            "correoPersonal": "lucialuna4458@yahoo.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1101832481",
+            "id_rol": 5
+        },
+        {
+            "nombre": "JOSE GERMAN",
+            "apellido": "LOJA JAPON",
+            "correoPersonal": "pepin-1966@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102479092",
+            "id_rol": 1
+        },
+        {
+            "nombre": "PAULINA ISABEL",
+            "apellido": "MARIN",
+            "correoPersonal": "paulinamarin24@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102657168",
+            "id_rol": 5
+        },
+        {
+            "nombre": "LLANA PIEDAD",
+            "apellido": "MUÑOZ SUAREZ",
+            "correoPersonal": "llanapiedad2019@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102242623",
+            "id_rol": 5
+        },
+        {
+            "nombre": "VIRGINIA DEL SOCORRO",
+            "apellido": "OCAMPO",
+            "correoPersonal": "giviocam@yahoo.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102600705",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MARIA GABRIELA",
+            "apellido": "OJEDA MOREIRA",
+            "correoPersonal": "gabiojedamoreira@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103760987",
+            "id_rol": 5
+        },
+        {
+            "nombre": "VERENIZ ALEXANDRA",
+            "apellido": "OJEDA SARANGO",
+            "correoPersonal": "vereniz.ojeda9@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104039126",
+            "id_rol": 5
+        },
+        {
+            "nombre": "HECTOR IVAN",
+            "apellido": "ORDOÑEZ MAZA",
+            "correoPersonal": "ivanh2007@live.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102406608",
+            "id_rol": 5
+        },
+        {
+            "nombre": "JUANA EMPERATRIZ",
+            "apellido": "ORDOÑEZ VASQUEZ ",
+            "correoPersonal": "juanitaeov1962@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102114657",
+            "id_rol": 5
+        },
+        {
+            "nombre": "FANNY LASTENIA",
+            "apellido": "ORTIZ SUQUILANDA",
+            "correoPersonal": "lastenia0111@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103795900",
+            "id_rol": 5
+        },
+        {
+            "nombre": "JACKELINE",
+            "apellido": "PACHECO CASTILLO",
+            "correoPersonal": "jackelinepacheco3@yahoo.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103999114",
+            "id_rol": 5
+        },
+        {
+            "nombre": "SHADIRA GIOCONDA",
+            "apellido": "PACHECO PIEDRA",
+            "correoPersonal": "shadirapacheco@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102861828",
+            "id_rol": 5
+        },
+        {
+            "nombre": "CARMEN CATERINE",
+            "apellido": "PRADO JIMENEZ",
+            "correoPersonal": "caterine84prado@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104190879",
+            "id_rol": 5
+        },
+        {
+            "nombre": "LIDIA CARMITA",
+            "apellido": "PUCHA MEDINA",
+            "correoPersonal": "lidiacarmita75@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103349013",
+            "id_rol": 5
+        },
+        {
+            "nombre": "PATRICIO PAUL",
+            "apellido": "PALACIOS ROBLES",
+            "correoPersonal": "patoazul.8228@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103678015",
+            "id_rol": 5
+        },
+        {
+            "nombre": "STALIN FABIAN",
+            "apellido": "PINEDA ILLESCAS",
+            "correoPersonal": "fabiandragonrojo@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103822266",
+            "id_rol": 5
+        },
+        {
+            "nombre": "NORMA PIEDAD",
+            "apellido": "AGILA RODRIGUEZ",
+            "correoPersonal": "agilanorma@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102537725",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MONICA BEATRIZ",
+            "apellido": "RAMIREZ LOZADA",
+            "correoPersonal": "moberalo_12@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104401110",
+            "id_rol": 5
+        },
+        {
+            "nombre": "JESSICA ELIZABETH",
+            "apellido": "ROSALES ARANDA J",
+            "correoPersonal": "jessik-ely23@hotmail.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1104149073",
+            "id_rol": 5
+        },
+        {
+            "nombre": "AMILTA JUDITH",
+            "apellido": "RUIZ VEGA",
+            "correoPersonal": "amiltgaruiz@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102811724",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MONICA BEATRIZ",
+            "apellido": "SANCHEZ CASTILLO",
+            "correoPersonal": "monicasanchezcastillo@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1103109276",
+            "id_rol": 5
+        },
+        {
+            "nombre": "JENNY TATIANA",
+            "apellido": "TOLEDO RIVAS",
+            "correoPersonal": "tatis12051987@hotmail.es",
+            "tipoDocId": "cedula",
+            "numeroId": "1104753056",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MARIA RUILANDA",
+            "apellido": "TORRES GALAN",
+            "correoPersonal": "ruilanda64@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102530407",
+            "id_rol": 5
+        },
+        {
+            "nombre": "CARLOS GONZALO",
+            "apellido": "TAPIA MUÑOZ",
+            "correoPersonal": "tapiamcarlosg@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102444773",
+            "id_rol": 5
+        },
+        {
+            "nombre": "RAMIRO FABIAN",
+            "apellido": "TROYA MUÑOZ",
+            "correoPersonal": "troyaramiro71@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102852751",
+            "id_rol": 5
+        },
+        {
+            "nombre": "GABRIELA DE LOS ANGELES",
+            "apellido": "VIRE QUEZADA",
+            "correoPersonal": "gavique@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "2100186275",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MARCELO FERNANDO",
+            "apellido": "VUELE DUMA",
+            "correoPersonal": "marcelovuele@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104179856",
+            "id_rol": 5
+        },
+        {
+            "nombre": "DIANA LUCÍA",
+            "apellido": "VILLA ACHUPALLAS",
+            "correoPersonal": "lucia.villaa@educacion.gob.ec",
+            "tipoDocId": "cedula",
+            "numeroId": "1102502414",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MONICA ADRINA",
+            "apellido": "GUAMAN RIVERA",
+            "correoPersonal": "monicadriana1984@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "704524834",
+            "id_rol": 5
+        },
+        {
+            "nombre": "ROSA ELENA",
+            "apellido": "TORRES CORONEL",
+            "correoPersonal": "rosa.torresc@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104860315",
+            "id_rol": 5
+        },
+        {
+            "nombre": "LAURA LORENA ",
+            "apellido": "GALVEZ JIMENEZ",
+            "correoPersonal": "lorenagalvezji@hotmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1102962006",
+            "id_rol": 5
+        },
+        {
+            "nombre": "ROSARIO DEL CARMEN",
+            "apellido": "ZHINGRE VELEZ",
+            "correoPersonal": "rosario661979@gmail.com",
+            "tipoDocId": "cedula",
+            "numeroId": "1104455694",
+            "id_rol": 5
+        },
+        {
+            "nombre": "MIRIAM ANTONIETA",
+            "apellido": "PÉREZ SARANGO ",
+            "correoPersonal": "miriam.perez@",
+            "tipoDocId": "cedula",
+            "numeroId": "1103297618",
+            "id_rol": 4
+        }
+    ]
+}
+

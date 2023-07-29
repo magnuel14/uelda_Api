@@ -1,7 +1,6 @@
 
 module.exports = function (sequelize, DataTypes) {
-    var persona = require('./persona');
-    var Persona = new persona(sequelize, DataTypes);
+    var Persona = require('./persona')(sequelize, DataTypes);
     var PerfilProfesional = sequelize.define('perfilProfesional', {
         id: {
             autoIncrement: true,
@@ -12,7 +11,7 @@ module.exports = function (sequelize, DataTypes) {
         razonUELDA: {
             type: DataTypes.ENUM({
                 values: [
-                    'Cectorización',
+                    'Sectorización',
                     'Bienestar Social',
                     'Concurso'
                 ]

@@ -1,7 +1,6 @@
 
 module.exports = function (sequelize, DataTypes) {
-    var persona = require('../models/persona');
-    var Persona = new persona(sequelize, DataTypes);
+    var Persona = require('./persona')(sequelize, DataTypes);
     var Representante = sequelize.define('representante', {
         id: {
             autoIncrement: true,
@@ -61,6 +60,10 @@ module.exports = function (sequelize, DataTypes) {
         //0 autorizado - 1 no autorizado
         autorizacionRetirarDoc: {
             type: DataTypes.INTEGER
+        },
+        //copia de los documentos de identificacion.
+        url_documentos_identificación: {
+            type: DataTypes.TEXT
         },
         external_id: {
             type: DataTypes.UUID,

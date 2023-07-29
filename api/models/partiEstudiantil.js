@@ -1,11 +1,16 @@
 module.exports = function (sequelize, DataTypes) {
-    var persona = require('./persona');
-    var Persona = new persona(sequelize, DataTypes);
+    var Persona = require('./persona')(sequelize, DataTypes);
     var PartiEstudiantil = sequelize.define('partiestudiantil', {
         id: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
+        },
+        titulo_campoAccion: {
+            type: DataTypes.STRING(50)
+        },
+        descripcion: {
+            type: DataTypes.TEXT
         },
         //1ro 80 horas -2do 120 horas
         numHoras: {
@@ -15,13 +20,13 @@ module.exports = function (sequelize, DataTypes) {
         calificacion: {
             type: DataTypes.STRING(50)
         },
+        //observaciones o casos especiales
+        observacion: {
+            type: DataTypes.STRING(250)
+        },
         //aprobado
         aprobado: {
             type: DataTypes.INTEGER
-        },
-        //observaciones ocasos especiales
-        observacion: {
-            type: DataTypes.STRING(250)
         },
         external_id: {
             type: DataTypes.UUID,

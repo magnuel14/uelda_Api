@@ -1,6 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var persona = require('../models/persona');
-    var Persona = new persona(sequelize, DataTypes);
+    var Persona = require('./persona')(sequelize, DataTypes);
     var Hermano = sequelize.define('hermano', {
         id: {
             autoIncrement: true,

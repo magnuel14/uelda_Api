@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-    var materia = require('./materia');
-    var Materia = new materia(sequelize, DataTypes);
+    var Materia = require('./materia')(sequelize, DataTypes);
+    var Matricula = require('./matricula')(sequelize, DataTypes);
     var AsistenciaXMate = sequelize.define('asistenciaXMate', {
         //las asistencias por materia en educacion basica superior y bachillerato
         id: {
@@ -8,11 +8,16 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //numero de horas 
-        //llenar de forma grupal o de forma individual
-        horasClase: {
+        //el tal de horas x materia se saca directamente de la materia a la que pertenece la asistencia
+        //total de numero de horas dictadas por el docente
+        horasClase_dictadas: {
             type: DataTypes.STRING(50)
         },
+        //total de numero de horas asistidas por el estudiante
+        horasClase_asistidas: {
+            type: DataTypes.STRING(50)
+        },
+        /** 
         // o si asiste, 1 si falta
         asistencia: {
             type: DataTypes.INTEGER
@@ -24,6 +29,7 @@ module.exports = function (sequelize, DataTypes) {
         observacion: {
             type: DataTypes.STRING(255)
         },
+        */
         external_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
@@ -35,6 +41,9 @@ module.exports = function (sequelize, DataTypes) {
     });
     AsistenciaXMate.belongsTo(Materia, {
         foreignKey: 'id_materia'
+    });
+    AsistenciaXMate.belongsTo(Matricula, {
+        foreignKey: 'id_matricula'
     });
     return AsistenciaXMate;
 };

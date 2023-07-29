@@ -3,10 +3,14 @@ const morgan = require("morgan");
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const dotenv = require('dotenv');
-const models = require('./api/models');
 const errorHandler = require('./middleware/errorHandler');
 const session = require('express-session');
 const flash = require('connect-flash');
+const fs = require('fs-extra');
+const path = require('path');
+const borrarTemp = require('./helpers/borrarTemps');
+const funcionesBD = require('./helpers/funcionesBD');
+const cron = require('node-cron');
 const app = express();
 
 dotenv.config();
@@ -15,13 +19,14 @@ dotenv.config();
 app.set('port', process.env.PORT || 4000);
 //app.use(cors({origin:"http://localhost:4200/"}))
 app.use(session({
-    secret: 'Manuel',
+    secret: 'Ueldaweb',
     resave: true,
     saveUninitialized: true
 }));
 app.use(flash());
-app.use(cors());
+
 // Configurar cabeceras y CORS
+app.use(cors());
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
@@ -37,29 +42,40 @@ app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: './uploads'
 }));
-/** 
-//sincronizacion dde los modelos de la bd
-try {
-    // basede dtatos 
-    models.sequelize.sync().then(() => {
-        console.log('Base de Datos conectada');
-    }).catch(err => {
-        console.log(err, "No se conecto a la BD");
-    });
-} catch (error) {
-    console.error('Unable to connect to the server ', error);
-}
-*/
-//rol de usuarios
+
+const tempFolderPath = path.join(__dirname, './uploads');
+// Programa la tarea cron para ejecutar la función de borrado a las 12 AM cada día
+cron.schedule('0 0 * * *', () => {
+    borrarTemp.borrar(tempFolderPath);
+});
+
+/**
+ * antes de usar la funcion de sincronizar
+ * se debe respaldar la data
+ * usar force: true solo en caso de sincronizar cambios en una bd con tablas
+ * sync({force: true})
+ * models.sequelize.sync({force: true}).then(() => {
+ */
+//sincronizacion de los modelos de la bd
+//funcionesBD.sincronizarBd();
+
+//insertar rol para usuarios
 //require('./api/controllers/dataRol/insert_rol');
 
-//routes
-app.use('/uelda/user', require('./api/routes/userRoutes'))
-app.use('/uelda/personal', require('./api/routes/personalRoutes'))
-app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'))
+// Middleware para verificar la conexión a la base de datos
+funcionesBD.coneccionBd();
 
-
-//middleware
+//middleware que evita que el server se pare en caso de detectar un error
 app.use(errorHandler);
+
+//routes
+app.use('/uelda/user', require('./api/routes/userRoutes'));
+app.use('/uelda/personal', require('./api/routes/personalRoutes'));
+app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'));
+app.use('/uelda/gestion_academica', require('./api/routes/gestionAcademicaRoutes'));
+app.use('/uelda/inspector', require('./api/routes/inspectorRoutes'));
+app.use('/uelda/docente', require('./api/routes/docenteRoutes'));
+app.use('/uelda/post_academico', require('./api/routes/postAcademicoRoutes'));
+app.use('/uelda/lista_visibilidad', require('./api/routes/listaVisibilidadRoutes'));
 
 module.exports = app;

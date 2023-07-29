@@ -1,6 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var persona = require('./persona');
-    var Persona = new persona(sequelize, DataTypes);
+    var Persona = require('./persona')(sequelize, DataTypes);
     var PostAcademico = sequelize.define('postAcademico', {
         id: {
             autoIncrement: true,
@@ -17,11 +16,34 @@ module.exports = function (sequelize, DataTypes) {
         descripcion: {
             type: DataTypes.TEXT
         },
+        url_imagen: {
+            type: DataTypes.TEXT
+        },
+        public_id_imagen: {
+            type: DataTypes.TEXT
+        },
         url_archivo: {
             type: DataTypes.TEXT
         },
-        //si esta en 0 el contenido estara disponible - si esta en 1 el contenido estaba oculto.
+        public_id_archivo: {
+            type: DataTypes.TEXT
+        },
+        //validacion para comporbar quien puede visualizar el post
+        //  Todos, solo personal, grupo especifico
+        //     0  -     1       -       2
         visibilidad: {
+            type: DataTypes.INTEGER,
+        },
+        //si esta en 0 el contenido estara disponible - si esta en 1 el contenido estara oculto.
+        estado: {
+            type: DataTypes.INTEGER,
+        },
+        //id del año lectivo actual
+        id_anioLectivo_actual: {
+            type: DataTypes.INTEGER
+        },
+        // ID de la lista visbilidad para comprobar la lista de personas que puede visualizar el post academico
+        id_ListaVisibilidad: {
             type: DataTypes.INTEGER,
         },
         external_id: {
@@ -38,8 +60,3 @@ module.exports = function (sequelize, DataTypes) {
     });
     return PostAcademico;
 };
-/**
- * crear grupos de trabajo para visualizacion de archivos
- * al crear un archivo se debe ingresar quiens va a poder ver la publicacion segun su rol
- * ejemplo:juanta general, gobierno escolar, etc.
- */

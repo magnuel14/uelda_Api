@@ -2,7 +2,7 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://res.cloudinary.com/mag-dev/image/upload/v1684731931/ueldaContainer/logo-UELDAWeb_ymadxe.png" width="320" alt="LOGO DE UELDAWeb" /></a>
 </p>
   
-  <p align="center">BackEnd para la aplicación de gestión acadamica de la <a href="#" target="_blank">Unidad Educativa Lauro Damerval Ayora</p>
+  <p align="center">BackEnd para la aplicación de gestión academica de la <a href="#" target="_blank">Unidad Educativa Lauro Damerval Ayora</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/badge/npm-8.3.1-green" alt="NPM Version" /></a>
 
@@ -79,21 +79,18 @@ DATABASE_NAME = ueldaWebBD
 ```
 <i>**NOTE**</i>.- Para sincronizar los modelos generados por Sequelize, debe descomentar  el siguiente fragmento de [NodeJs](https://github.com/magnuel14/uelda_Api/blob/main/app.js). Luego descomente la el codigo para generar los roles para los usuarios.
 ```
-/** 
-//sincronizacion dde los modelos de la bd
-try {
-    // basede dtatos 
-    models.sequelize.sync().then(() => {
-        console.log('Base de Datos conectada');
-    }).catch(err => {
-        console.log(err, "No se conecto a la BD");
-    });
-} catch (error) {
-    console.error('Unable to connect to the server ', error);
-}
-//rol de usuarios
-require('./api/controllers/dataRol/insert_rol');
-*/
+/**
+ * antes de usar la funcion de sincronizar
+ * se debe respaldar la data
+ * usar force: true solo en caso de sincronizar cambios en una bd con tablas
+ * sync({force: true})
+ * models.sequelize.sync({force: true}).then(() => {
+ */
+//sincronizacion de los modelos de la bd
+//funcionesBD.sincronizarBd();
+
+//insertar rol para usuarios
+//require('./api/controllers/dataRol/insert_rol');
 ```
 
 ## Test
@@ -115,10 +112,4 @@ Para generar la documentación del proyecto utilice
 
 ```bash
 $ npm run documentation
-```
-
-Para generar el informe del coverage del proyecto utilice 
-
-```bash
-$ npm run test:cov
 ```

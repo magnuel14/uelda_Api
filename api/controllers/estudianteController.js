@@ -1,5 +1,4 @@
 'use strict';
-const jwt = require('jsonwebtoken');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
@@ -11,6 +10,17 @@ const Representante = models.representante;
 const Hermano = models.hermano;
 const Cuenta = models.cuenta;
 const InfoMedica = models.infoMedica;
+const AnioLectivo = models.anioLectivo;
+const Matricula = models.matricula;
+const Materia = models.materia;
+const AsistenciaXDia = models.asistenciaXDia;
+const AsistenciaXMate = models.asistenciaXMate;
+const CalificacionQ = models.calificacionQ;
+const CalificacionT = models.calificacionT;
+const Paralelo = models.paralelo;
+const Curso = models.curso;
+
+
 
 let controller = {
     /** Implementado try cath*/
@@ -20,7 +30,23 @@ let controller = {
      * @returns Una lista en formato json de los estuidantes registrados
      */
     getEstudiantes: async (req, res) => {
-        const estudiantes = await Persona.findAll({ where: { id_rols: 6 } });
+        const estudiantes = await Persona.findAll(
+            {
+                include: [Cuenta], where: { id_rol: 6 }
+            });
+        res.json(estudiantes);
+    },
+    /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
+    * @param {*} req 
+    * @param {*} res 
+    * @returns Una lista en formato json de los estuidantes registrados
+    */
+    getEstudiantesExternal: async (req, res) => {
+        const estudiantes = await Persona.findAll(
+            {
+                attributes: ['external_id'],
+                where: { id_rol: 6, estadoAc: null }
+            });
         res.json(estudiantes);
     },
     /**
@@ -62,7 +88,7 @@ let controller = {
                         id_persona: newEstudiante.id,
                     };
                     const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-                    if (!newEstudianteCuenta) return res.json({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
+                    if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
                     const dataInfoMed = {
                         id_persona: newEstudiante.id,
                         discapacidad: "1",
@@ -73,14 +99,15 @@ let controller = {
                         tipoEnfermedadCatastrofica: "N/A"
                     };
                     const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                    return res.json({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
+                    console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
                 } else {
-                    return res.json({ message: 'Ya existe un estudiante con ese correo' });
+                    console.log({ message: 'Ya existe un estudiante con ese correo' });
                 }
             } else {
                 const cedulaValida = cedulaValidator.validator(numeroId);
                 if (cedulaValida.flag == 3) {
                     const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+
                     if (!infoEstudianteCuenta) {
                         const estudiante = await Persona.create(estudianteData);
                         const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
@@ -195,10 +222,22 @@ let controller = {
      * @param {*} res 
      * @returns Una lista en formato json del o los representantes registrados
      */
-    getRepresentanteByEx: async (req, res) => {
+    getRepresentantesByEx: async (req, res) => {
         const { externalId } = req.params;
         const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
         const infoRepresentante = await Representante.findAll({ where: { id_persona: infoEstudiante.id } });
+        return res.json({ infoRepresentante });
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getRepresentanteByDNI: async (req, res) => {
+        const { numeroId } = req.params;
+        //const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+        const infoRepresentante = await Representante.findOne({ where: { numeroId: numeroId } });
         return res.json({ infoRepresentante });
     },
     /**
@@ -227,55 +266,25 @@ let controller = {
             }
         })
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        let contadorCero = 0;
         const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
         if (infoRepresentantes.length <= 2) {
             if (!searchRepresentante) {
-                if (autorizacionRetirarDoc == 0) {
-                    for (let i = 0; i < infoRepresentantes.length; i++) {
-                        if (infoRepresentantes[i].autorizacionRetirarDoc === 0) {
-                            contadorCero++;
-                        }
-                    }
-                    if (contadorCero === 1) {
-                        return res.json({ message: 'Ya existe un representante con autorizacion de retirar la carpeta del estudiante' });
-                    }
-                    else {
-                        if (tipoDocId == 'pasaporte') {
-                            const representnateData = {
-                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                                correoPersonal: correoPersonal,
-                                celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
-                                nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                                teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                                autorizacionRetirarDoc: autorizacionRetirarDoc,
-                                id_persona: infoPersona.id,
-                            };
-                            //console.log('datos: ', representnateData)
-                            const newRepresentante = await Representante.create(representnateData);
-                            return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
-                        } else {
-                            const cedulaValida = cedulaValidator.validator(numeroId);
-                            if (cedulaValida.flag == 3) {
-                                const representnateData = {
-                                    nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                                    correoPersonal: correoPersonal,
-                                    celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
-                                    nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                                    teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                                    autorizacionRetirarDoc: autorizacionRetirarDoc,
-                                    id_persona: infoPersona.id,
-                                };
-                                //console.log('datos: ', representnateData)
-                                const newRepresentante = await Representante.create(representnateData);
-                                return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
-                            } else {
-                                return res.json({ message: cedulaValida.message });
-                            }
-                        }
-                    }
+                if (tipoDocId == 'pasaporte') {
+                    const representnateData = {
+                        nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
+                        correoPersonal: correoPersonal,
+                        celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
+                        nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
+                        teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
+                        autorizacionRetirarDoc: autorizacionRetirarDoc,
+                        id_persona: infoPersona.id,
+                    };
+                    //console.log('datos: ', representnateData)
+                    const newRepresentante = await Representante.create(representnateData);
+                    return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
                 } else {
-                    if (tipoDocId == 'pasaporte') {
+                    const cedulaValida = cedulaValidator.validator(numeroId);
+                    if (cedulaValida.flag == 3) {
                         const representnateData = {
                             nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
                             correoPersonal: correoPersonal,
@@ -289,23 +298,7 @@ let controller = {
                         const newRepresentante = await Representante.create(representnateData);
                         return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
                     } else {
-                        const cedulaValida = cedulaValidator.validator(numeroId);
-                        if (cedulaValida.flag == 3) {
-                            const representnateData = {
-                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                                correoPersonal: correoPersonal,
-                                celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
-                                nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                                teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                                autorizacionRetirarDoc: autorizacionRetirarDoc,
-                                id_persona: infoPersona.id,
-                            };
-                            //console.log('datos: ', representnateData)
-                            const newRepresentante = await Representante.create(representnateData);
-                            return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
-                        } else {
-                            return res.json({ message: cedulaValida.message });
-                        }
+                        return res.json({ message: cedulaValida.message });
                     }
                 }
             } else {
@@ -344,71 +337,29 @@ let controller = {
             autorizacionRetirarDoc: autorizacionRetirarDoc,
         };
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } })
         const searchRepresentante = await Representante.findOne({
             where: {
-                [Op.or]: [{ numeroId: numeroId }, { id_persona: infoPersona.id }]
+                [Op.and]: [{ numeroId: numeroId }, { id_persona: infoPersona.id }]
             }
         })
-        //console.log(searchRepresentante.id)
-        let id_representante;
-        let contadorCero = 0;
-        for (let i = 0; i < infoRepresentantes.length; i++) {
-            id_representante = infoRepresentantes[i].id;
-        }
+        console.log(searchRepresentante.correoPersonal)
+
         if (searchRepresentante) {
-            console.log(id_representante == searchRepresentante.id)
-            if (autorizacionRetirarDoc == 0) {
-                for (let i = 0; i < infoRepresentantes.length; i++) {
-                    if (infoRepresentantes[i].autorizacionRetirarDoc === 0) {
-                        contadorCero++;
-                    }
-                }
-                if (contadorCero === 1) {
-                    const infoRepresentanteAuhtDoc = await Representante.findOne({
-                        where: {
-                            [Op.or]: [{ autorizacionRetirarDoc: 0 }, { id: searchRepresentante.id }]
-                        }
-                    })
-                    if (infoRepresentanteAuhtDoc) {
-                        const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
-                        return res.json({ message: 'Se ha ingresado la información de su representante', updateRepresentante });
-                    } else {
-                        return res.json({ message: 'Ya existe un representante con autorizacion de retirar la carpeta del estudiante' });
-                    }
-                }
-                else {
-                    const searchRepresentanteByemail = await Representante.findOne({ where: { correoPersonal: correoPersonal } })
-                    if (searchRepresentanteByemail) {
-                        if (searchRepresentante.id == searchRepresentanteByemail.id) {
-                            //console.log('datos: ', updateRepresentanteData)
-                            const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
-                            return res.json({ message: 'Se ha ingresado la información de su representante', updateRepresentante });
-                        } else {
-                            return res.json({ message: 'Este correo esta ligado a otro representante 3' });
-                        }
-                    } else if (!searchRepresentanteByemail) {
-                        //console.log('datos: ', updateRepresentanteData)
-                        const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
-                        return res.json({ message: 'Se ha ingresado la información de su representante', updateRepresentante });
-                    }
-                }
-            } else {
-                const searchRepresentanteByemail = await Representante.findOne({ where: { correoPersonal: correoPersonal } })
-                if (searchRepresentanteByemail) {
-                    console.log(searchRepresentante.id == searchRepresentanteByemail.id)
-                    if (searchRepresentante.id == searchRepresentanteByemail.id) {
-                        //console.log('datos: ', updateRepresentanteData)
-                        const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
-                        return res.json({ message: 'Se ha actualizado la información de su representante', updateRepresentante });
-                    } else {
-                        return res.json({ message: 'Este correo esta ligado a otro representante 1' });
-                    }
-                } else if (!searchRepresentanteByemail) {
+            const searchRepresentanteByemail = await Representante.findOne({ where: { correoPersonal: correoPersonal } })
+            console.log(searchRepresentanteByemail.correoPersonal)
+            if (searchRepresentanteByemail) {
+                console.log(searchRepresentante.id == searchRepresentanteByemail.id)
+                if (searchRepresentante.id == searchRepresentanteByemail.id) {
                     //console.log('datos: ', updateRepresentanteData)
                     const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
                     return res.json({ message: 'Se ha actualizado la información de su representante', updateRepresentante });
+                } else {
+                    return res.json({ message: 'Este correo esta ligado a otro representante 1' });
                 }
+            } else if (!searchRepresentanteByemail) {
+                //console.log('datos: ', updateRepresentanteData)
+                const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
+                return res.json({ message: 'Se ha actualizado la información de su representante', updateRepresentante });
             }
         } else {
             return res.json({ message: 'El representante no existe' });
@@ -519,6 +470,215 @@ let controller = {
         } else {
             return res.json({ message: 'Error al Eliminar' });
         }
+    },
+    /**
+    * registroEstudiantes: Funcion para crear una lista de nuevos usuarios con el  rol de estudiante.
+    * @param {*} req 
+    * @param {*} res 
+    * Recibe una lista de información personal, de indole familiar y dirección de su domicilio
+    * Se genera las credenciales para la tabla cuenta, con el correro personal y numero de identificación, al ser esta
+    * la clave, será encriptada.
+    * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
+    * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero 
+    * de identificación
+    * @returns La información de la persona y su cuenta.
+    */
+    registroEstudiantes: async (req, res) => {
+        const { lista_Estudiantes } = req.body;
+        for (let i = 0; i < lista_Estudiantes.length; i++) {
+            const {
+                nombre, apellido, tipoDocId, numeroId,
+                correoPersonal
+            } = lista_Estudiantes[i];
+            const estudianteData = {
+                nombre: nombre, apellido: apellido,
+                tipoDocId: tipoDocId, numeroId: numeroId,
+                id_rol: "6",
+                correoPersonal: correoPersonal,
+            }
+            const searchPersona = await Persona.findOne({
+                where: {
+                    [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
+                }
+            });
+            //console.log(tipoDocId)
+            if (!searchPersona) {
+                if (tipoDocId == 'pasaporte') {
+                    const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+                    if (!infoEstudianteCuenta) {
+                        const estudiante = await Persona.create(estudianteData);
+                        const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
+                        var salt = bcrypt.genSaltSync(10);
+                        let password = bcrypt.hashSync(numeroId, salt);
+                        const dataCuenta = {
+                            correo: correoPersonal,
+                            clave: password,
+                            estado: 0,
+                            id_persona: newEstudiante.id,
+                        };
+                        const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+                        if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
+                        const dataInfoMed = {
+                            id_persona: newEstudiante.id,
+                            discapacidad: "1",
+                            tipoDiscapacidad: "N/A",
+                            porcentajeDiscapacidad: "N/A",
+                            nCarnetDiscapacidad: "N/A",
+                            enfermedadCatastrofica: "1",
+                            tipoEnfermedadCatastrofica: "N/A"
+                        };
+                        const newInfoMedica = await InfoMedica.create(dataInfoMed);
+                        console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
+                    } else {
+                        console.log({ message: 'Ya existe un estudiante con ese correo' });
+                    }
+                } else {
+                    const cedulaValida = cedulaValidator.validator(numeroId);
+                    if (cedulaValida.flag == 3) {
+                        //const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+                        const estudiante = await Persona.create(estudianteData);
+                        const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
+                        var salt = bcrypt.genSaltSync(10);
+                        let password = bcrypt.hashSync(numeroId, salt);
+                        const dataCuenta = {
+                            correo: correoPersonal,
+                            clave: password,
+                            estado: 0,
+                            id_persona: newEstudiante.id,
+                        };
+                        const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+                        if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
+                        const dataInfoMed = {
+                            id_persona: newEstudiante.id,
+                            discapacidad: "1",
+                            tipoDiscapacidad: "N/A",
+                            porcentajeDiscapacidad: "N/A",
+                            nCarnetDiscapacidad: "N/A",
+                            enfermedadCatastrofica: "1",
+                            tipoEnfermedadCatastrofica: "N/A"
+                        };
+                        const newInfoMedica = await InfoMedica.create(dataInfoMed);
+                        console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
+
+                    } else {
+                        console.log({ message: cedulaValida.message });
+                    }
+                }
+            } else {
+                console.log({ message: 'Ya existe un estudiante con esta información' });
+            }
+        }
+        return res.json({ message: 'Se han registrado los estudiantes' })
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+    getCalifiaciones_asistencias: async (req, res) => {
+        const { externalId } = req.params;
+        let lista_calificaionesQ = [];
+        let lista_calificaionesT = [];
+        let lista_asistenciasXmateria = [];
+        let info_Matricula = [];
+
+
+        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
+        const info_estudiante = await Persona.findOne({ where: { external_id: externalId } });
+
+        const info_matricula_actual = await Matricula.findOne({
+            where: {
+                id_persona: info_estudiante.id,
+                id_anioLectivo_actual: info_anioLectivo.id
+            }
+        });
+        const info_paralelo = await Paralelo.findOne({
+            attributes: ['id', 'titulo', 'id_curso'],
+            where: { id: info_matricula_actual.id_paralelo }
+        });
+        console.log(info_paralelo)
+
+        const info_curso = await Curso.findOne({
+            attributes: ['id', 'nivelAcademico', 'gradoAcademico',],
+            where: { id: info_paralelo.id_curso }
+        });
+        console.log(info_curso)
+
+        const info_matricula = {
+            ...info_matricula_actual.dataValues,
+            titulo_paralelo: info_paralelo.titulo,
+            id_curso: info_curso.id,
+            nivelAcademico: info_curso.nivelAcademico,
+            gradoAcademico: info_curso.gradoAcademico,
+        };
+        info_Matricula.push(info_matricula)
+
+        const info_AsistenciaXDia = await AsistenciaXDia.findOne({ where: { id_matricula: info_matricula_actual.id } })
+        const info_AsistenciaXMate = await AsistenciaXMate.findAll({ where: { id_matricula: info_matricula_actual.id } })
+        const info_calificacionT = await CalificacionT.findAll({ where: { id_matricula: info_matricula_actual.id } })
+        const info_CalificacionQ = await CalificacionQ.findAll({ where: { id_matricula: info_matricula_actual.id } })
+
+
+
+        for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+            const id = info_AsistenciaXMate[i].id;
+            const id_materia = info_AsistenciaXMate[i].id_materia;
+
+            const asistenciaXmateria = await AsistenciaXMate.findOne({ where: { id: id } });
+            const info_materia = await Materia.findOne({
+                attributes: ['nombre', 'area'],
+                where: { id: id_materia }
+            });
+            const info_asistenciaXmateria = {
+                ...asistenciaXmateria.dataValues,
+                area: info_materia.area,
+                nombre: info_materia.nombre
+            };
+            lista_asistenciasXmateria.push(info_asistenciaXmateria);
+        }
+        for (let i = 0; i < info_calificacionT.length; i++) {
+            const id = info_calificacionT[i].id;
+            const id_materia = info_calificacionT[i].id_materia;
+
+            const calificacionT = await CalificacionT.findOne({ where: { id: id } });
+            const info_materia = await Materia.findOne({
+                attributes: ['nombre', 'area'],
+                where: { id: id_materia }
+            });
+            const info_CalificacionT = {
+                ...calificacionT.dataValues,
+                area: info_materia.area,
+                nombre: info_materia.nombre
+            };
+            lista_calificaionesT.push(info_CalificacionT);
+        }
+        for (let i = 0; i < info_CalificacionQ.length; i++) {
+            const id = info_CalificacionQ[i].id;
+            const id_materia = info_CalificacionQ[i].id_materia;
+
+            const calificacionQ = await CalificacionQ.findOne({ where: { id: id } });
+            const info_materia = await Materia.findOne({
+                attributes: ['nombre', 'area'],
+                where: { id: id_materia }
+            });
+            const info_calificacionQ = {
+                ...calificacionQ.dataValues,
+                area: info_materia.area,
+                nombre: info_materia.nombre
+            };
+            lista_calificaionesQ.push(info_calificacionQ);
+        }
+
+        return res.json({
+            info_Matricula,
+            lista_asistenciasXmateria,
+            info_AsistenciaXDia,
+            lista_calificaionesT,
+            lista_calificaionesQ
+        });
+
+
     }
     /**Fin funciones validadas */
 }
