@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "serve": "nodemon server.js"
+    "serve": "nodemon server.js",
+    "lint:fix": "eslint --fix ./utils"
   },
   "keywords": [
     "app",
@@ -38,6 +39,9 @@
     "sequelize": "^6.30.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "eslint": "^8.46.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.28.0",
+    "nodemon": "^3.0.1"
   }
 }
