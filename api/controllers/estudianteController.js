@@ -44,7 +44,7 @@ let controller = {
     getEstudiantesExternal: async (req, res) => {
         const estudiantes = await Persona.findAll(
             {
-                attributes: ['external_id'],
+                attributes: [['external_id', 'externalId']],
                 where: { id_rol: 6, estadoAc: null }
             });
         res.json(estudiantes);
