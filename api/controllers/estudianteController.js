@@ -36,18 +36,16 @@ let controller = {
             });
         res.json(estudiantes);
     },
-    /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
-    * @param {*} req 
-    * @param {*} res 
-    * @returns Una lista en formato json de los estuidantes registrados
-    */
-    getEstudiantesExternal: async (req, res) => {
-        const estudiantes = await Persona.findAll(
-            {
-                attributes: [['external_id', 'externalId']],
-                where: { id_rol: 6, estadoAc: null }
-            });
-        res.json(estudiantes);
+     /**
+     * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
+     * @param {*} req externalId
+     * @param {*} res 
+     * @returns Una lista en formato json de la información del estudiante en caso que exista
+     */
+     getEstudianteByEx: async (req, res) => {
+        const { externalId } = req.params;
+        const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+        return res.json({ infoEstudiante });
     },
     /**
      * createPerson: Funcion para crear un nuevo usuario con rol estudiante.
@@ -142,17 +140,6 @@ let controller = {
         } else {
             return res.json({ message: 'Ya existe un estudiante con esta información' });
         }
-    },
-    /**
-     * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
-     * @param {*} req externalId
-     * @param {*} res 
-     * @returns Una lista en formato json de la información del estudiante en caso que exista
-     */
-    getEstudianteByEx: async (req, res) => {
-        const { externalId } = req.params;
-        const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
-        return res.json({ infoEstudiante });
     },
     /**
      * updateEstudiante: Esta función sirve para editar la información del estudiante
@@ -679,7 +666,20 @@ let controller = {
         });
 
 
-    }
+    },
+       /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
+    * @param {*} req 
+    * @param {*} res 
+    * @returns Una lista en formato json de los estuidantes registrados
+    */
+       getEstudiantesExternal: async (req, res) => {
+        const estudiantes = await Persona.findAll(
+            {
+                attributes: [['external_id', 'externalId']],
+                where: { id_rol: 6, estadoAc: null }
+            });
+        res.json(estudiantes);
+    },
     /**Fin funciones validadas */
 }
 

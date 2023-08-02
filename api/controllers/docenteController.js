@@ -280,7 +280,6 @@ let controller = {
 
                 info_paraleloTutor.push(info_paralelo_tutor_curso);
 
-
                 for (let i = 0; i < info_cargaHoraria.cargaHoraria_Paralelos.length; i++) {
                     const id_paralelo = info_cargaHoraria.cargaHoraria_Paralelos[i].id_paralelo;
                     const info_paralelo_docente = await Paralelo.findOne({ where: { id: id_paralelo } });
@@ -1175,8 +1174,6 @@ let controller = {
         return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
-
-
     /**
      * @param {*} res 
      * @returns 
@@ -1198,7 +1195,6 @@ let controller = {
         }
         return res.json({ message: 'Se ha registrado la asistencia' });
     },
-
     /**Fin funciones validadas */
 }
 
