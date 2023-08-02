@@ -4708,6 +4708,37 @@ let controller = {
         return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
+    testPDF: async (req, res) => {
+        const { externalId } = req.body;
+        const inforPerson = await Persona.findOne({
+            attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+
+            where: { external_id: externalId }
+        });
+
+        const infoMatricula = await Matricula.findOne({ where: { id_persona: inforPerson.id } });
+        const infoParalelo = await Paralelo.findOne({ where: { id: infoMatricula.id_paralelo } });
+        const infoCurso = await Curso.findOne({ where: { id: infoParalelo.id_curso } });
+
+        const anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+
+        const infoSecretaria = await Persona.findOne({
+            attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+            where: { id_rol: 4 }
+        });
+        const infoRector = await Persona.findOne({
+            attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+            where: { id_rol: 1 }
+        });
+        return res.json({ inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector })
+
+        /** 2023-#
+        await pdfGenerator.calificacionesReport()
+        return res.json({
+            message: 'Pasa'
+        });
+        */
+    }
 
     /**Fin funciones validadas */
 }

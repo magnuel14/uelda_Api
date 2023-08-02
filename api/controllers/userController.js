@@ -14,7 +14,7 @@ let controller = {
     /** Implementado try cath*/
     getUsers: async (req, res) => {
         const users = await Persona.findAll({
-            attributes: ['id','nombre', 'apellido'] // Especifica los atributos que quieres obtener
+            attributes: ['id', 'nombre', 'apellido'] // Especifica los atributos que quieres obtener
         });
         res.json(users);
     },
@@ -151,12 +151,7 @@ let controller = {
             apellido: infoPersona.apellido, nombre: infoPersona.nombre
         });
     },
-    testPDF: async (req, res) => {
-        await pdfGenerator.calificacionesReport()
-        return res.json({
-            message: 'Pasa'
-        });
-    }
+   
     /** fin Implementado try cath*/
 }
 module.exports = controller;
