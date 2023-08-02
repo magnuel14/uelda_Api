@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+        padding-left: 17px;
+        padding-right: 17px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        }
+        table {
+        border-collapse: collapse;
+        }
+        .align{
+            text-align: center;
+        }
+        .full_width{
+            width: 100%;
+        }
+        .bold{
+            font-weight: 700;
+        }
+        td{
+            padding: 0;
+        }
+
+        .inner-table {
+            border: none;
+            margin: -2px; /* To compensate for the border of the outer table cell */
+        }
+
+        .borders td{
+            border: 1px solid red;
+        }
+        .text_head td{
+            height: 18px;
+        }
+        .lined_div{
+            display: inline-block;
+        }
+        .b_rigth{
+            border-right: 1px solid black;
+        }
+        .b_left{
+            border-left: 1px solid black;
+        }
+        .b_top{
+            border-top: 1px solid black;
+        }
+        .b_bottom{
+            border-bottom: 1px solid black;
+        }
+        .border{
+            border: 1px solid black;
+        }
+        .u_border{
+            border-right: 1px solid black;
+            border-left: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+        .text_table_small{
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .text_table_content{
+            font-size: 9px;
+        }
+        .bord td{
+            border: 1px solid black;
+        }
+        .font_tittle_table{
+            font-size: 11px;
+            font-weight: 700;
+        }
+            
+    </style>
+</head>
+<body>
+    <div class="align full_width bold" style="font-size: 19px;">UNIDAD EDUCATIVA LAURO DAMERVAL AYORA</div>
+    <div class="align full_width" style="font-size: 14px; margin-top: 7px;">Bachillerato Ciencias</div>
+    <div class="align full_width" style="font-size: 16px;">REPORTE DE EVALUACIÓN</div>
+    <table class="full_width">
+        <tbody>
+            <tr>
+                <td class="align" style="font-size: 15px;"><strong>Año Lectivo:</strong> 2021-2022</td>
+                <td class="align" style="font-size: 15px;"><strong>Régimen</strong>: SIERRA</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="full_width" style="border-top: 1px solid black;"></div>
+    <div style="font-size: 11px;">Datos Informativos del Estudiante:</div>
+    <table class="full_width" style="font-size: 11px;">
+        <tbody>
+            <tr class="text_head">
+                <td style="width: 37%;">
+                    <div class="lined_div" style="margin: 0%; width: 43px;">Nombre:</div> 
+                    <div class="lined_div align" style="margin: 0%; width: 343px;">BRAVO HIDALGO ANDRES LEONARDO</div>
+                </td>
+                <td style="width: 25%;">
+                    <div class="lined_div" style="margin: 0%; width: 73px;">Grado/Paralelo:</div> 
+                    <div class="lined_div align" style="margin: 0%; width: 180px;">1er Año Bachillerato A</div>
+                </td>
+                <td style="width: 37%;">
+                    <div class="lined_div" style="margin: 0%; width: 53px;">Institución:</div> 
+                    <div class="lined_div align" style="margin: 0%; width: 330px;">UNIDAD EDUCATIVA LAURO DAMERVAL AYORA</div>
+                </td>
+            </tr>
+            <tr class="text_head">
+                <td> 
+                    <div class="lined_div" style="margin: 0%; width: 93px;">Código Mineduc:</div> 
+                    <div class="lined_div align" style="margin: 0%; width: 250px;">1105791774</div>
+                </td>
+                <td> 
+                    <div class="lined_div" style="margin: 0%; width: 73px;">Jornada:</div> 
+                    <div class="lined_div align" style="margin: 0%; width: 180px;">MATUTINA</div>
+                </td>
+                <td> 
+                    <div class="lined_div" style="margin: 0%; width: 73px;">Modalidad:</div> 
+                    <div class="lined_div align" style="margin: 0%; width: 270px;">PRESENCIAL</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="full_width" style="border-top: 1px solid black;"></div>
+    <table class="full_width" style="margin-top: 3px;">
+        <tr>
+            <td class="align bold" colspan="24" style="background-color: rgba(128, 128, 128, 0.329); font-size: 13px;">REPORTE ANUAL DE CALIFICACIONES</td>
+        </tr>
+        <tr class="align font_tittle_table">
+            <td colspan="2" style="border-right: 1px solid black;"></td>
+            <td colspan="8" style="border-right: 1px solid black;">PRIMER QUIMESTRE </td>
+            <td colspan="8" style="border-right: 1px solid black;">SEGUNDO QUIMESTRE</td>
+            <td colspan="1" rowspan="2" style="border-right: 1px solid black; width: 33px;">Suple</td>
+            <td colspan="2" style="border-right: 1px solid black; font-size: 9px;">PROMEDIO ANUAL</td>
+            <td colspan="3" style="border-right: 1px solid black;">ASISTENCIA</td>
+        </tr>
+        <tr class="align text_table_small bord">
+            <td style="text-align: start; width: 134px ;">Áreas</td>
+            <td style="text-align: start; width: 199px ;">Asignatura</td>
+            <td style="width: 32px;">P1</td>
+            <td style="width: 32px;">P2</td>
+            <td style="width: 32px;">PROM</td>
+            <td style="width: 32px;">%PRO (80%)</td>
+            <td style="width: 33px;">EXAM</td>
+            <td style="width: 32px;">%EX (20%)</td>
+            <td style="width: 33px;">QUI</td>
+            <td style="width: 33px;">EC</td>
+            <td style="width: 32px;">P1</td>
+            <td style="width: 32px;">P2</td>
+            <td style="width: 32px;">PROM</td>
+            <td style="width: 32px;">%PRO (80%)</td>
+            <td style="width: 33px;">EXAM</td>
+            <td style="width: 32px;">%EX (20%)</td>
+            <td style="width: 33px;">QUI</td>
+            <td style="width: 33px;">EC</td>
+            <td style="width: 33px;">PA</td>
+            <td style="width: 33px;">EC</td>
+            <td>H.J</td>
+            <td>H.I</td>
+            <td>ASIS</td>
+        </tr>
+
+
+
+
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        <tr class="align bord text_table_content">
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td style="text-align: start;">LENGUA Y LITERATURA</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+        
+        
+
+
+
+        
+        
+        <tr class="align bord text_table_content" style="font-weight: 700;">
+            <td colspan="2" style="text-align: start;">PROMEDIO GENERAL</td>
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td>  
+            <td>8,78</td>
+            <td>8,55</td>
+            <td>8,66</td>
+            <td>6,92</td>
+            <td>9,31</td>
+            <td>1,86</td>
+            <td>8,78</td>
+            <td>AA</td> 
+            <td>0.00</td>
+            <td>8.17</td>
+            <td>AA</td> 
+            <td>0</td>
+            <td>0</td>
+            <td>125</td>
+        </tr>
+    </table>
+
+    <table style="margin-top: 10px; width: 35%;">
+        <tbody>
+            <tr style="font-weight: 700;">
+                <td ></td>
+                <td class="border align" colspan="3">QUIMESTRE 1 </td>
+                <td class="border align" colspan="3">QUIMESTRE 2</td>
+            </tr>
+            <tr class="bord align" style="font-weight: 700;">
+                <td></td>     
+                <td>P1</td>
+                <td>P2</td>
+                <td>Q1</td>
+                <td>P1</td>
+                <td>P2</td>
+                <td>Q2</td>
+            </tr>
+            <tr class="bord align">
+                <td style="font-weight: 700;">COMPORTAMIENTO</td>
+                <td>A</td>
+                <td>A</td>
+                <td>A</td>
+                <td>A</td>
+                <td>A</td>
+                <td>A</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="margin-top: 5px; font-size: 9px; width: 50%;">
+        <tbody>
+            <tr class="bord">
+                <td>COMPORTAMIENTO</td>
+                <td>PROYECTOS ESCOLARES</td>
+                <td>ESCALA CUALITATIVA ESCALA CUANTITATIVA</td>
+            </tr>
+            <tr class="bord">
+                <td style="padding-left: 4px;">
+                    <div>A= Muy satisfactorio</div>
+                    <div>B= Satisfactorio</div>
+                    <div>C= Poco Satisfactorioo</div>
+                    <div>D= Mejorable</div>
+                    <div>E= Insatisfactorio</div>
+                </td>
+                <td style="padding-left: 4px;">
+                    <div>EX= Excelente</div>
+                    <div>MB= Muy Buena</div>
+                    <div>B= Buena</div>
+                    <div>R= Regular</div>
+                </td>
+                <td style="padding-left: 4px;">
+                    <div>DA Domina los aprendizajes requeridos             9.00-10.00</div>
+                    <div>AA Alcanza los aprendizajes requeridos            7.00-8.99</div>
+                    <div>PA Próximo a alcanzar los aprendizajes requeridos 4.01-6.99</div>
+                    <div>NA No alzanda los aprendizajes requeridos         <=4</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="align" style="margin-top: 20px; font-size: 9px; font-weight: 700;">
+        <div style="display: inline-block; width: 240px; margin: 5%; border-top: 1px solid black;">RECTOR/A - DIRECTOR/A - LIDER EDUCATIVO</div>
+        <div style="display: inline-block; width: 240px; margin: 5%; border-top: 1px solid black;">DOCENTE TUTOR</div>
+        <div style="display: inline-block; width: 240px; margin: 5%; border-top: 1px solid black;">PADRE DE FAMILIA</div>
+    </div>
+</body>
+</html>

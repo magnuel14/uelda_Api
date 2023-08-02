@@ -4,6 +4,7 @@ const models = require('../models');
 const bcrypt = require('bcryptjs');
 const cloudinaryC = require('../../cloudinary');
 const fs = require('fs-extra');
+const pdfGenerator = require('../../helpers/pdf-generator')
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
@@ -148,6 +149,12 @@ let controller = {
         return res.json({
             message: 'Se ha actualizado el estado de la cuenta de: ',
             apellido: infoPersona.apellido, nombre: infoPersona.nombre
+        });
+    },
+    testPDF: async (req, res) => {
+        await pdfGenerator.calificacionesReport()
+        return res.json({
+            message: 'Pasa'
         });
     }
     /** fin Implementado try cath*/
