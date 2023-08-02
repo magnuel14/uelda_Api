@@ -4730,8 +4730,8 @@ let controller = {
             attributes: ['id', 'nombre', 'apellido', 'numeroId'],
             where: { id_rol: 1 }
         });
-        return res.json({ inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector })
-
+        //return res.json({ inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector })
+        let info = ({ inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector });
         /** 2023-#
         await pdfGenerator.calificacionesReport()
         return res.json({
