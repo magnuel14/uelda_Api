@@ -1,9 +1,9 @@
-'use strict';
-const models = require('../models');
-const bcrypt = require('bcryptjs');
+"use strict";
+const models = require("../models");
+const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 
-const cedulaValidator = require('../../helpers/cedulaHelper');
+const cedulaValidator = require("../../helpers/cedulaHelper");
 
 const Persona = models.persona;
 const Representante = models.representante;
@@ -20,667 +20,945 @@ const CalificacionT = models.calificacionT;
 const Paralelo = models.paralelo;
 const Curso = models.curso;
 
-
-
 let controller = {
-    /** Implementado try cath*/
-    /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
-     * @param {*} req 
-     * @param {*} res 
-     * @returns Una lista en formato json de los estuidantes registrados
-     */
-    getEstudiantes: async (req, res) => {
-        const estudiantes = await Persona.findAll(
-            {
-                include: [Cuenta], where: { id_rol: 6 }
-            });
-        res.json(estudiantes);
-    },
-    /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
-    * @param {*} req 
-    * @param {*} res 
-    * @returns Una lista en formato json de los estuidantes registrados
-    */
-    getEstudiantesExternal: async (req, res) => {
-        const estudiantes = await Persona.findAll(
-            {
-                attributes: ['external_id'],
-                where: { id_rol: 6, estadoAc: null }
-            });
-        res.json(estudiantes);
-    },
-    /**
-     * createPerson: Funcion para crear un nuevo usuario con rol estudiante.
-     * @param {*} req 
-     * @param {*} res 
-     * Recibe una lista de información personal, de indole familiar y dirección de su domicilio
-     * Se genera las credenciales para la tabla cuenta, con el correro personal y numero de identificación, al ser esta
-     * la clave, será encriptada.
-     * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
-     * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero 
-     * de identificación
-     * @returns La información de la persona y su cuenta.
-     */
-    createEstudiante: async (req, res) => {
-        const {
-            nombre, apellido, tipoDocId, numeroId,
-            correoPersonal
-        } = req.body
-        const estudianteData = {
-            nombre: nombre, apellido: apellido,
-            tipoDocId: tipoDocId, numeroId: numeroId,
-            id_rol: "6",
-            correoPersonal: correoPersonal,
-        }
-        const searchPersona = await Persona.findOne({ where: { numeroId: numeroId } });
-        if (!searchPersona) {
-            if (tipoDocId == 'pasaporte') {
-                const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
-                if (!infoEstudianteCuenta) {
-                    const estudiante = await Persona.create(estudianteData);
-                    const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
-                    var salt = bcrypt.genSaltSync(10);
-                    let password = bcrypt.hashSync(numeroId, salt);
-                    const dataCuenta = {
-                        correo: correoPersonal,
-                        clave: password,
-                        estado: 0,
-                        id_persona: newEstudiante.id,
-                    };
-                    const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-                    if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
-                    const dataInfoMed = {
-                        id_persona: newEstudiante.id,
-                        discapacidad: "1",
-                        tipoDiscapacidad: "N/A",
-                        porcentajeDiscapacidad: "N/A",
-                        nCarnetDiscapacidad: "N/A",
-                        enfermedadCatastrofica: "1",
-                        tipoEnfermedadCatastrofica: "N/A"
-                    };
-                    const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                    console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
-                } else {
-                    console.log({ message: 'Ya existe un estudiante con ese correo' });
-                }
-            } else {
-                const cedulaValida = cedulaValidator.validator(numeroId);
-                if (cedulaValida.flag == 3) {
-                    const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
-
-                    if (!infoEstudianteCuenta) {
-                        const estudiante = await Persona.create(estudianteData);
-                        const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
-                        var salt = bcrypt.genSaltSync(10);
-                        let password = bcrypt.hashSync(numeroId, salt);
-                        const dataCuenta = {
-                            correo: correoPersonal,
-                            clave: password,
-                            estado: 0,
-                            id_persona: newEstudiante.id,
-                        };
-                        const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-                        if (!newEstudianteCuenta) return res.json({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
-                        const dataInfoMed = {
-                            id_persona: newEstudiante.id,
-                            discapacidad: "1",
-                            tipoDiscapacidad: "N/A",
-                            porcentajeDiscapacidad: "N/A",
-                            nCarnetDiscapacidad: "N/A",
-                            enfermedadCatastrofica: "1",
-                            tipoEnfermedadCatastrofica: "N/A"
-                        };
-                        const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                        return res.json({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
-                    } else {
-                        return res.json({ message: 'Ya existe un estudiante con ese correo' });
-                    }
-                } else {
-                    return res.json({ message: cedulaValida.message });
-                }
-            }
-        } else {
-            return res.json({ message: 'Ya existe un estudiante con esta información' });
-        }
-    },
-    /**
-     * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
-     * @param {*} req externalId
-     * @param {*} res 
-     * @returns Una lista en formato json de la información del estudiante en caso que exista
-     */
-    getEstudianteByEx: async (req, res) => {
-        const { externalId } = req.params;
-        const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
-        return res.json({ infoEstudiante });
-    },
-    /**
-     * updateEstudiante: Esta función sirve para editar la información del estudiante
-     * @param {*} req 
-     * @param {*} res 
-     * Recibe la lista de atributos segun su modelo descritos en Persona, pero con la restricción
-     * de que hay que diferenciar campos para el personal y para el estudiante como:
-     *  estadoPadres, listaHogar, estadoAc.
-     * Se carga el externalId del Estudiante el cual se usa en la condicion "where" (sql)
-     * Y la upateEstudianteData que es la informacin nueva para el Estudiante
-     * @returns Un mensaje de comprobación del estado de la tarea
-     */
-    updateEstudiante: async (req, res) => {
-        const {
-            externalId,
-            nombre, apellido, nacionalidad, cuidadNaci, provincia, fechaNaci,
-            edad, correoPersonal, celular, telefono,
-            etnia, tipoGenero,
-            parroquia, barrio, refeCasa, idenCasa, callePrin, calleSecond, codigoUnicLuz,
-            estadoPadres, listaHogar,
-            estadoAc
-        } = req.body;
-        const upateEstudianteData = {
-            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-            provincia: provincia, fechaNaci: fechaNaci, edad: edad, correoPersonal: correoPersonal,
-            celular: celular, telefono: telefono,
-            etnia: etnia, tipoGenero: tipoGenero,
-            parroquia: parroquia, barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
-            calleSecond: calleSecond,
-            codigoUnicLuz: codigoUnicLuz, estadoPadres: estadoPadres, listaHogar: listaHogar,
-            estadoAc: estadoAc
-        };
-        const dataCuenta = {
+  /** Implementado try cath*/
+  /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
+   * @param {*} req
+   * @param {*} res
+   * @returns Una lista en formato json de los estuidantes registrados
+   */
+  getEstudiantes: async (req, res) => {
+    const estudiantes = await Persona.findAll({
+      include: [Cuenta],
+      where: { id_rol: 6 },
+    });
+    res.json(estudiantes);
+  },
+  /**getEstudiantes: Funcion get para obtener la lista de usuarios con rol estudiante
+   * @param {*} req
+   * @param {*} res
+   * @returns Una lista en formato json de los estuidantes registrados
+   */
+  getEstudiantesExternal: async (req, res) => {
+    const estudiantes = await Persona.findAll({
+      attributes: ["external_id"],
+      where: { id_rol: 6, estadoAc: null },
+    });
+    res.json(estudiantes);
+  },
+  /**
+   * createPerson: Funcion para crear un nuevo usuario con rol estudiante.
+   * @param {*} req
+   * @param {*} res
+   * Recibe una lista de información personal, de indole familiar y dirección de su domicilio
+   * Se genera las credenciales para la tabla cuenta, con el correro personal y numero de identificación, al ser esta
+   * la clave, será encriptada.
+   * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
+   * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero
+   * de identificación
+   * @returns La información de la persona y su cuenta.
+   */
+  createEstudiante: async (req, res) => {
+    const { nombre, apellido, tipoDocId, numeroId, correoPersonal } = req.body;
+    const estudianteData = {
+      nombre: nombre,
+      apellido: apellido,
+      tipoDocId: tipoDocId,
+      numeroId: numeroId,
+      id_rol: "6",
+      correoPersonal: correoPersonal,
+    };
+    const searchPersona = await Persona.findOne({
+      where: { numeroId: numeroId },
+    });
+    if (!searchPersona) {
+      if (tipoDocId == "pasaporte") {
+        const infoEstudianteCuenta = await Persona.findOne({
+          where: { correoPersonal: correoPersonal },
+        });
+        if (!infoEstudianteCuenta) {
+          const estudiante = await Persona.create(estudianteData);
+          const newEstudiante = await Persona.findOne({
+            where: { numeroId: numeroId },
+          });
+          var salt = bcrypt.genSaltSync(10);
+          let password = bcrypt.hashSync(numeroId, salt);
+          const dataCuenta = {
             correo: correoPersonal,
-        };
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
-        if (infoPersona) {
-            console.log('1', infoPersona.id == infoEstudianteCuenta)
-            if (infoEstudianteCuenta) {
-                console.log('2:', infoPersona.id == infoEstudianteCuenta.id)
-                if (infoPersona.id == infoEstudianteCuenta.id) {
-                    const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-                    await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-                    //console.log('datos: ', upateEstudianteData)
-                    await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
-                    return res.json({ message: 'Se ha actualizado la información del estudiante' });
-                } else {
-                    return res.json({ message: 'Este correo esta ligado a otra cuenta' });
-                }
-            } else {
-                const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-                await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-                //console.log('datos: ', upateEstudianteData)
-                await Persona.update(upateEstudianteData, { where: { external_id: externalId } });
-                return res.json({ message: 'Se ha actualizado la información del estudiante' });
-            }
+            clave: password,
+            estado: 0,
+            id_persona: newEstudiante.id,
+          };
+          const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+          if (!newEstudianteCuenta)
+            console.log({
+              message:
+                "La cuenta no se puedo crear, revise bien su informacion.",
+            });
+          const dataInfoMed = {
+            id_persona: newEstudiante.id,
+            discapacidad: "1",
+            tipoDiscapacidad: "N/A",
+            porcentajeDiscapacidad: "N/A",
+            nCarnetDiscapacidad: "N/A",
+            enfermedadCatastrofica: "1",
+            tipoEnfermedadCatastrofica: "N/A",
+          };
+          const newInfoMedica = await InfoMedica.create(dataInfoMed);
+          console.log({
+            message: "Ha generado un nuevo usuario",
+            estudiante,
+            newEstudianteCuenta,
+            newInfoMedica,
+          });
         } else {
-            return res.json({ message: 'No existe un estudiante con esta información' });
+          console.log({ message: "Ya existe un estudiante con ese correo" });
         }
-    },
-    /**
-     * getRepresentanteByEx: Función para obtener el o los representantes registrados del estudiante según su 
-     * externalId
-     * Se hace una busqueda del estudiante, el externalId se lo emplea en la condicion "where" (sql)
-     * @param {*} req externalId
-     * @param {*} res 
-     * @returns Una lista en formato json del o los representantes registrados
-     */
-    getRepresentantesByEx: async (req, res) => {
-        const { externalId } = req.params;
-        const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
-        const infoRepresentante = await Representante.findAll({ where: { id_persona: infoEstudiante.id } });
-        return res.json({ infoRepresentante });
-    },
-    /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     * @returns 
-     */
-    getRepresentanteByDNI: async (req, res) => {
-        const { numeroId } = req.params;
-        //const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
-        const infoRepresentante = await Representante.findOne({ where: { numeroId: numeroId } });
-        return res.json({ infoRepresentante });
-    },
-    /**
-     *createRepresentante: Función para crear un representante 
-     *Se recibe una lista de atributos especificados en el modelo de representante
-     *Se comprueba si ya existe un representante segun su numero de DNI
-     *Se comprueba si ya existe un representante con autorizacionRetirarDoc = 0,
-     *Esto debido a que solo un representante debe tener esta autorización
-     *Se coprueba si el docuemnto DNI es pasaporte o cedula
-     *En caso de ser cedula e la valida
-     * @param {*} req 
-     * @param {*} res 
-     * @returns Un mensaje del estado de la tarea
-     */
-    createRepresentante: async (req, res) => {
-        const {
-            externalId,
-            nombre, apellido, nacionalidad, tipoDocId, numeroId,
-            correoPersonal, celular, nivelEdu, ocuLab, direcTrabajo,
-            teleTrabajo, relacionFamiliar, contactoEmer,
-            autorizacionRetirarDoc
-        } = req.body;
-        const searchRepresentante = await Representante.findOne({
-            where: {
-                [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
-            }
-        })
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
-        if (infoRepresentantes.length <= 2) {
-            if (!searchRepresentante) {
-                if (tipoDocId == 'pasaporte') {
-                    const representnateData = {
-                        nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                        correoPersonal: correoPersonal,
-                        celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
-                        nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                        teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                        autorizacionRetirarDoc: autorizacionRetirarDoc,
-                        id_persona: infoPersona.id,
-                    };
-                    //console.log('datos: ', representnateData)
-                    const newRepresentante = await Representante.create(representnateData);
-                    return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
-                } else {
-                    const cedulaValida = cedulaValidator.validator(numeroId);
-                    if (cedulaValida.flag == 3) {
-                        const representnateData = {
-                            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
-                            correoPersonal: correoPersonal,
-                            celular: celular, tipoDocId: tipoDocId, numeroId: numeroId,
-                            nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-                            teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
-                            autorizacionRetirarDoc: autorizacionRetirarDoc,
-                            id_persona: infoPersona.id,
-                        };
-                        //console.log('datos: ', representnateData)
-                        const newRepresentante = await Representante.create(representnateData);
-                        return res.json({ message: 'Se ha ingresado la información de su representante', newRepresentante });
-                    } else {
-                        return res.json({ message: cedulaValida.message });
-                    }
-                }
-            } else {
-                return res.json({ message: 'Ya existe un representante con ese numero de DNI o Correo Personal' });
-            }
+      } else {
+        const cedulaValida = cedulaValidator.validator(numeroId);
+        if (cedulaValida.flag == 3) {
+          const infoEstudianteCuenta = await Persona.findOne({
+            where: { correoPersonal: correoPersonal },
+          });
 
+          if (!infoEstudianteCuenta) {
+            const estudiante = await Persona.create(estudianteData);
+            const newEstudiante = await Persona.findOne({
+              where: { numeroId: numeroId },
+            });
+            var salt = bcrypt.genSaltSync(10);
+            let password = bcrypt.hashSync(numeroId, salt);
+            const dataCuenta = {
+              correo: correoPersonal,
+              clave: password,
+              estado: 0,
+              id_persona: newEstudiante.id,
+            };
+            const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+            if (!newEstudianteCuenta)
+              return res.json({
+                message:
+                  "La cuenta no se puedo crear, revise bien su informacion.",
+              });
+            const dataInfoMed = {
+              id_persona: newEstudiante.id,
+              discapacidad: "1",
+              tipoDiscapacidad: "N/A",
+              porcentajeDiscapacidad: "N/A",
+              nCarnetDiscapacidad: "N/A",
+              enfermedadCatastrofica: "1",
+              tipoEnfermedadCatastrofica: "N/A",
+            };
+            const newInfoMedica = await InfoMedica.create(dataInfoMed);
+            return res.json({
+              message: "Ha generado un nuevo usuario",
+              estudiante,
+              newEstudianteCuenta,
+              newInfoMedica,
+            });
+          } else {
+            return res.json({
+              message: "Ya existe un estudiante con ese correo",
+            });
+          }
         } else {
-            return res.json({ message: 'El estudiante solo puede tener como maximo 3 representantes' });
+          return res.json({ message: cedulaValida.message });
         }
-    },
-    /**
-     *updateRepresentante: Función para actulizar datos de un representante 
-     *Se recibe una lista de atributos especificados en el modelo de representante
-     *a excepción de tipo tipoDocId, numeroId.
-     *Se comprueba si ya existe un representante segun su numero de DNI
-     *Se comprueba si ya existe un representante con autorizacionRetirarDoc = 0,
-     *Esto debido a que solo un representante debe tener esta autorización
-     * @param {*} req 
-     * @param {*} res 
-     * @returns Un mensaje del estado de la tarea
-     */
-    updateRepresentante: async (req, res) => {
-        const {
-            externalId,
-            nombre, apellido, nacionalidad,
-            correoPersonal, celular, nivelEdu, ocuLab, direcTrabajo,
-            teleTrabajo, relacionFamiliar, contactoEmer, numeroId,
-            autorizacionRetirarDoc
-        } = req.body;
-        const updateRepresentanteData = {
-            nombre: nombre, apellido: apellido, nacionalidad: nacionalidad,
+      }
+    } else {
+      return res.json({
+        message: "Ya existe un estudiante con esta información",
+      });
+    }
+  },
+  /**
+   * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
+   * @param {*} req externalId
+   * @param {*} res
+   * @returns Una lista en formato json de la información del estudiante en caso que exista
+   */
+  getEstudianteByEx: async (req, res) => {
+    try {
+      const { externalId } = req.params;
+
+      // Buscar el estudiante por externalId
+      const estudiante = await Persona.findOne({
+        where: { external_id: externalId },
+      });
+
+      if (!estudiante) {
+        return res.status(404).json({ error: "Estudiante no encontrado" });
+      }
+
+      const anioLectivoActual = await AnioLectivo.findOne({
+        where: { estadoAniolectivo: 0 },
+      });
+
+      if (!anioLectivoActual){
+        return res.status(404).json({ error: "No existe un año lectivo activo" });
+      }
+
+      // Buscar la matrícula del estudiante
+      const matricula = await Matricula.findOne({
+        where: {
+          id_persona: estudiante.id,
+          id_anioLectivo_actual: anioLectivoActual.id,
+        },
+      });
+
+      if (!matricula) {
+        return res
+          .status(404)
+          .json({ error: "Matrícula no encontrada para este estudiante" });
+      }
+
+      // Buscar las calificaciones por trimestre o quimestre de la matrícula
+      let calificaciones = [];
+      let tipoCalificacion = '';
+
+      if (anioLectivoActual.tipoCalificacion == 0) {
+        calificaciones = await CalificacionQ.findAll({
+            where: { id_matricula: matricula.id },
+        });
+        tipoCalificacion = 'quimestre';
+      } else {
+        calificaciones = await CalificacionT.findAll({
+            where: { id_matricula: matricula.id },
+        });
+        tipoCalificacion = 'trimestre';
+      }
+      
+      // Crear una respuesta con toda la información recolectada
+      const response = {
+        infoEstudiante: estudiante,
+        matricula: matricula,
+        calificaciones: calificaciones,
+        tipoCalificacion: tipoCalificacion,
+      };
+
+      return res.json(response);
+    } catch (error) {
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
+  },
+  /**
+   * updateEstudiante: Esta función sirve para editar la información del estudiante
+   * @param {*} req
+   * @param {*} res
+   * Recibe la lista de atributos segun su modelo descritos en Persona, pero con la restricción
+   * de que hay que diferenciar campos para el personal y para el estudiante como:
+   *  estadoPadres, listaHogar, estadoAc.
+   * Se carga el externalId del Estudiante el cual se usa en la condicion "where" (sql)
+   * Y la upateEstudianteData que es la informacin nueva para el Estudiante
+   * @returns Un mensaje de comprobación del estado de la tarea
+   */
+  updateEstudiante: async (req, res) => {
+    const {
+      externalId,
+      nombre,
+      apellido,
+      nacionalidad,
+      cuidadNaci,
+      provincia,
+      fechaNaci,
+      edad,
+      correoPersonal,
+      celular,
+      telefono,
+      etnia,
+      tipoGenero,
+      parroquia,
+      barrio,
+      refeCasa,
+      idenCasa,
+      callePrin,
+      calleSecond,
+      codigoUnicLuz,
+      estadoPadres,
+      listaHogar,
+      estadoAc,
+    } = req.body;
+    const upateEstudianteData = {
+      nombre: nombre,
+      apellido: apellido,
+      nacionalidad: nacionalidad,
+      cuidadNaci: cuidadNaci,
+      provincia: provincia,
+      fechaNaci: fechaNaci,
+      edad: edad,
+      correoPersonal: correoPersonal,
+      celular: celular,
+      telefono: telefono,
+      etnia: etnia,
+      tipoGenero: tipoGenero,
+      parroquia: parroquia,
+      barrio: barrio,
+      refeCasa: refeCasa,
+      idenCasa: idenCasa,
+      callePrin: callePrin,
+      calleSecond: calleSecond,
+      codigoUnicLuz: codigoUnicLuz,
+      estadoPadres: estadoPadres,
+      listaHogar: listaHogar,
+      estadoAc: estadoAc,
+    };
+    const dataCuenta = {
+      correo: correoPersonal,
+    };
+    const infoPersona = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+    const infoEstudianteCuenta = await Persona.findOne({
+      where: { correoPersonal: correoPersonal },
+    });
+    if (infoPersona) {
+      console.log("1", infoPersona.id == infoEstudianteCuenta);
+      if (infoEstudianteCuenta) {
+        console.log("2:", infoPersona.id == infoEstudianteCuenta.id);
+        if (infoPersona.id == infoEstudianteCuenta.id) {
+          const updateDataCuenta = await Cuenta.findOne({
+            where: { id_persona: infoPersona.id },
+          });
+          await Cuenta.update(dataCuenta, {
+            where: { id: updateDataCuenta.id },
+          });
+          //console.log('datos: ', upateEstudianteData)
+          await Persona.update(upateEstudianteData, {
+            where: { external_id: externalId },
+          });
+          return res.json({
+            message: "Se ha actualizado la información del estudiante",
+          });
+        } else {
+          return res.json({ message: "Este correo esta ligado a otra cuenta" });
+        }
+      } else {
+        const updateDataCuenta = await Cuenta.findOne({
+          where: { id_persona: infoPersona.id },
+        });
+        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+        //console.log('datos: ', upateEstudianteData)
+        await Persona.update(upateEstudianteData, {
+          where: { external_id: externalId },
+        });
+        return res.json({
+          message: "Se ha actualizado la información del estudiante",
+        });
+      }
+    } else {
+      return res.json({
+        message: "No existe un estudiante con esta información",
+      });
+    }
+  },
+  /**
+   * getRepresentanteByEx: Función para obtener el o los representantes registrados del estudiante según su
+   * externalId
+   * Se hace una busqueda del estudiante, el externalId se lo emplea en la condicion "where" (sql)
+   * @param {*} req externalId
+   * @param {*} res
+   * @returns Una lista en formato json del o los representantes registrados
+   */
+  getRepresentantesByEx: async (req, res) => {
+    const { externalId } = req.params;
+    const infoEstudiante = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+    const infoRepresentante = await Representante.findAll({
+      where: { id_persona: infoEstudiante.id },
+    });
+    return res.json({ infoRepresentante });
+  },
+  /**
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  getRepresentanteByDNI: async (req, res) => {
+    const { numeroId } = req.params;
+    //const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+    const infoRepresentante = await Representante.findOne({
+      where: { numeroId: numeroId },
+    });
+    return res.json({ infoRepresentante });
+  },
+  /**
+   *createRepresentante: Función para crear un representante
+   *Se recibe una lista de atributos especificados en el modelo de representante
+   *Se comprueba si ya existe un representante segun su numero de DNI
+   *Se comprueba si ya existe un representante con autorizacionRetirarDoc = 0,
+   *Esto debido a que solo un representante debe tener esta autorización
+   *Se coprueba si el docuemnto DNI es pasaporte o cedula
+   *En caso de ser cedula e la valida
+   * @param {*} req
+   * @param {*} res
+   * @returns Un mensaje del estado de la tarea
+   */
+  createRepresentante: async (req, res) => {
+    const {
+      externalId,
+      nombre,
+      apellido,
+      nacionalidad,
+      tipoDocId,
+      numeroId,
+      correoPersonal,
+      celular,
+      nivelEdu,
+      ocuLab,
+      direcTrabajo,
+      teleTrabajo,
+      relacionFamiliar,
+      contactoEmer,
+      autorizacionRetirarDoc,
+    } = req.body;
+    const searchRepresentante = await Representante.findOne({
+      where: {
+        [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }],
+      },
+    });
+    const infoPersona = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+    const infoRepresentantes = await Representante.findAll({
+      where: { id_persona: infoPersona.id },
+    });
+    if (infoRepresentantes.length <= 2) {
+      if (!searchRepresentante) {
+        if (tipoDocId == "pasaporte") {
+          const representnateData = {
+            nombre: nombre,
+            apellido: apellido,
+            nacionalidad: nacionalidad,
             correoPersonal: correoPersonal,
             celular: celular,
-            nivelEdu: nivelEdu, ocuLab: ocuLab, direcTrabajo: direcTrabajo,
-            teleTrabajo: teleTrabajo, relacionFamiliar: relacionFamiliar, contactoEmer: contactoEmer,
+            tipoDocId: tipoDocId,
+            numeroId: numeroId,
+            nivelEdu: nivelEdu,
+            ocuLab: ocuLab,
+            direcTrabajo: direcTrabajo,
+            teleTrabajo: teleTrabajo,
+            relacionFamiliar: relacionFamiliar,
+            contactoEmer: contactoEmer,
             autorizacionRetirarDoc: autorizacionRetirarDoc,
-        };
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        const searchRepresentante = await Representante.findOne({
-            where: {
-                [Op.and]: [{ numeroId: numeroId }, { id_persona: infoPersona.id }]
-            }
-        })
-        console.log(searchRepresentante.correoPersonal)
-
-        if (searchRepresentante) {
-            const searchRepresentanteByemail = await Representante.findOne({ where: { correoPersonal: correoPersonal } })
-            console.log(searchRepresentanteByemail.correoPersonal)
-            if (searchRepresentanteByemail) {
-                console.log(searchRepresentante.id == searchRepresentanteByemail.id)
-                if (searchRepresentante.id == searchRepresentanteByemail.id) {
-                    //console.log('datos: ', updateRepresentanteData)
-                    const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
-                    return res.json({ message: 'Se ha actualizado la información de su representante', updateRepresentante });
-                } else {
-                    return res.json({ message: 'Este correo esta ligado a otro representante 1' });
-                }
-            } else if (!searchRepresentanteByemail) {
-                //console.log('datos: ', updateRepresentanteData)
-                const updateRepresentante = await Representante.update(updateRepresentanteData, { where: { numeroId: numeroId } });
-                return res.json({ message: 'Se ha actualizado la información de su representante', updateRepresentante });
-            }
+            id_persona: infoPersona.id,
+          };
+          //console.log('datos: ', representnateData)
+          const newRepresentante = await Representante.create(
+            representnateData
+          );
+          return res.json({
+            message: "Se ha ingresado la información de su representante",
+            newRepresentante,
+          });
         } else {
-            return res.json({ message: 'El representante no existe' });
-        }
-    },
-    /**
-    *deleteRepresentante: Función para eliminar al representante 
-    *Se recibe el externalId del estudiante y el numeroId del representante
-    *Se comprueba si existe un representante segun su numero de DNI
-    *Se comprueba si almenos hay un representante registrado
-    *En caso de que solo exista un representante registrado no se puede elimnar a dicho representante
-    * @param {*} req 
-    * @param {*} res 
-    * @returns Un mensaje del estado de la tarea
-    */
-    deleteRepresentante: async (req, res) => {
-        const {
-            externalId,
-            numeroId
-        } = req.body;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } })
-        const infoRepresentantes = await Representante.findAll({ where: { id_persona: infoPersona.id } });
-        const searchRepresentante = await Representante.findOne({ where: { numeroId: numeroId } });
-        if (searchRepresentante) {
-            //console.log(infoRepresentantes)
-            if (infoRepresentantes.length == 1) {
-                return res.json({ message: 'No se puede eliminar, el estudiante debe tener almenos 1 representante registrado.' });
-            } else {
-                const deleteRepresentante = await Representante.destroy({ where: { numeroId: numeroId } });
-                return res.json({ message: 'Se ha eliminado a su representante', deleteRepresentante });
-            }
-        } else {
-            return res.json({ message: 'No existe un representante con esa infórmación' });
-        }
-
-    },
-    /**
-     * getAllhermanos: Función para recuperar todos los hermanos del estudiante segun
-     * el externalId del estudiante
-     * @param {*} req 
-     * @param {*} res 
-     * @returns Una lista de hermanos en formato json
-     */
-    getAllhermanos: async (req, res) => {
-        const {
-            externalId
-        } = req.params;
-        const infopersona = await Persona.findOne({ where: { external_id: externalId } });
-        const infoHermanos = await Hermano.findAll({ where: { id_persona: infopersona.id } });
-        let containerHermanos = [];
-        for (let i = 0; i < infoHermanos.length; i++) {
-            const element = infoHermanos[i].id_hermano;
-            const infoHermano = await Persona.findOne({ where: { id: element } });
-            const nombre = infoHermano.nombre;
-            const apellido = infoHermano.apellido;
-            const numeroId = infoHermano.numeroId;
-            containerHermanos.push({ nombre: nombre, apellido: apellido, numeroId: numeroId, id: element })
-        }
-        return res.json({ containerHermanos });
-    },
-    /**
-     * addHermano: Funciónpra agregar un hermano que este registrado en el sistema
-     * se hace la busqueda de un estudiante segun su numero de DNI 
-     * En caso de exista una persoana que cumpla con esta condición
-     * Se agrega un hermano al estudiante
-     * En esta tabalsolo se guarda el id del estudiante
-     * debido a que el resto de la informacion
-     * @param {*} req 
-     * @param {*} res
-     * @returns  
-     */
-    addHermano: async (req, res) => {
-        const {
-            externalId,
-            numeroId
-        } = req.body;
-        const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
-        const infoHermano = await Persona.findOne({ where: { numeroId: numeroId } });
-        if (infoHermano) {
-            if (infoEstudiante.numeroId == infoHermano.numeroId) {
-                return res.json({ message: 'No se puede agregarse a usted mismo como hermano' });
-            } else {
-                const hermanoData = {
-                    id_hermano: infoHermano.id,
-                    id_persona: infoEstudiante.id,
-                };
-                const newHermano = await Hermano.create(hermanoData);
-                return res.json({ message: 'Se ha guardado  su hermano', newHermano });
-            }
-        } else {
-            return res.json({ message: 'No existe un estudiante con este numero de DNI' });
-        }
-    },
-    /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     * @returns 
-     */
-    deleteHermano: async (req, res) => {
-        const {
-            numeroId
-        } = req.body;
-        const searchHermano = await Persona.findOne({ where: { numeroId: numeroId } });
-        if (searchHermano) {
-            await Hermano.destroy({ where: { id_hermano: searchHermano.id } });
-            return res.json({ message: 'Se ha eliminado su hermano' });
-        } else {
-            return res.json({ message: 'Error al Eliminar' });
-        }
-    },
-    /**
-    * registroEstudiantes: Funcion para crear una lista de nuevos usuarios con el  rol de estudiante.
-    * @param {*} req 
-    * @param {*} res 
-    * Recibe una lista de información personal, de indole familiar y dirección de su domicilio
-    * Se genera las credenciales para la tabla cuenta, con el correro personal y numero de identificación, al ser esta
-    * la clave, será encriptada.
-    * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
-    * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero 
-    * de identificación
-    * @returns La información de la persona y su cuenta.
-    */
-    registroEstudiantes: async (req, res) => {
-        const { lista_Estudiantes } = req.body;
-        for (let i = 0; i < lista_Estudiantes.length; i++) {
-            const {
-                nombre, apellido, tipoDocId, numeroId,
-                correoPersonal
-            } = lista_Estudiantes[i];
-            const estudianteData = {
-                nombre: nombre, apellido: apellido,
-                tipoDocId: tipoDocId, numeroId: numeroId,
-                id_rol: "6",
-                correoPersonal: correoPersonal,
-            }
-            const searchPersona = await Persona.findOne({
-                where: {
-                    [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
-                }
-            });
-            //console.log(tipoDocId)
-            if (!searchPersona) {
-                if (tipoDocId == 'pasaporte') {
-                    const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
-                    if (!infoEstudianteCuenta) {
-                        const estudiante = await Persona.create(estudianteData);
-                        const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
-                        var salt = bcrypt.genSaltSync(10);
-                        let password = bcrypt.hashSync(numeroId, salt);
-                        const dataCuenta = {
-                            correo: correoPersonal,
-                            clave: password,
-                            estado: 0,
-                            id_persona: newEstudiante.id,
-                        };
-                        const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-                        if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
-                        const dataInfoMed = {
-                            id_persona: newEstudiante.id,
-                            discapacidad: "1",
-                            tipoDiscapacidad: "N/A",
-                            porcentajeDiscapacidad: "N/A",
-                            nCarnetDiscapacidad: "N/A",
-                            enfermedadCatastrofica: "1",
-                            tipoEnfermedadCatastrofica: "N/A"
-                        };
-                        const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                        console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
-                    } else {
-                        console.log({ message: 'Ya existe un estudiante con ese correo' });
-                    }
-                } else {
-                    const cedulaValida = cedulaValidator.validator(numeroId);
-                    if (cedulaValida.flag == 3) {
-                        //const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
-                        const estudiante = await Persona.create(estudianteData);
-                        const newEstudiante = await Persona.findOne({ where: { numeroId: numeroId } });
-                        var salt = bcrypt.genSaltSync(10);
-                        let password = bcrypt.hashSync(numeroId, salt);
-                        const dataCuenta = {
-                            correo: correoPersonal,
-                            clave: password,
-                            estado: 0,
-                            id_persona: newEstudiante.id,
-                        };
-                        const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-                        if (!newEstudianteCuenta) console.log({ message: 'La cuenta no se puedo crear, revise bien su informacion.' })
-                        const dataInfoMed = {
-                            id_persona: newEstudiante.id,
-                            discapacidad: "1",
-                            tipoDiscapacidad: "N/A",
-                            porcentajeDiscapacidad: "N/A",
-                            nCarnetDiscapacidad: "N/A",
-                            enfermedadCatastrofica: "1",
-                            tipoEnfermedadCatastrofica: "N/A"
-                        };
-                        const newInfoMedica = await InfoMedica.create(dataInfoMed);
-                        console.log({ message: 'Ha generado un nuevo usuario', estudiante, newEstudianteCuenta, newInfoMedica });
-
-                    } else {
-                        console.log({ message: cedulaValida.message });
-                    }
-                }
-            } else {
-                console.log({ message: 'Ya existe un estudiante con esta información' });
-            }
-        }
-        return res.json({ message: 'Se han registrado los estudiantes' })
-    },
-    /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     * @returns 
-     */
-    getCalifiaciones_asistencias: async (req, res) => {
-        const { externalId } = req.params;
-        let lista_calificaionesQ = [];
-        let lista_calificaionesT = [];
-        let lista_asistenciasXmateria = [];
-        let info_Matricula = [];
-
-
-        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
-        const info_estudiante = await Persona.findOne({ where: { external_id: externalId } });
-
-        const info_matricula_actual = await Matricula.findOne({
-            where: {
-                id_persona: info_estudiante.id,
-                id_anioLectivo_actual: info_anioLectivo.id
-            }
-        });
-        const info_paralelo = await Paralelo.findOne({
-            attributes: ['id', 'titulo', 'id_curso'],
-            where: { id: info_matricula_actual.id_paralelo }
-        });
-        console.log(info_paralelo)
-
-        const info_curso = await Curso.findOne({
-            attributes: ['id', 'nivelAcademico', 'gradoAcademico',],
-            where: { id: info_paralelo.id_curso }
-        });
-        console.log(info_curso)
-
-        const info_matricula = {
-            ...info_matricula_actual.dataValues,
-            titulo_paralelo: info_paralelo.titulo,
-            id_curso: info_curso.id,
-            nivelAcademico: info_curso.nivelAcademico,
-            gradoAcademico: info_curso.gradoAcademico,
-        };
-        info_Matricula.push(info_matricula)
-
-        const info_AsistenciaXDia = await AsistenciaXDia.findOne({ where: { id_matricula: info_matricula_actual.id } })
-        const info_AsistenciaXMate = await AsistenciaXMate.findAll({ where: { id_matricula: info_matricula_actual.id } })
-        const info_calificacionT = await CalificacionT.findAll({ where: { id_matricula: info_matricula_actual.id } })
-        const info_CalificacionQ = await CalificacionQ.findAll({ where: { id_matricula: info_matricula_actual.id } })
-
-
-
-        for (let i = 0; i < info_AsistenciaXMate.length; i++) {
-            const id = info_AsistenciaXMate[i].id;
-            const id_materia = info_AsistenciaXMate[i].id_materia;
-
-            const asistenciaXmateria = await AsistenciaXMate.findOne({ where: { id: id } });
-            const info_materia = await Materia.findOne({
-                attributes: ['nombre', 'area'],
-                where: { id: id_materia }
-            });
-            const info_asistenciaXmateria = {
-                ...asistenciaXmateria.dataValues,
-                area: info_materia.area,
-                nombre: info_materia.nombre
+          const cedulaValida = cedulaValidator.validator(numeroId);
+          if (cedulaValida.flag == 3) {
+            const representnateData = {
+              nombre: nombre,
+              apellido: apellido,
+              nacionalidad: nacionalidad,
+              correoPersonal: correoPersonal,
+              celular: celular,
+              tipoDocId: tipoDocId,
+              numeroId: numeroId,
+              nivelEdu: nivelEdu,
+              ocuLab: ocuLab,
+              direcTrabajo: direcTrabajo,
+              teleTrabajo: teleTrabajo,
+              relacionFamiliar: relacionFamiliar,
+              contactoEmer: contactoEmer,
+              autorizacionRetirarDoc: autorizacionRetirarDoc,
+              id_persona: infoPersona.id,
             };
-            lista_asistenciasXmateria.push(info_asistenciaXmateria);
-        }
-        for (let i = 0; i < info_calificacionT.length; i++) {
-            const id = info_calificacionT[i].id;
-            const id_materia = info_calificacionT[i].id_materia;
-
-            const calificacionT = await CalificacionT.findOne({ where: { id: id } });
-            const info_materia = await Materia.findOne({
-                attributes: ['nombre', 'area'],
-                where: { id: id_materia }
+            //console.log('datos: ', representnateData)
+            const newRepresentante = await Representante.create(
+              representnateData
+            );
+            return res.json({
+              message: "Se ha ingresado la información de su representante",
+              newRepresentante,
             });
-            const info_CalificacionT = {
-                ...calificacionT.dataValues,
-                area: info_materia.area,
-                nombre: info_materia.nombre
-            };
-            lista_calificaionesT.push(info_CalificacionT);
+          } else {
+            return res.json({ message: cedulaValida.message });
+          }
         }
-        for (let i = 0; i < info_CalificacionQ.length; i++) {
-            const id = info_CalificacionQ[i].id;
-            const id_materia = info_CalificacionQ[i].id_materia;
-
-            const calificacionQ = await CalificacionQ.findOne({ where: { id: id } });
-            const info_materia = await Materia.findOne({
-                attributes: ['nombre', 'area'],
-                where: { id: id_materia }
-            });
-            const info_calificacionQ = {
-                ...calificacionQ.dataValues,
-                area: info_materia.area,
-                nombre: info_materia.nombre
-            };
-            lista_calificaionesQ.push(info_calificacionQ);
-        }
-
+      } else {
         return res.json({
-            info_Matricula,
-            lista_asistenciasXmateria,
-            info_AsistenciaXDia,
-            lista_calificaionesT,
-            lista_calificaionesQ
+          message:
+            "Ya existe un representante con ese numero de DNI o Correo Personal",
         });
-
-
+      }
+    } else {
+      return res.json({
+        message: "El estudiante solo puede tener como maximo 3 representantes",
+      });
     }
-    /**Fin funciones validadas */
-}
+  },
+  /**
+   *updateRepresentante: Función para actulizar datos de un representante
+   *Se recibe una lista de atributos especificados en el modelo de representante
+   *a excepción de tipo tipoDocId, numeroId.
+   *Se comprueba si ya existe un representante segun su numero de DNI
+   *Se comprueba si ya existe un representante con autorizacionRetirarDoc = 0,
+   *Esto debido a que solo un representante debe tener esta autorización
+   * @param {*} req
+   * @param {*} res
+   * @returns Un mensaje del estado de la tarea
+   */
+  updateRepresentante: async (req, res) => {
+    const {
+      externalId,
+      nombre,
+      apellido,
+      nacionalidad,
+      correoPersonal,
+      celular,
+      nivelEdu,
+      ocuLab,
+      direcTrabajo,
+      teleTrabajo,
+      relacionFamiliar,
+      contactoEmer,
+      numeroId,
+      autorizacionRetirarDoc,
+    } = req.body;
+    const updateRepresentanteData = {
+      nombre: nombre,
+      apellido: apellido,
+      nacionalidad: nacionalidad,
+      correoPersonal: correoPersonal,
+      celular: celular,
+      nivelEdu: nivelEdu,
+      ocuLab: ocuLab,
+      direcTrabajo: direcTrabajo,
+      teleTrabajo: teleTrabajo,
+      relacionFamiliar: relacionFamiliar,
+      contactoEmer: contactoEmer,
+      autorizacionRetirarDoc: autorizacionRetirarDoc,
+    };
+    const infoPersona = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+    const searchRepresentante = await Representante.findOne({
+      where: {
+        [Op.and]: [{ numeroId: numeroId }, { id_persona: infoPersona.id }],
+      },
+    });
+    console.log(searchRepresentante.correoPersonal);
+
+    if (searchRepresentante) {
+      const searchRepresentanteByemail = await Representante.findOne({
+        where: { correoPersonal: correoPersonal },
+      });
+      console.log(searchRepresentanteByemail.correoPersonal);
+      if (searchRepresentanteByemail) {
+        console.log(searchRepresentante.id == searchRepresentanteByemail.id);
+        if (searchRepresentante.id == searchRepresentanteByemail.id) {
+          //console.log('datos: ', updateRepresentanteData)
+          const updateRepresentante = await Representante.update(
+            updateRepresentanteData,
+            { where: { numeroId: numeroId } }
+          );
+          return res.json({
+            message: "Se ha actualizado la información de su representante",
+            updateRepresentante,
+          });
+        } else {
+          return res.json({
+            message: "Este correo esta ligado a otro representante 1",
+          });
+        }
+      } else if (!searchRepresentanteByemail) {
+        //console.log('datos: ', updateRepresentanteData)
+        const updateRepresentante = await Representante.update(
+          updateRepresentanteData,
+          { where: { numeroId: numeroId } }
+        );
+        return res.json({
+          message: "Se ha actualizado la información de su representante",
+          updateRepresentante,
+        });
+      }
+    } else {
+      return res.json({ message: "El representante no existe" });
+    }
+  },
+  /**
+   *deleteRepresentante: Función para eliminar al representante
+   *Se recibe el externalId del estudiante y el numeroId del representante
+   *Se comprueba si existe un representante segun su numero de DNI
+   *Se comprueba si almenos hay un representante registrado
+   *En caso de que solo exista un representante registrado no se puede elimnar a dicho representante
+   * @param {*} req
+   * @param {*} res
+   * @returns Un mensaje del estado de la tarea
+   */
+  deleteRepresentante: async (req, res) => {
+    const { externalId, numeroId } = req.body;
+    const infoPersona = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+    const infoRepresentantes = await Representante.findAll({
+      where: { id_persona: infoPersona.id },
+    });
+    const searchRepresentante = await Representante.findOne({
+      where: { numeroId: numeroId },
+    });
+    if (searchRepresentante) {
+      //console.log(infoRepresentantes)
+      if (infoRepresentantes.length == 1) {
+        return res.json({
+          message:
+            "No se puede eliminar, el estudiante debe tener almenos 1 representante registrado.",
+        });
+      } else {
+        const deleteRepresentante = await Representante.destroy({
+          where: { numeroId: numeroId },
+        });
+        return res.json({
+          message: "Se ha eliminado a su representante",
+          deleteRepresentante,
+        });
+      }
+    } else {
+      return res.json({
+        message: "No existe un representante con esa infórmación",
+      });
+    }
+  },
+  /**
+   * getAllhermanos: Función para recuperar todos los hermanos del estudiante segun
+   * el externalId del estudiante
+   * @param {*} req
+   * @param {*} res
+   * @returns Una lista de hermanos en formato json
+   */
+  getAllhermanos: async (req, res) => {
+    const { externalId } = req.params;
+    const infopersona = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+    const infoHermanos = await Hermano.findAll({
+      where: { id_persona: infopersona.id },
+    });
+    let containerHermanos = [];
+    for (let i = 0; i < infoHermanos.length; i++) {
+      const element = infoHermanos[i].id_hermano;
+      const infoHermano = await Persona.findOne({ where: { id: element } });
+      const nombre = infoHermano.nombre;
+      const apellido = infoHermano.apellido;
+      const numeroId = infoHermano.numeroId;
+      containerHermanos.push({
+        nombre: nombre,
+        apellido: apellido,
+        numeroId: numeroId,
+        id: element,
+      });
+    }
+    return res.json({ containerHermanos });
+  },
+  /**
+   * addHermano: Funciónpra agregar un hermano que este registrado en el sistema
+   * se hace la busqueda de un estudiante segun su numero de DNI
+   * En caso de exista una persoana que cumpla con esta condición
+   * Se agrega un hermano al estudiante
+   * En esta tabalsolo se guarda el id del estudiante
+   * debido a que el resto de la informacion
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  addHermano: async (req, res) => {
+    const { externalId, numeroId } = req.body;
+    const infoEstudiante = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+    const infoHermano = await Persona.findOne({
+      where: { numeroId: numeroId },
+    });
+    if (infoHermano) {
+      if (infoEstudiante.numeroId == infoHermano.numeroId) {
+        return res.json({
+          message: "No se puede agregarse a usted mismo como hermano",
+        });
+      } else {
+        const hermanoData = {
+          id_hermano: infoHermano.id,
+          id_persona: infoEstudiante.id,
+        };
+        const newHermano = await Hermano.create(hermanoData);
+        return res.json({ message: "Se ha guardado  su hermano", newHermano });
+      }
+    } else {
+      return res.json({
+        message: "No existe un estudiante con este numero de DNI",
+      });
+    }
+  },
+  /**
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  deleteHermano: async (req, res) => {
+    const { numeroId } = req.body;
+    const searchHermano = await Persona.findOne({
+      where: { numeroId: numeroId },
+    });
+    if (searchHermano) {
+      await Hermano.destroy({ where: { id_hermano: searchHermano.id } });
+      return res.json({ message: "Se ha eliminado su hermano" });
+    } else {
+      return res.json({ message: "Error al Eliminar" });
+    }
+  },
+  /**
+   * registroEstudiantes: Funcion para crear una lista de nuevos usuarios con el  rol de estudiante.
+   * @param {*} req
+   * @param {*} res
+   * Recibe una lista de información personal, de indole familiar y dirección de su domicilio
+   * Se genera las credenciales para la tabla cuenta, con el correro personal y numero de identificación, al ser esta
+   * la clave, será encriptada.
+   * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
+   * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero
+   * de identificación
+   * @returns La información de la persona y su cuenta.
+   */
+  registroEstudiantes: async (req, res) => {
+    const { lista_Estudiantes } = req.body;
+    for (let i = 0; i < lista_Estudiantes.length; i++) {
+      const { nombre, apellido, tipoDocId, numeroId, correoPersonal } =
+        lista_Estudiantes[i];
+      const estudianteData = {
+        nombre: nombre,
+        apellido: apellido,
+        tipoDocId: tipoDocId,
+        numeroId: numeroId,
+        id_rol: "6",
+        correoPersonal: correoPersonal,
+      };
+      const searchPersona = await Persona.findOne({
+        where: {
+          [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }],
+        },
+      });
+      //console.log(tipoDocId)
+      if (!searchPersona) {
+        if (tipoDocId == "pasaporte") {
+          const infoEstudianteCuenta = await Persona.findOne({
+            where: { correoPersonal: correoPersonal },
+          });
+          if (!infoEstudianteCuenta) {
+            const estudiante = await Persona.create(estudianteData);
+            const newEstudiante = await Persona.findOne({
+              where: { numeroId: numeroId },
+            });
+            var salt = bcrypt.genSaltSync(10);
+            let password = bcrypt.hashSync(numeroId, salt);
+            const dataCuenta = {
+              correo: correoPersonal,
+              clave: password,
+              estado: 0,
+              id_persona: newEstudiante.id,
+            };
+            const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+            if (!newEstudianteCuenta)
+              console.log({
+                message:
+                  "La cuenta no se puedo crear, revise bien su informacion.",
+              });
+            const dataInfoMed = {
+              id_persona: newEstudiante.id,
+              discapacidad: "1",
+              tipoDiscapacidad: "N/A",
+              porcentajeDiscapacidad: "N/A",
+              nCarnetDiscapacidad: "N/A",
+              enfermedadCatastrofica: "1",
+              tipoEnfermedadCatastrofica: "N/A",
+            };
+            const newInfoMedica = await InfoMedica.create(dataInfoMed);
+            console.log({
+              message: "Ha generado un nuevo usuario",
+              estudiante,
+              newEstudianteCuenta,
+              newInfoMedica,
+            });
+          } else {
+            console.log({ message: "Ya existe un estudiante con ese correo" });
+          }
+        } else {
+          const cedulaValida = cedulaValidator.validator(numeroId);
+          if (cedulaValida.flag == 3) {
+            //const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
+            const estudiante = await Persona.create(estudianteData);
+            const newEstudiante = await Persona.findOne({
+              where: { numeroId: numeroId },
+            });
+            var salt = bcrypt.genSaltSync(10);
+            let password = bcrypt.hashSync(numeroId, salt);
+            const dataCuenta = {
+              correo: correoPersonal,
+              clave: password,
+              estado: 0,
+              id_persona: newEstudiante.id,
+            };
+            const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+            if (!newEstudianteCuenta)
+              console.log({
+                message:
+                  "La cuenta no se puedo crear, revise bien su informacion.",
+              });
+            const dataInfoMed = {
+              id_persona: newEstudiante.id,
+              discapacidad: "1",
+              tipoDiscapacidad: "N/A",
+              porcentajeDiscapacidad: "N/A",
+              nCarnetDiscapacidad: "N/A",
+              enfermedadCatastrofica: "1",
+              tipoEnfermedadCatastrofica: "N/A",
+            };
+            const newInfoMedica = await InfoMedica.create(dataInfoMed);
+            console.log({
+              message: "Ha generado un nuevo usuario",
+              estudiante,
+              newEstudianteCuenta,
+              newInfoMedica,
+            });
+          } else {
+            console.log({ message: cedulaValida.message });
+          }
+        }
+      } else {
+        console.log({
+          message: "Ya existe un estudiante con esta información",
+        });
+      }
+    }
+    return res.json({ message: "Se han registrado los estudiantes" });
+  },
+  /**
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+  getCalifiaciones_asistencias: async (req, res) => {
+    const { externalId } = req.params;
+    let lista_calificaionesQ = [];
+    let lista_calificaionesT = [];
+    let lista_asistenciasXmateria = [];
+    let info_Matricula = [];
+
+    const info_anioLectivo = await AnioLectivo.findOne({
+      where: { estadoAniolectivo: "0" },
+    });
+    const info_estudiante = await Persona.findOne({
+      where: { external_id: externalId },
+    });
+
+    const info_matricula_actual = await Matricula.findOne({
+      where: {
+        id_persona: info_estudiante.id,
+        id_anioLectivo_actual: info_anioLectivo.id,
+      },
+    });
+    const info_paralelo = await Paralelo.findOne({
+      attributes: ["id", "titulo", "id_curso"],
+      where: { id: info_matricula_actual.id_paralelo },
+    });
+    console.log(info_paralelo);
+
+    const info_curso = await Curso.findOne({
+      attributes: ["id", "nivelAcademico", "gradoAcademico"],
+      where: { id: info_paralelo.id_curso },
+    });
+    console.log(info_curso);
+
+    const info_matricula = {
+      ...info_matricula_actual.dataValues,
+      titulo_paralelo: info_paralelo.titulo,
+      id_curso: info_curso.id,
+      nivelAcademico: info_curso.nivelAcademico,
+      gradoAcademico: info_curso.gradoAcademico,
+    };
+    info_Matricula.push(info_matricula);
+
+    const info_AsistenciaXDia = await AsistenciaXDia.findOne({
+      where: { id_matricula: info_matricula_actual.id },
+    });
+    const info_AsistenciaXMate = await AsistenciaXMate.findAll({
+      where: { id_matricula: info_matricula_actual.id },
+    });
+    const info_calificacionT = await CalificacionT.findAll({
+      where: { id_matricula: info_matricula_actual.id },
+    });
+    const info_CalificacionQ = await CalificacionQ.findAll({
+      where: { id_matricula: info_matricula_actual.id },
+    });
+
+    for (let i = 0; i < info_AsistenciaXMate.length; i++) {
+      const id = info_AsistenciaXMate[i].id;
+      const id_materia = info_AsistenciaXMate[i].id_materia;
+
+      const asistenciaXmateria = await AsistenciaXMate.findOne({
+        where: { id: id },
+      });
+      const info_materia = await Materia.findOne({
+        attributes: ["nombre", "area"],
+        where: { id: id_materia },
+      });
+      const info_asistenciaXmateria = {
+        ...asistenciaXmateria.dataValues,
+        area: info_materia.area,
+        nombre: info_materia.nombre,
+      };
+      lista_asistenciasXmateria.push(info_asistenciaXmateria);
+    }
+    for (let i = 0; i < info_calificacionT.length; i++) {
+      const id = info_calificacionT[i].id;
+      const id_materia = info_calificacionT[i].id_materia;
+
+      const calificacionT = await CalificacionT.findOne({ where: { id: id } });
+      const info_materia = await Materia.findOne({
+        attributes: ["nombre", "area"],
+        where: { id: id_materia },
+      });
+      const info_CalificacionT = {
+        ...calificacionT.dataValues,
+        area: info_materia.area,
+        nombre: info_materia.nombre,
+      };
+      lista_calificaionesT.push(info_CalificacionT);
+    }
+    for (let i = 0; i < info_CalificacionQ.length; i++) {
+      const id = info_CalificacionQ[i].id;
+      const id_materia = info_CalificacionQ[i].id_materia;
+
+      const calificacionQ = await CalificacionQ.findOne({ where: { id: id } });
+      const info_materia = await Materia.findOne({
+        attributes: ["nombre", "area"],
+        where: { id: id_materia },
+      });
+      const info_calificacionQ = {
+        ...calificacionQ.dataValues,
+        area: info_materia.area,
+        nombre: info_materia.nombre,
+      };
+      lista_calificaionesQ.push(info_calificacionQ);
+    }
+
+    return res.json({
+      info_Matricula,
+      lista_asistenciasXmateria,
+      info_AsistenciaXDia,
+      lista_calificaionesT,
+      lista_calificaionesQ,
+    });
+  },
+  /**Fin funciones validadas */
+};
 
 module.exports = controller;
