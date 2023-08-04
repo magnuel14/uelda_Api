@@ -1,5 +1,6 @@
 'use strict';
 const models = require('../models');
+const { Op } = require("sequelize");
 
 const Persona = models.persona;
 const ListaVisibilidad = models.listaVisibilidad;
@@ -54,7 +55,7 @@ let controller = {
 
         }
 
-        return res.json(lista_postAca_personas);
+        return res.json({lista_postAca_personas});
 
     },
     /**
@@ -75,6 +76,11 @@ let controller = {
             titulo_Grupo: titulo_Grupo
         };
         const newLista = await ListaVisibilidad.create(data_newLista);
+        const data_newLista_persona = {
+            external_id_persona: externalId,
+            id_listaVisibilidad: newLista.id
+        };
+        await ListaVisibilidad_persona.create(data_newLista_persona);
 
         for (let i = 0; i < ListaPersonas.length; i++) {
             const external_id_persona = ListaPersonas[i].externalId;
@@ -163,6 +169,51 @@ let controller = {
         await ListaVisibilidad.destroy({ where: { id: infoLista.id } });
 
         return res.json({ message: `Se ha eliminado el Grupo visibilidad titulado: ${infoLista.titulo_Grupo}` })
+    },
+    getPersonas: async (req, res) => {
+        const { flag, personal } = req.body;
+        console.log(flag === '')
+        if (flag === '') {
+            res.json({ estatus: '1', message: 'Revise bien la información ingresada' });
+
+        } else {
+            if (personal === true) {
+                const searchPerson = await Persona.findAll({
+                    attributes: ['nombre', 'apellido', 'id', 'id_rol', 'external_id'],
+                    where: {
+                        [Op.or]: [
+                            { numeroId: flag },
+                            { nombre: { [Op.iLike]: `%${flag}%` } },
+                            { apellido: { [Op.iLike]: `%${flag}%` } },
+                        ],
+                        [Op.not]: { id_rol: 6 }
+                    }
+                });
+                if (searchPerson.length >= 1) {
+                    res.json({ estatus: '0', searchPerson, length_lista: searchPerson.length });
+
+                } else {
+                    res.json({ estatus: '1', message: 'Revise bien la información ingresada' });
+                }
+            } else if (personal === false) {
+                const searchPerson = await Persona.findAll({
+                    attributes: ['nombre', 'apellido', 'id', 'id_rol', 'external_id'],
+                    where: {
+                        [Op.or]: [
+                            { numeroId: flag },
+                            { nombre: { [Op.iLike]: `%${flag}%` } },
+                            { apellido: { [Op.iLike]: `%${flag}%` } }
+                        ]
+                    }
+                });
+                if (searchPerson.length >= 1) {
+                    res.json({ estatus: '0', searchPerson, length_lista: searchPerson.length });
+
+                } else {
+                    res.json({ estatus: '1', message: 'Revise bien la información ingresada' });
+                }
+            }
+        }
     }
     /** fin Implementado try cath*/
 }

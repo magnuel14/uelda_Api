@@ -19,16 +19,13 @@ let controller = {
     * @returns 
     */
     getAllpostAcademico: async (req, res) => {
-        const all_postAcademicos = await PostAcademico.findAll();
+        let all_postAcademicos = await PostAcademico.findAll();
 
         let lista_postAca_personas = [];
 
         for (let i = 0; i < all_postAcademicos.length; i++) {
             const visibilidad = all_postAcademicos[i].visibilidad;
             const id_ListaVisibilidad = all_postAcademicos[i].id_ListaVisibilidad;
-
-
-            const estado = all_postAcademicos[i].estado;
             const idPersona = all_postAcademicos[i].id_persona;
             const inforPersona = await Persona.findOne({
                 attributes: ['nombre', 'apellido', 'foto', 'external_id'],
@@ -75,6 +72,7 @@ let controller = {
                     ],
                     where: { id: id_ListaVisibilidad }
                 });
+                console.log(info_lista)
                 all_postAcademicos[i].personas = info_lista.listaVisibilidad_personas;
 
                 post.push(all_postAcademicos[i]);
@@ -89,9 +87,8 @@ let controller = {
                     });
                 }
             }
-            return res.json(lista_postAca_personas);
-
         }
+        return res.json(lista_postAca_personas);
     },
     /** Implementado try cath*/
     /**
@@ -196,7 +193,7 @@ let controller = {
         const info_AnioLectivo_actual = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
 
         if (req.files) {
-            if (req.files?.foto && !req.files?.doc) {
+            if (req.files?.foto ) {
                 const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
                 //const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
 
@@ -218,60 +215,7 @@ let controller = {
 
                 const newPost = await PostAcademico.create(data_newPost);
                 return res.json({ message: 'Se ha creado el post Académico', newPost });
-
-
-            } else if (req.files?.doc && !req.files?.foto) {
-                //const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
-                const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
-
-                const data_newPost = {
-                    titulo: titulo,
-                    tipoArchivo: tipoArchivo,
-                    descripcion: descripcion,
-                    visibilidad: visibilidad,
-
-                    url_imagen: urlImagen,
-
-                    url_archivo: resultDoc.secure_url,
-                    public_id_archivo: resultDoc.public_id,
-
-                    id_anioLectivo_actual: info_AnioLectivo_actual.id,
-
-                    id_ListaVisibilidad: id_ListaVisibilidad,
-                    id_persona: infoPersona.id,
-                    estado: 0
-                };
-
-                const newPost = await PostAcademico.create(data_newPost);
-                return res.json({ message: 'Se ha creado el post Académico', newPost });
-
-
-            } else if (req.files?.foto && req.files?.doc) {
-                const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
-                const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
-
-                const data_newPost = {
-                    titulo: titulo,
-                    tipoArchivo: tipoArchivo,
-                    descripcion: descripcion,
-                    visibilidad: visibilidad,
-
-                    url_imagen: resultFoto.secure_url,
-                    public_id_imagen: resultFoto.public_id,
-
-                    url_archivo: resultDoc.secure_url,
-                    public_id_archivo: resultDoc.public_id,
-
-                    id_anioLectivo_actual: info_AnioLectivo_actual.id,
-
-                    id_ListaVisibilidad: id_ListaVisibilidad,
-                    id_persona: infoPersona.id,
-                    estado: 0
-                };
-
-                const newPost = await PostAcademico.create(data_newPost);
-                return res.json({ message: 'Se ha creado el post Académico', newPost });
-            }
+            } 
         } else {
 
             const data_newPost = {

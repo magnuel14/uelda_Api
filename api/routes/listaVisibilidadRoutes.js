@@ -7,6 +7,7 @@ router.get('/get_AllListaVisibilidad/:externalId', tryCatch(listaVisibilidadCont
 router.post('/create_ListaVisibilidad', tryCatch(listaVisibilidadController.createListaVisibilidad));
 router.post('/update_ListaVisibilidad', tryCatch(listaVisibilidadController.updateListaVisibilidad));
 router.post('/delete_ListaVisibilidad', tryCatch(listaVisibilidadController.deleteListaVisibilidad));
+router.post('/get_Personas', tryCatch(listaVisibilidadController.getPersonas));
 
 module.exports = router;
 
