@@ -22,6 +22,7 @@ let controller = {
         let all_postAcademicos = await PostAcademico.findAll();
 
         let lista_postAca_personas = [];
+        console.log(all_postAcademicos.length)
 
         for (let i = 0; i < all_postAcademicos.length; i++) {
             const visibilidad = all_postAcademicos[i].visibilidad;
@@ -41,6 +42,8 @@ let controller = {
                 lista_postAca_personas.push({
                     post, inforPersona, personas
                 });
+                console.log(lista_postAca_personas.length)
+
 
             } else if (visibilidad === 1) {
                 let post = [];
@@ -62,6 +65,7 @@ let controller = {
                     post, inforPersona, personas
                 });
 
+
             } else if (visibilidad === 2) {
                 let post = [];
                 let personas = [];
@@ -72,7 +76,6 @@ let controller = {
                     ],
                     where: { id: id_ListaVisibilidad }
                 });
-                console.log(info_lista)
                 all_postAcademicos[i].personas = info_lista.listaVisibilidad_personas;
 
                 post.push(all_postAcademicos[i]);
@@ -80,15 +83,16 @@ let controller = {
                 for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
                     const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
                     personas.push({ external_id: external_id });
-
-
-                    lista_postAca_personas.push({
-                        post, inforPersona, personas
-                    });
                 }
+                lista_postAca_personas.push({
+                    post, inforPersona, personas
+                });
+
             }
+
         }
         return res.json(lista_postAca_personas);
+
     },
     /** Implementado try cath*/
     /**
@@ -100,6 +104,7 @@ let controller = {
     getAllpostAcademicoByExternalId: async (req, res) => {
         const { externalId } = req.params;
         const infoPostAcademico = await PostAcademico.findOne({ where: { external_id: externalId } });
+        let lista_postAca_personas = [];
 
 
         if (infoPostAcademico) {
@@ -117,6 +122,8 @@ let controller = {
                 lista_postAca_personas.push({
                     post, inforPersona, personas
                 });
+                return res.json(lista_postAca_personas);
+
 
             } else if (visibilidad === 1) {
                 let post = [];
@@ -137,6 +144,8 @@ let controller = {
                 lista_postAca_personas.push({
                     post, inforPersona, personas
                 });
+                return res.json(lista_postAca_personas);
+
 
             } else if (visibilidad === 2) {
                 let post = [];
@@ -148,31 +157,21 @@ let controller = {
                     ],
                     where: { id: id_ListaVisibilidad }
                 });
-                infoPostAcademico.personas = info_lista.listaVisibilidad_personas;
-
-                post.push(infoPostAcademico);
 
                 for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
                     const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
                     personas.push({ external_id: external_id });
-
-
-                    lista_postAca_personas.push(
-                        post, inforPersona, personas
-                    );
                 }
+                post.push(infoPostAcademico);
 
                 lista_postAca_personas.push({
                     post, inforPersona, personas
                 });
+                return res.json(lista_postAca_personas);
             }
-            return res.json(lista_postAca_personas);
-
         } else {
             return res.json({ message: 'Ocurrio un error' });
-
         }
-
     },
     /** Implementado try cath*/
     /**
@@ -193,7 +192,7 @@ let controller = {
         const info_AnioLectivo_actual = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
 
         if (req.files) {
-            if (req.files?.foto ) {
+            if (req.files?.foto) {
                 const resultFoto = await cloudinaryC.uploadImagePost(req.files.foto.tempFilePath);
                 //const resultDoc = await cloudinaryC.uploadFilePost(req.files.doc.tempFilePath);
 
@@ -215,7 +214,7 @@ let controller = {
 
                 const newPost = await PostAcademico.create(data_newPost);
                 return res.json({ message: 'Se ha creado el post Académico', newPost });
-            } 
+            }
         } else {
 
             const data_newPost = {

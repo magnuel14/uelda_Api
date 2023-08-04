@@ -55,7 +55,7 @@ let controller = {
 
         }
 
-        return res.json({lista_postAca_personas});
+        return res.json(lista_postAca_personas);
 
     },
     /**
