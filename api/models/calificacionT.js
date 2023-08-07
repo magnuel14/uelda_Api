@@ -102,3 +102,4 @@ module.exports = function (sequelize, DataTypes) {
     });
     return CalificacionT;
 };
+//poner flag de tipo de califacion: o cualitativo - cuantitativo

@@ -12,6 +12,8 @@ router.post('/update_EstadoAnioLectivo', tryCatch(gestionAcademicaController.upd
 
 //gestion de matricula o promociones de estudiantes
 router.post('/matricular_Estudiante', (gestionAcademicaController.matricularEstudiantes));
+router.post('/update_matricula_Estudiante', (gestionAcademicaController.updateMatriculaEstudiante));
+
 router.post('/promover_Estudiante', tryCatch(gestionAcademicaController.promoverEstudiantes));
 
 //curso
