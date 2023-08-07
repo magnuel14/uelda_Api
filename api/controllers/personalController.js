@@ -38,6 +38,17 @@ let controller = {
             });
         res.json(personal);
     },
+     /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
+     getPersonByEx: async (req, res) => {
+        const { externalId } = req.params;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        return res.json({ infoPersona });
+    },
     /**
      * createPerson: Funcion para crear un nuevo usuario.
      * @param {*} req 
@@ -128,17 +139,6 @@ let controller = {
         } else {
             return res.json({ message: cedulaValida.message });
         }
-    },
-    /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     * @returns 
-     */
-    getPersonByEx: async (req, res) => {
-        const { externalId } = req.params;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        return res.json({ infoPersona });
     },
     /**
      * updatePersona: Esta función sirve para editar la información de la persona 

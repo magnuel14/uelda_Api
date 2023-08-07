@@ -65,7 +65,7 @@ cron.schedule('0 0 * * *', () => {
 // Middleware para verificar la conexión a la base de datos
 funcionesBD.coneccionBd();
 
-//middleware que evita que el server se pare en caso de detectar un error
+//middleware que evita que el server se detenga en caso de detectar un error
 app.use(errorHandler);
 
 //routes

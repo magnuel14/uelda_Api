@@ -47,6 +47,17 @@ let controller = {
     res.json(estudiantes);
   },
   /**
+    * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
+    * @param {*} req externalId
+    * @param {*} res 
+    * @returns Una lista en formato json de la información del estudiante en caso que exista
+    */
+  getEstudianteByEx: async (req, res) => {
+    const { externalId } = req.params;
+    const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+    return res.json({ infoEstudiante });
+  },
+  /**
    * createPerson: Funcion para crear un nuevo usuario con rol estudiante.
    * @param {*} req
    * @param {*} res
@@ -194,7 +205,7 @@ let controller = {
         where: { estadoAniolectivo: 0 },
       });
 
-      if (!anioLectivoActual){
+      if (!anioLectivoActual) {
         return res.status(404).json({ error: "No existe un año lectivo activo" });
       }
 
@@ -218,16 +229,16 @@ let controller = {
 
       if (anioLectivoActual.tipoCalificacion == 0) {
         calificaciones = await CalificacionQ.findAll({
-            where: { id_matricula: matricula.id },
+          where: { id_matricula: matricula.id },
         });
         tipoCalificacion = 'quimestre';
       } else {
         calificaciones = await CalificacionT.findAll({
-            where: { id_matricula: matricula.id },
+          where: { id_matricula: matricula.id },
         });
         tipoCalificacion = 'trimestre';
       }
-      
+
       // Crear una respuesta con toda la información recolectada
       const response = {
         infoEstudiante: estudiante,

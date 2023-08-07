@@ -1,5 +1,6 @@
 'use strict';
 const models = require('../models');
+const asistenciaxDia = require('../models/asistenciaxDia');
 
 const Persona = models.persona;
 const AnioLectivo = models.anioLectivo;
@@ -329,6 +330,356 @@ let controller = {
     * @param {*} res 
     * @returns 
     */
+    updateMatriculaEstudiante: async (req, res) => {
+        let {
+            externalId, id_paralelo,
+            periodo_academicos_Programados_inicial,
+            periodo_academicos_Programados_preparatoria,
+            periodo_academicos_Programados_elemental,
+            periodo_academicos_Programados_media,
+        } = req.body
+        const infoAnioActual = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+        const infoEstudianteUpdate = await Persona.findOne({
+            where: {
+                external_id: externalId, estadoAc: 0
+            }
+        });
+
+        if (infoEstudianteUpdate) {
+            const infoMatricula = await Matricula.findOne({
+                where:
+                {
+                    id_persona: infoEstudianteUpdate.id,
+                    id_anioLectivo_actual: infoAnioActual.id
+                },
+                include: [
+                    {
+                        model: AsistenciaXDia,
+                        attributes: ['id']
+                    },
+                    {
+                        model: AsistenciaXMate,
+                        attributes: ['id']
+                    },
+                    {
+                        model: CalificacionQ,
+                        attributes: ['id']
+                    },
+                    {
+                        model: CalificacionT,
+                        attributes: ['id']
+                    }
+                ]
+            });
+            if (infoMatricula) {
+                const asistenciaXMates = infoMatricula.dataValues.asistenciaXMates;
+                const calificacionTs = infoMatricula.dataValues.calificacionTs;
+                const calificacionQs = infoMatricula.dataValues.calificacionQs;
+
+                if (asistenciaXMates) {
+                    for (let i = 0; i < asistenciaXMates.length; i++) {
+                        const { id } = asistenciaXMates[i];
+                        await AsistenciaXMate.destroy({
+                            where: { id: id }
+                        });
+                    }
+                }
+
+                if (infoMatricula.asistenciaXDia) {
+                    await AsistenciaXDia.destroy({
+                        where: {
+                            id: infoMatricula.asistenciaXDia
+                        }
+                    });
+                }
+
+                if (calificacionTs) {
+                    for (let i = 0; i < calificacionTs.length; i++) {
+                        const { id } = calificacionTs[i];
+                        await CalificacionT.destroy({
+                            where: { id: id }
+                        });
+                    }
+                }
+
+                if (calificacionQs) {
+                    for (let i = 0; i < calificacionQs.length; i++) {
+                        const { id } = calificacionQs[i];
+                        await CalificacionQ.destroy({
+                            where: { id: id }
+                        });
+                    }
+                }
+
+                if (infoMatricula) {
+                    await Matricula.destroy({
+                        where: {
+                            id: infoMatricula.id
+                        }
+                    });
+                }
+                const dataPersona = {
+                    estadoAc: 4
+                };
+                await Persona.update(dataPersona, { where: { external_id: externalId } });
+
+                const infoParalelo = await Paralelo.findOne({
+                    where: { id: id_paralelo }
+                });
+
+                const infoCurso = await Curso.findOne({
+                    include: [Materia],
+                    where: { id: infoParalelo.id_curso }
+                });
+
+                if (infoEstudianteUpdate.estadoAc !== '0' || infoEstudianteUpdate.estadoAc === null) {
+
+                    const data_newMatriculaEstudiante = {
+                        id_paralelo: id_paralelo,
+                        id_persona: infoEstudianteUpdate.id,
+                        id_anioLectivo_actual: infoAnioActual.id
+                    }
+                    const dataEstadoAcademico = {
+                        estadoAc: '0'
+                    }
+
+                    await Persona.update(dataEstadoAcademico, { where: { id: infoEstudianteUpdate.id } });
+
+                    const newMatricula_estudiante = await Matricula.create(data_newMatriculaEstudiante);
+
+                    if (newMatricula_estudiante) {
+
+                        if (infoCurso.nivelAcademico == 'Inicial 3 años') {
+                            const asistenciaXDia = {
+                                horasClase_programadas: periodo_academicos_Programados_inicial,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_matricula: newMatricula_estudiante.id
+                            }
+                            await AsistenciaXDia.create(asistenciaXDia);
+                        }
+                        if (infoCurso.nivelAcademico == 'Inicial 4 años') {
+                            const asistenciaXDia = {
+                                horasClase_programadas: periodo_academicos_Programados_inicial,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_matricula: newMatricula_estudiante.id
+                            }
+                            await AsistenciaXDia.create(asistenciaXDia);
+                        }
+                        if (infoCurso.nivelAcademico == 'Básica Preparatoria') {
+                            const asistenciaXDia = {
+                                horasClase_programadas: periodo_academicos_Programados_preparatoria,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_matricula: newMatricula_estudiante.id
+                            }
+                            await AsistenciaXDia.create(asistenciaXDia);
+
+                            const info_materia_EF = await Materia.findOne(
+                                {
+                                    where: {
+                                        nombre: 'Educación Física',
+                                        id_curso: infoCurso.id
+                                    }
+                                }
+                            );
+                            const asistenciasXMateria_EF = {
+                                horasClase_programadas: info_materia_EF.horasClase_programadas,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_materia: info_materia_EF.id,
+                                id_matricula: newMatricula_estudiante.id
+                            };
+
+                            await AsistenciaXMate.create(asistenciasXMateria_EF);
+
+                        }
+                        if (infoCurso.nivelAcademico == 'Básica Elemental') {
+                            const asistenciaXDia = {
+                                horasClase_programadas: periodo_academicos_Programados_elemental,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_matricula: newMatricula_estudiante.id
+                            }
+                            await AsistenciaXDia.create(asistenciaXDia);
+
+                            const info_materia_EF = await Materia.findOne(
+                                {
+                                    where: {
+                                        nombre: 'Educación Física',
+                                        id_curso: infoCurso.id
+                                    }
+                                }
+                            );
+                            const asistenciasXMateria_EF = {
+                                horasClase_programadas: info_materia_EF.horasClase_programadas,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_materia: info_materia_EF.id,
+                                id_matricula: newMatricula_estudiante.id
+                            };
+
+                            await AsistenciaXMate.create(asistenciasXMateria_EF);
+
+                            const info_materia_EN = await Materia.findOne(
+                                {
+                                    where: {
+                                        nombre: 'Inglés',
+                                        id_curso: infoCurso.id
+                                    }
+                                }
+                            );
+                            const asistenciasXMateria_EN = {
+                                horasClase_programadas: info_materia_EN.horasClase_programadas,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_materia: info_materia_EN.id,
+                                id_matricula: newMatricula_estudiante.id
+                            };
+
+                            await AsistenciaXMate.create(asistenciasXMateria_EN);
+                        }
+                        if (infoCurso.nivelAcademico == 'Básica Media') {
+                            const asistenciaXDia = {
+                                horasClase_programadas: periodo_academicos_Programados_media,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_matricula: newMatricula_estudiante.id
+                            }
+                            await AsistenciaXDia.create(asistenciaXDia);
+
+                            const info_materia_EF = await Materia.findOne(
+                                {
+                                    where: {
+                                        nombre: 'Educación Física',
+                                        id_curso: infoCurso.id
+                                    }
+                                }
+                            );
+                            const asistenciasXMateria_EF = {
+                                horasClase_programadas: info_materia_EF.horasClase_programadas,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_materia: info_materia_EF.id,
+                                id_matricula: newMatricula_estudiante.id
+                            };
+
+                            await AsistenciaXMate.create(asistenciasXMateria_EF);
+
+                            const info_materia_EN = await Materia.findOne(
+                                {
+                                    where: {
+                                        nombre: 'Inglés',
+                                        id_curso: infoCurso.id
+                                    }
+                                }
+                            );
+                            const asistenciasXMateria_EN = {
+                                horasClase_programadas: info_materia_EN.horasClase_programadas,
+                                horasClase_dictadas: '0',
+                                horasClase_asistidas: '0',
+                                id_materia: info_materia_EN.id,
+                                id_matricula: newMatricula_estudiante.id
+                            };
+
+                            await AsistenciaXMate.create(asistenciasXMateria_EN);
+                        }
+                        else if (
+                            infoCurso.nivelAcademico == 'Básica Superior' ||
+                            infoCurso.nivelAcademico == 'Bachillerato') {
+                            for (let i = 0; i < infoCurso.materia.length; i++) {
+                                const id_materia = infoCurso.materia[i].id;
+                                const infoMateria = await Materia.findOne({ where: { id: id_materia } });
+
+                                const asistenciasXMateria = {
+                                    horasClase_programadas: infoMateria.horasClase_programadas,
+                                    horasClase_dictadas: '0',
+                                    horasClase_asistidas: '0',
+                                    id_materia: id_materia,
+                                    id_matricula: newMatricula_estudiante.id
+                                };
+
+                                await AsistenciaXMate.create(asistenciasXMateria);
+
+                            }
+                        }
+                        for (let i = 0; i < infoCurso.materia.length; i++) {
+                            const { tipoCalificacion } = infoCurso.materia[i];
+                            const id_materia = infoCurso.materia[i].id;
+                            if (tipoCalificacion == 0) {
+                                const dataCalificacionQ = {
+                                    firstParcialPQ: 0, secondParcialPQ: 0,
+                                    subTotalPQ: 0, testPQ: 0, totalPQ: 0,
+                                    firstParcialSQ: 0, secondParcialSQ: 0,
+                                    subTota2PQ: 0, testSQ: 0, totalSQ: 0,
+                                    notaFinal: 0, aprobado: 1,
+                                    id_materia: id_materia,
+                                    id_matricula: newMatricula_estudiante.id
+                                };
+                                await CalificacionQ.create(dataCalificacionQ);
+                            } else {
+                                if (infoCurso.nivelAcademico == 'Bachillerato' && infoCurso.gradoAcademico == 3 ||
+                                    infoCurso.gradoAcademico == 10 || infoCurso.gradoAcademico == 7) {
+                                    const dataCalificacionT = {
+                                        aportesPrimerTimestre: 0, proIntegradorFase_1: 0,
+                                        evaluacion_estructurada_1: 0,
+                                        aportesSegundoTimestre: 0, proIntegradorFase_2: 0,
+                                        evaluacion_estructurada_2: 0,
+                                        aportesTercerTimestre: 0, proIntegradorFase_3: 0,
+                                        evaluacion_estructurada_3: 0,
+                                        proyecto_Final: 0, evaluacion_nivel: 0,
+                                        total_Final: 0, aprobado: 1,
+                                        id_materia: id_materia,
+                                        id_matricula: newMatricula_estudiante.id
+                                    };
+                                    await CalificacionT.create(dataCalificacionT);
+                                } else {
+                                    const dataCalificacionT = {
+                                        aportesPrimerTimestre: 0, proIntegradorFase_1: 0,
+                                        evaluacion_estructurada_1: 0,
+                                        aportesSegundoTimestre: 0, proIntegradorFase_2: 0,
+                                        evaluacion_estructurada_2: 0,
+                                        aportesTercerTimestre: 0, proIntegradorFase_3: 0,
+                                        evaluacion_estructurada_3: 0,
+                                        proyecto_Final: 0, evaluacion_nivel: 0,
+                                        total_Final: 0, aprobado: 1,
+                                        id_materia: id_materia,
+                                        id_matricula: newMatricula_estudiante.id
+                                    };
+                                    await CalificacionT.create(dataCalificacionT);
+                                }
+                            }
+                        }
+                    } else {
+                        return res.json({ message: 'Ocurrio un problema' });
+                    }
+                }
+
+                const cursoNivel = infoCurso.nivelAcademico;
+                const cursoGrado = infoCurso.gradoAcademico;
+                const paraleloTitulo = infoParalelo.titulo;
+                const estudianteName = infoEstudianteUpdate.nombre;
+                const estudianteLastName = infoEstudianteUpdate.apellido;
+
+
+                return res.json({
+                    message: `Se cambio al estudiante: ${estudianteLastName} ${estudianteName}, al curso: ${cursoGrado} de ${cursoNivel}, paralelo: ${paraleloTitulo}.`
+                });
+
+            } else {
+                return res.json({ message: 'Ha ocurrido un error, el estudiante no tiene una matricula actual.' });
+            }
+        } else {
+            return res.json({ message: 'Ha ocurrido un error, no existe el estudiante.' });
+        }
+    },
+    /**
+      * 
+      * @param {*} req 
+      * @param {*} res 
+      * @returns 
+      */
     promoverEstudiantes: async (req, res) => {
         //let { lista_externalid_estudiantes, horasClase_programadas } = req.body
         const {
@@ -342,7 +693,7 @@ let controller = {
             }
         });
         const list_Estudiantes = await Persona.findAll({ where: { id_rol: '6' } });
-        const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+        const infoAnioActual = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
 
 
         for (let i = 0; i < list_Estudiantes.length; i++) {
