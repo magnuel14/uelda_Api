@@ -4,7 +4,6 @@ const models = require('../models');
 const bcrypt = require('bcryptjs');
 const cloudinaryC = require('../../cloudinary');
 const fs = require('fs-extra');
-const pdfGenerator = require('../../helpers/pdf-generator')
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;

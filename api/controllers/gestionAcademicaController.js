@@ -1,6 +1,8 @@
 'use strict';
 const models = require('../models');
 const asistenciaxDia = require('../models/asistenciaxDia');
+const pdfGenerator = require('../../helpers/pdf-generator')
+const fs = require("fs");
 
 const Persona = models.persona;
 const AnioLectivo = models.anioLectivo;
@@ -4709,11 +4711,11 @@ let controller = {
 
     },
     testPDF: async (req, res) => {
-        const { externalId } = req.body;
+        const { external_id } = req.body;
         const inforPerson = await Persona.findOne({
             attributes: ['id', 'nombre', 'apellido', 'numeroId'],
 
-            where: { external_id: externalId }
+            where: { external_id: external_id }
         });
 
         const infoMatricula = await Matricula.findOne({ where: { id_persona: inforPerson.id } });
@@ -4730,14 +4732,33 @@ let controller = {
             attributes: ['id', 'nombre', 'apellido', 'numeroId'],
             where: { id_rol: 1 }
         });
-        //return res.json({ inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector })
-        let info = ({ inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector });
-        /** 2023-#
-        await pdfGenerator.calificacionesReport()
-        return res.json({
-            message: 'Pasa'
-        });
-        */
+        await pdfGenerator.matriculaReport( inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector )
+        let filePath = 'reporte.pdf'
+        let docName = 'reporte.pdf'
+        if (fs.existsSync(filePath)) {
+            // Send the file as a response
+            res.download(filePath, docName+'.pdf', (err) => {
+              if (err) {
+                console.log('Error sending file:', err);
+              } else {
+                console.log("Se envió el archivo");
+                // Delete the file after the download is completed
+                fs.unlink(filePath, (unlinkErr) => {
+                  if (unlinkErr) {
+                    console.log('Error deleting file:', unlinkErr);
+                    return
+                  } else {
+                    console.log('File deleted successfully');
+                  }
+                });
+              }
+            });
+          } else {
+            return res.status(200).send({
+                status: 'error',
+                data: 'No se encontro el archivo'
+            });
+          }
     }
 
     /**Fin funciones validadas */

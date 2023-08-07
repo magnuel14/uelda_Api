@@ -5,7 +5,7 @@ const { PDFDocument  } = require('pdf-lib');
 
 const pdfGenerator = {};
 
-pdfGenerator.matriculaReport = async () => {
+pdfGenerator.matriculaReport = async ( inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector) => {
   //Get template
   const path = "./public/pdf_templates/certificado_matricula.html";
   let html = file(path);
@@ -13,8 +13,14 @@ pdfGenerator.matriculaReport = async () => {
 
   //Fill data into html template
   let htmlCompiled = template({
-    name: "Nombre de estudiante",
-    date: textDate()
+    name: inforPerson.apellido + ' ' + inforPerson.nombre,
+    date: textDate(),
+    rector: infoRector.apellido + ' ' + infoRector.nombre,
+    secretaria: infoSecretaria.apellido + ' ' + infoSecretaria.nombre,
+    paralelo: infoParalelo.titulo,
+    anioLectivo: (anioLectivo.fechaInicio).slice(6, 10)+ ' - ' +(anioLectivo.fechaFin).slice(6, 10),
+    curso: infoCurso.gradoAcademico +' ' + infoCurso.nivelAcademico,
+    matricula: textDate().slice(21,26)+'-'+ (infoMatricula.id.toString()).padStart(4, "0")
   });
 
   let options = {
