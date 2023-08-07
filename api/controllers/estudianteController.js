@@ -47,14 +47,16 @@ let controller = {
     res.json(estudiantes);
   },
   /**
-    * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
-    * @param {*} req externalId
-    * @param {*} res 
-    * @returns Una lista en formato json de la información del estudiante en caso que exista
-    */
+   * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
+   * @param {*} req externalId
+   * @param {*} res
+   * @returns Una lista en formato json de la información del estudiante en caso que exista
+   */
   getEstudianteByEx: async (req, res) => {
     const { externalId } = req.params;
-    const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+    const infoEstudiante = await Persona.findOne({
+      where: { external_id: externalId },
+    });
     return res.json({ infoEstudiante });
   },
   /**
@@ -206,7 +208,9 @@ let controller = {
       });
 
       if (!anioLectivoActual) {
-        return res.status(404).json({ error: "No existe un año lectivo activo" });
+        return res
+          .status(404)
+          .json({ error: "No existe un año lectivo activo" });
       }
 
       // Buscar la matrícula del estudiante
@@ -225,18 +229,26 @@ let controller = {
 
       // Buscar las calificaciones por trimestre o quimestre de la matrícula
       let calificaciones = [];
-      let tipoCalificacion = '';
+      let tipoCalificacion = "";
 
       if (anioLectivoActual.tipoCalificacion == 0) {
         calificaciones = await CalificacionQ.findAll({
           where: { id_matricula: matricula.id },
+          include: {
+            model: Materia,
+            attributes: ["area", "nombre"], // Incluye solo los campos 'area' y 'nombre'
+          },
         });
-        tipoCalificacion = 'quimestre';
+        tipoCalificacion = "quimestre";
       } else {
         calificaciones = await CalificacionT.findAll({
           where: { id_matricula: matricula.id },
+          include: {
+            model: Materia,
+            attributes: ["area", "nombre"], // Incluye solo los campos 'area' y 'nombre'
+          },
         });
-        tipoCalificacion = 'trimestre';
+        tipoCalificacion = "trimestre";
       }
 
       // Crear una respuesta con toda la información recolectada
