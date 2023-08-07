@@ -254,7 +254,7 @@ let controller = {
       // Crear una respuesta con toda la información recolectada
       const response = {
         infoEstudiante: estudiante,
-        matricula: matricula,
+        // matricula: matricula,
         calificaciones: calificaciones,
         tipoCalificacion: tipoCalificacion,
       };
