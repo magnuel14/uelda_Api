@@ -1,5 +1,9 @@
 node_modules/
-
+api
+database
+helpers
+middleware
+utils
 
 
 

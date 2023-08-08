@@ -300,20 +300,20 @@ mailing.sendMailPasswordReset = async (rows, token) => {
 
 async function sendMail(mailOptions) {
   try {
-    let result = await transporter().sendMail(mailOptions)
-    console.log('mail sent')
+    let result = await transporter.sendMail(mailOptions)
+    //console.log('mail sent')
     return 1;
   } catch (error) {
-    console.log(error);
+    //console.log("error al enviar");
     return 0;
   }
 }
 
-mailing.sendSystemErrorMail = async (data, mailPass) => {
+mailing.sendSystemErrorMail = async (data) => {
   const path = './public/email_templates/error_handling.html';
   let htmlF = fs.readFileSync(path).toString();
   if (!htmlF) {
-    return 0;
+    return 0
   } else {
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
@@ -323,37 +323,18 @@ mailing.sendSystemErrorMail = async (data, mailPass) => {
     let replacements = {
       error: data,
       fecha: today,
-    };
-    let template = handlebars.compile(htmlF);
-    let htmlToSent = template(replacements);
+    }
+    let template = handlebars.compile(htmlF)
+    let htmlToSent = template(replacements)
     let mailOptions = {
-      from: `"Error Handling - UELDAWeb" <ueldaweb2023@gmail.com>`,
+      from: `"Error Handling - UELDAWEB" <ueldaweb2023@gmail.com>`,
+      // sender address 'cris.ivancola@gmail.com', 'eddytorresmi@gmail.com',
       to: ['manuelvicente912@gmail.com'],
       subject: 'System Error UELDAWeb', // Subject line
       text: 'Error UELDAWeb', // plain text body
       html: htmlToSent,
     };
-
-    // Usar la clave de acceso para configurar el transporte del correo
-    const transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: process.env.MAIL_PORT,
-      secure: true,
-      auth: {
-        user: process.env.MAIL_ID,
-        pass: process.env.MAIL_PASS, // Utilizar la clave de acceso pasada como parámetro
-      },
-    });
-
-    // Enviar el correo utilizando el transporte configurado
-    try {
-      let result = await transporter.sendMail(mailOptions);
-      console.log('Mail sent');
-      return 1;
-    } catch (error) {
-      console.log('Error al enviar el correo:', error);
-      return 0;
-    }
+    sendMail(mailOptions);
   }
-};
+}
 module.exports = mailing;

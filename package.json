@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "serve": "nodemon server.js",
-    "lint:fix": "eslint --fix ./utils"
+    "lint:fix": "eslint --fix ./middleware/"
   },
   "keywords": [
     "app",
