@@ -6,6 +6,8 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
+        //id del estudiante resgistrado en el sistema
+        //solo se registran hermanos en caso de que este sea estudiante de la uelda
         id_hermano: {
             type: DataTypes.INTEGER
         },
