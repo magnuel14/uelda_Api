@@ -338,7 +338,7 @@ let controller = {
 
 
             const info_estudiante = await Persona.findOne({
-                attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+                attributes: ['id', 'nombre', 'apellido', 'numeroId','estadoAc'],
                 where: { id: id_persona }
             });
 
