@@ -25,4 +25,7 @@ router.get('/getMateria_byId/:id_materia', gestionAcademicaController.verifyToke
 //promocion estudiante
 router.post('/comprobarPromocionEstudiante', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.comprobarPromocionEstudiante));
 
+router.post('/matriculaPDF', (gestionAcademicaController.matriculaPDF));
+
+
 module.exports = router;

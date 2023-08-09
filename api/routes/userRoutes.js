@@ -11,4 +11,5 @@ router.post('/signin', (userController.singnin));
 router.post('/update_infoCuenta', userController.verifyToken, tryCatch(userController.updateCuenta));
 router.post('/update_estadoC', userController.verifyToken, tryCatch(userController.updateEstadoCuenta));
 
+
 module.exports = router;
