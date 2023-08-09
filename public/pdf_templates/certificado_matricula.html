@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CERTIFICADO DE MATRICULA</title>
+    <style>
+      body {
+        padding-left: 8rem;
+        padding-right: 8rem;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 18.5px;
+      }
+      
+      table {
+        border-collapse: collapse !important;
+      }
+      .labels{
+        display: inline-block;
+        font-size: 17px;
+        height: 2rem;
+      }
+      .title{
+        font-weight: 700
+      }
+      .sp{
+        margin-left: 1rem;
+        width: 140px;
+      }
+      .sp2{
+        width: 110px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <img style="width: 9rem; position: absolute; top: 23px; left: 176px;" src="https://res.cloudinary.com/mag-dev/image/upload/v1690649481/ueldaContainer/logo_zm4xjj.jpg">
+      <img style="height: 5rem; position: absolute; top: 12px; right: 210px;" src="https://res.cloudinary.com/mag-dev/image/upload/v1690649481/ueldaContainer/ecuador_fmo8rs.jpg">
+    </div>
+    <table style="width: 100%">
+      <tbody>
+        <tr>
+          <td style="width: 20%;">
+            
+          </td>
+          <td style="text-align: center; font-weight: 700; padding-top: 2.5rem; width: 60%;">
+            CERTIFICADO DE MATRICULA
+          </td>
+          <td style="width: 20%;"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="width: 100%; margin-top: 3rem; font-weight: 700">
+      <label style="margin-left: 2rem; margin-right: 4rem">INSTITUCIÓN:</label>
+      <label>UNIDAD EDUCATIVA LAURO DAMERVAL AYORA</label>
+    </div>
+    <div
+      style="
+        text-align: center;
+        margin-top: 1.8rem;
+        font-size: 17px;
+        font-weight: 700;
+      "
+    >
+      LOJA - ECUADOR
+    </div>
+    <table style="width: 100%; margin-top: 25px">
+      <tbody>
+        <tr>
+          <td>
+            <div class="labels title sp">Año Lectivo:</div>
+            <div class="labels "> {{anioLectivo}} </div>
+          </td>
+          <td>
+            <div class="labels title sp2">No. Matrícula:</div>
+            <div class="labels ">{{matricula}}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="labels title sp">Nivel Educación:</div>
+            <div class="labels"> {{curso}} </div>
+          </td>
+          <td>
+            <div class="labels title sp2">Paralelo:</div>
+            <div class="labels">PARALELO {{paralelo}}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="labels title sp">Fecha:</div>
+            <div class="labels">{{date}}</div>
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 40px; padding-left: 20px; font-size: 17px;"><label>Quién suscribe Rector y Secretaria certifican que el(a) sr(ta.)</label></div>
+    <div style="margin-top: 10px; text-align: center; font-size: 17px; font-weight: 700;">{{name}}</div>
+    <div style="margin: 10px; font-size: 17px;">
+        Previo el cumplimiento de los requisitos legales, se matriculó en el curso indicado según consta en los registros
+        de matrículas que reposan en esta institución.
+    </div>
+    <table style="margin-top: 120px; width: 100%; font-size: 14px;">
+        <tbody>
+            <tr>
+                <td style="text-align: center;">
+                    <div>Dr. {{rector}}</div>
+                    <div>RECTOR</div>
+                </td>
+                <td style="text-align: center;">
+                    <div>Lic. {{secretaria}}</div>
+                    <div>SECRETARIA</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="width: 100%; text-align: center; font-size: 14px; margin-top: 20px;">ANALISTA DE ATENCIÓN CIUDADANA</div>
+  </body>
+</html>
