@@ -1,26 +1,28 @@
 const handlebars = require("handlebars");
 let fs = require('fs');
 const htmlToPdf = require('html-pdf');
-const { PDFDocument  } = require('pdf-lib');
+const { PDFDocument } = require('pdf-lib');
 
 const pdfGenerator = {};
 
-pdfGenerator.matriculaReport = async ( inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector) => {
+pdfGenerator.matriculaReport = async (inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector) => {
   //Get template
   const path = "./public/pdf_templates/certificado_matricula.html";
   let html = file(path);
   let template = handlebars.compile(html);
 
   //Fill data into html template
+  const today = new Date();
+  const year = today.getFullYear()
   let htmlCompiled = template({
     name: inforPerson.apellido + ' ' + inforPerson.nombre,
     date: textDate(),
     rector: infoRector.apellido + ' ' + infoRector.nombre,
     secretaria: infoSecretaria.apellido + ' ' + infoSecretaria.nombre,
     paralelo: infoParalelo.titulo,
-    anioLectivo: (anioLectivo.periodo).toUpperCase() ,
-    curso: infoCurso.gradoAcademico +'° ' + infoCurso.nivelAcademico,
-    matricula: textDate().slice(22,27)+'-'+ (infoMatricula.id.toString()).padStart(4, "0")
+    anioLectivo: (anioLectivo.periodo).toUpperCase(),
+    curso: infoCurso.gradoAcademico + '° ' + infoCurso.nivelAcademico,
+    matricula: year + '-' + (infoMatricula.id.toString()).padStart(4, "0")
   });
 
   let options = {
@@ -84,7 +86,7 @@ function file(path) {
     const data = fs.readFileSync(path, "utf8");
     return data;
   } catch (err) {
-      console.log(err);
+    console.log(err);
     return 0;
   }
 }
