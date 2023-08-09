@@ -1,14 +1,11 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 const models = require('../models');
-<<<<<<< HEAD
 const dotenv = require('dotenv');
 dotenv.config();
-=======
 const asistenciaxDia = require('../models/asistenciaxDia');
 const pdfGenerator = require('../../helpers/pdf-generator')
 const fs = require("fs");
->>>>>>> 01b428578d1af46b5e956ed13c288b4c06392b2c
 
 const Persona = models.persona;
 const AnioLectivo = models.anioLectivo;
