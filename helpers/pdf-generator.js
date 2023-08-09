@@ -18,9 +18,9 @@ pdfGenerator.matriculaReport = async ( inforPerson, infoMatricula, infoParalelo,
     rector: infoRector.apellido + ' ' + infoRector.nombre,
     secretaria: infoSecretaria.apellido + ' ' + infoSecretaria.nombre,
     paralelo: infoParalelo.titulo,
-    anioLectivo: (anioLectivo.fechaInicio).slice(6, 10)+ ' - ' +(anioLectivo.fechaFin).slice(6, 10),
-    curso: infoCurso.gradoAcademico +' ' + infoCurso.nivelAcademico,
-    matricula: textDate().slice(21,26)+'-'+ (infoMatricula.id.toString()).padStart(4, "0")
+    anioLectivo: (anioLectivo.periodo).toUpperCase() ,
+    curso: infoCurso.gradoAcademico +'° ' + infoCurso.nivelAcademico,
+    matricula: textDate().slice(22,27)+'-'+ (infoMatricula.id.toString()).padStart(4, "0")
   });
 
   let options = {

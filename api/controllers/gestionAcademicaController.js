@@ -4710,7 +4710,7 @@ let controller = {
         return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
-    testPDF: async (req, res) => {
+    matriculaPDF: async (req, res) => {
         const { external_id } = req.body;
         const inforPerson = await Persona.findOne({
             attributes: ['id', 'nombre', 'apellido', 'numeroId'],
