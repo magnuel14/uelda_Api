@@ -13,7 +13,7 @@ let controller = {
     /** Implementado try cath*/
     getUsers: async (req, res) => {
         const users = await Persona.findAll({
-            attributes: ['id','nombre', 'apellido'] // Especifica los atributos que quieres obtener
+            attributes: ['id', 'nombre', 'apellido'] // Especifica los atributos que quieres obtener
         });
         res.json(users);
     },
@@ -149,7 +149,8 @@ let controller = {
             message: 'Se ha actualizado el estado de la cuenta de: ',
             apellido: infoPersona.apellido, nombre: infoPersona.nombre
         });
-    }
+    },
+   
     /** fin Implementado try cath*/
 }
 module.exports = controller;

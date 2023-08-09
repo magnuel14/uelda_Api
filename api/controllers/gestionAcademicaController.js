@@ -1,6 +1,8 @@
 'use strict';
 const models = require('../models');
 const asistenciaxDia = require('../models/asistenciaxDia');
+const pdfGenerator = require('../../helpers/pdf-generator')
+const fs = require("fs");
 
 const Persona = models.persona;
 const AnioLectivo = models.anioLectivo;
@@ -4708,6 +4710,56 @@ let controller = {
         return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
+    matriculaPDF: async (req, res) => {
+        const { external_id } = req.body;
+        const inforPerson = await Persona.findOne({
+            attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+
+            where: { external_id: external_id }
+        });
+
+        const infoMatricula = await Matricula.findOne({ where: { id_persona: inforPerson.id } });
+        const infoParalelo = await Paralelo.findOne({ where: { id: infoMatricula.id_paralelo } });
+        const infoCurso = await Curso.findOne({ where: { id: infoParalelo.id_curso } });
+
+        const anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+
+        const infoSecretaria = await Persona.findOne({
+            attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+            where: { id_rol: 4 }
+        });
+        const infoRector = await Persona.findOne({
+            attributes: ['id', 'nombre', 'apellido', 'numeroId'],
+            where: { id_rol: 1 }
+        });
+        await pdfGenerator.matriculaReport( inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector )
+        let filePath = 'reporte.pdf'
+        let docName = 'reporte.pdf'
+        if (fs.existsSync(filePath)) {
+            // Send the file as a response
+            res.download(filePath, docName+'.pdf', (err) => {
+              if (err) {
+                console.log('Error sending file:', err);
+              } else {
+                console.log("Se envió el archivo");
+                // Delete the file after the download is completed
+                fs.unlink(filePath, (unlinkErr) => {
+                  if (unlinkErr) {
+                    console.log('Error deleting file:', unlinkErr);
+                    return
+                  } else {
+                    console.log('File deleted successfully');
+                  }
+                });
+              }
+            });
+          } else {
+            return res.status(200).send({
+                status: 'error',
+                data: 'No se encontro el archivo'
+            });
+          }
+    }
 
     /**Fin funciones validadas */
 }
