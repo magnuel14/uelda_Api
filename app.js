@@ -19,34 +19,34 @@ dotenv.config();
 app.set('port', process.env.PORT || 4000);
 // app.use(cors({origin:"http://localhost:4200/"}))
 app.use(session({
-  secret: 'Ueldaweb',
-  resave: true,
-  saveUninitialized: true,
+    secret: 'Ueldaweb',
+    resave: true,
+    saveUninitialized: true,
 }));
 app.use(flash());
 
 // Configurar cabeceras y CORS
 app.use(cors());
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-  next();
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
 });
 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: './uploads',
+    useTempFiles: true,
+    tempFileDir: './uploads',
 }));
 
 const tempFolderPath = path.join(__dirname, './uploads');
 // Programa la tarea cron para ejecutar la función de borrado a las 12 AM cada día
 cron.schedule('0 0 * * *', () => {
-  borrarTemp.borrar(tempFolderPath);
+    borrarTemp.borrar(tempFolderPath);
 });
 
 /**
