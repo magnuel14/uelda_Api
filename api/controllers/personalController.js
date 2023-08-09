@@ -38,13 +38,13 @@ let controller = {
             });
         res.json(personal);
     },
-     /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     * @returns 
-     */
-     getPersonByEx: async (req, res) => {
+    /**
+    * 
+    * @param {*} req 
+    * @param {*} res 
+    * @returns 
+    */
+    getPersonByEx: async (req, res) => {
         const { externalId } = req.params;
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
         return res.json({ infoPersona });
@@ -64,31 +64,30 @@ let controller = {
      * @returns La información de la persona y su cuenta.
      */
     createPerson: async (req, res) => {
-        //Preguntar que datos se debe validar
-        //Correropersonal para crear cuenta.
         const {
             nombre, apellido, tipoDocId, numeroId,
             correoPersonal, id_rol
         } = req.body
-        const searchPersona = await Persona.findOne({
-            where: {
-                [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }]
-            }
-        });
-        const cedulaValida = cedulaValidator.validator(numeroId);
-        //return res.json({ message: cedulaValida.flag });
+        const numeroIdString = numeroId + '';
+
+        const cedulaValida = cedulaValidator.validator(numeroIdString);
         if (cedulaValida.flag == 3) {
+            const searchPersona = await Persona.findOne({
+                where: {
+                    [Op.or]: [{ numeroId: numeroIdString }, { correoPersonal: correoPersonal }]
+                }
+            });
             if (!searchPersona) {
                 const personaData = {
                     nombre: nombre, apellido: apellido,
-                    tipoDocId: tipoDocId, numeroId: numeroId,
+                    tipoDocId: tipoDocId, numeroId: numeroIdString,
                     id_rol: id_rol,
                     correoPersonal: correoPersonal,
                 }
                 const persona = await Persona.create(personaData);
-                const newPersona = await Persona.findOne({ where: { numeroId: numeroId } });
+                const newPersona = await Persona.findOne({ where: { numeroId: numeroIdString } });
                 var salt = bcrypt.genSaltSync(10);
-                let password = bcrypt.hashSync(numeroId, salt);
+                let password = bcrypt.hashSync(numeroIdString, salt);
                 const dataCuenta = {
                     correo: correoPersonal,
                     clave: password,
@@ -96,9 +95,10 @@ let controller = {
                     id_persona: newPersona.id,
                 };
                 const newPersonaCuenta = await Cuenta.create(dataCuenta);
-                //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
-                if (!newPersonaCuenta) return res.json({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
-                //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
+                if (!newPersonaCuenta) return res.json({
+                    message: 'Su cuenta no se puedo crear, revise bien si informacion.',
+                    flag: 1
+                })
                 const dataInfoMed = {
                     id_persona: newPersona.id,
                     discapacidad: "1",
@@ -108,9 +108,7 @@ let controller = {
                     enfermedadCatastrofica: "1",
                     tipoEnfermedadCatastrofica: "N/A"
                 };
-                //const persona = await Persona.findOne({ where: { id: idP } });
-                //return res.json({persona });
-                const newInfoMedica = await InfoMedica.create(dataInfoMed);
+                await InfoMedica.create(dataInfoMed);
                 const dataPerfilProfe = {
                     id_persona: newPersona.id,
                     fechaInMag: 'dia/mes/año',
@@ -120,7 +118,7 @@ let controller = {
                     categoria: 'N/A',
                     aniosCategoria: 'N/A',
                 }
-                const newperfilProfesional = await PerfilProfesional.create(dataPerfilProfe);
+                await PerfilProfesional.create(dataPerfilProfe);
                 const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona: newPersona.id } });
                 const datatituloPro = {
                     id_perfilProfesional: infoPerfilPro.id,
@@ -130,14 +128,14 @@ let controller = {
                     cuartoNivel: 'N/A',
                     cuartoEspecialidad: 'N/A'
                 }
-                const newtituloProfesional = await TituloProfesional.create(datatituloPro);
-                return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
+                await TituloProfesional.create(datatituloPro);
+                return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
 
             } else {
-                return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
+                return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal', flag: 1 });
             }
         } else {
-            return res.json({ message: cedulaValida.message });
+            return res.json({ message: cedulaValida.message, flag: 1 });
         }
     },
     /**

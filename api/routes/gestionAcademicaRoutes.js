@@ -11,8 +11,8 @@ router.post('/update_AnioLectivo', tryCatch(gestionAcademicaController.updateAni
 router.post('/update_EstadoAnioLectivo', tryCatch(gestionAcademicaController.updateEstadoAnioLectivo));
 
 //gestion de matricula o promociones de estudiantes
-router.post('/matricular_Estudiante', (gestionAcademicaController.matricularEstudiantes));
-router.post('/update_matricula_Estudiante', (gestionAcademicaController.updateMatriculaEstudiante));
+router.post('/matricular_Estudiante', tryCatch(gestionAcademicaController.matricularEstudiantes));
+router.post('/update_matricula_Estudiante', tryCatch(gestionAcademicaController.updateMatriculaEstudiante));
 
 router.post('/promover_Estudiante', tryCatch(gestionAcademicaController.promoverEstudiantes));
 
@@ -23,6 +23,6 @@ router.get('/getParalelo_byId/:id_paralelo', tryCatch(gestionAcademicaController
 //materia
 router.get('/getMateria_byId/:id_materia', tryCatch(gestionAcademicaController.getMateria_byId));
 //promocion estudiante
-router.post('/comprobarPromocionEstudiante', (gestionAcademicaController.comprobarPromocionEstudiante));
+router.post('/comprobarPromocionEstudiante', tryCatch(gestionAcademicaController.comprobarPromocionEstudiante));
 
 module.exports = router;

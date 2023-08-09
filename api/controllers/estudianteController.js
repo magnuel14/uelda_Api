@@ -70,89 +70,50 @@ let controller = {
    * @returns La información de la persona y su cuenta.
    */
   createEstudiante: async (req, res) => {
-    const { nombre, apellido, tipoDocId, numeroId, correoPersonal } = req.body;
-    const estudianteData = {
-      nombre: nombre,
-      apellido: apellido,
-      tipoDocId: tipoDocId,
-      numeroId: numeroId,
-      id_rol: "6",
-      correoPersonal: correoPersonal,
-    };
-    const searchPersona = await Persona.findOne({
-      where: { numeroId: numeroId },
-    });
-    if (!searchPersona) {
-      if (tipoDocId == "pasaporte") {
-        const infoEstudianteCuenta = await Persona.findOne({
-          where: { correoPersonal: correoPersonal },
-        });
-        if (!infoEstudianteCuenta) {
-          const estudiante = await Persona.create(estudianteData);
-          const newEstudiante = await Persona.findOne({
-            where: { numeroId: numeroId },
-          });
-          var salt = bcrypt.genSaltSync(10);
-          let password = bcrypt.hashSync(numeroId, salt);
-          const dataCuenta = {
-            correo: correoPersonal,
-            clave: password,
-            estado: 0,
-            id_persona: newEstudiante.id,
-          };
-          const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-          if (!newEstudianteCuenta)
-            console.log({
-              message:
-                "La cuenta no se puedo crear, revise bien su informacion.",
-            });
-          const dataInfoMed = {
-            id_persona: newEstudiante.id,
-            discapacidad: "1",
-            tipoDiscapacidad: "N/A",
-            porcentajeDiscapacidad: "N/A",
-            nCarnetDiscapacidad: "N/A",
-            enfermedadCatastrofica: "1",
-            tipoEnfermedadCatastrofica: "N/A",
-          };
-          const newInfoMedica = await InfoMedica.create(dataInfoMed);
-          console.log({
-            message: "Ha generado un nuevo usuario",
-            estudiante,
-            newEstudianteCuenta,
-            newInfoMedica,
-          });
-        } else {
-          console.log({ message: "Ya existe un estudiante con ese correo" });
+    const { externalId, nombre, apellido, tipoDocId, numeroId, correoPersonal } = req.body;
+    const numeroIdString = numeroId + '';
+    const infoPersonal = await Persona.findOne({ where: { external_id: externalId } });
+    if (infoPersonal.id_rol === 2 || infoPersonal.id_rol === 4) {
+      const searchPersona = await Persona.findOne({
+        where: {
+          [Op.and]: [
+            {
+              [Op.or]: [
+                { numeroId: numeroIdString },
+                { correoPersonal: correoPersonal }
+              ]
+            },
+            { id_rol: 6 }
+          ]
         }
-      } else {
-        const cedulaValida = cedulaValidator.validator(numeroId);
-        if (cedulaValida.flag == 3) {
+      });
+      if (!searchPersona) {
+        if (tipoDocId == "pasaporte") {
           const infoEstudianteCuenta = await Persona.findOne({
             where: { correoPersonal: correoPersonal },
           });
-
           if (!infoEstudianteCuenta) {
+            const estudianteData = {
+              nombre: nombre,
+              apellido: apellido,
+              tipoDocId: tipoDocId,
+              numeroId: numeroIdString,
+              correoPersonal: correoPersonal,
+              id_rol: "6",
+            };
             const estudiante = await Persona.create(estudianteData);
-            const newEstudiante = await Persona.findOne({
-              where: { numeroId: numeroId },
-            });
             var salt = bcrypt.genSaltSync(10);
-            let password = bcrypt.hashSync(numeroId, salt);
+            let password = bcrypt.hashSync(numeroIdString, salt);
             const dataCuenta = {
               correo: correoPersonal,
               clave: password,
               estado: 0,
-              id_persona: newEstudiante.id,
+              id_persona: estudiante.id,
             };
             const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta)
-              return res.json({
-                message:
-                  "La cuenta no se puedo crear, revise bien su informacion.",
-              });
+            if (!newEstudianteCuenta) return res.json({ message: "La cuenta no se puedo crear, revise bien su informacion.", flag: 1 });
             const dataInfoMed = {
-              id_persona: newEstudiante.id,
+              id_persona: estudiante.id,
               discapacidad: "1",
               tipoDiscapacidad: "N/A",
               porcentajeDiscapacidad: "N/A",
@@ -160,25 +121,72 @@ let controller = {
               enfermedadCatastrofica: "1",
               tipoEnfermedadCatastrofica: "N/A",
             };
-            const newInfoMedica = await InfoMedica.create(dataInfoMed);
-            return res.json({
-              message: "Ha generado un nuevo usuario",
-              estudiante,
-              newEstudianteCuenta,
-              newInfoMedica,
-            });
+            await InfoMedica.create(dataInfoMed);
           } else {
-            return res.json({
-              message: "Ya existe un estudiante con ese correo",
-            });
+            return res.json({ message: "Ya existe un estudiante con ese correo", flag: 1 });
           }
         } else {
-          return res.json({ message: cedulaValida.message });
+          const cedulaValida = cedulaValidator.validator(numeroIdString);
+          if (cedulaValida.flag == 3) {
+            const infoEstudianteCuenta = await Persona.findOne({
+              where: { correoPersonal: correoPersonal },
+            });
+            if (!infoEstudianteCuenta) {
+              const estudianteData = {
+                nombre: nombre,
+                apellido: apellido,
+                tipoDocId: tipoDocId,
+                numeroId: numeroIdString,
+                correoPersonal: correoPersonal,
+                id_rol: "6",
+              };
+              const estudiante = await Persona.create(estudianteData);
+              var salt = bcrypt.genSaltSync(10);
+              let password = bcrypt.hashSync(numeroIdString, salt);
+              const dataCuenta = {
+                correo: correoPersonal,
+                clave: password,
+                estado: 0,
+                id_persona: estudiante.id,
+              };
+              const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+              if (!newEstudianteCuenta)
+                return res.json({
+                  message:
+                    "La cuenta no se puedo crear, revise bien su informacion.", flag: 1
+                });
+              const dataInfoMed = {
+                id_persona: estudiante.id,
+                discapacidad: "1",
+                tipoDiscapacidad: "N/A",
+                porcentajeDiscapacidad: "N/A",
+                nCarnetDiscapacidad: "N/A",
+                enfermedadCatastrofica: "1",
+                tipoEnfermedadCatastrofica: "N/A",
+              };
+              await InfoMedica.create(dataInfoMed);
+              return res.json({
+                message: "Ha generado un nuevo usuario",
+                estudiante, flag: 0
+              });
+            } else {
+              return res.json({
+                message: "Ya existe un estudiante con ese correo", flag: 1
+              });
+            }
+          } else {
+            return res.json({ message: cedulaValida.message, flag: 1 });
+          }
         }
+      } else {
+        return res.json({
+          message: "Ya existe un estudiante con esta información", flag: 1
+        });
       }
     } else {
       return res.json({
-        message: "Ya existe un estudiante con esta información",
+        message: "No tiene los permisos para crear un usuario nuevo.",
+        flag: 1
       });
     }
   },
