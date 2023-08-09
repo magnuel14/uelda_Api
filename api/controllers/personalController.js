@@ -1,9 +1,12 @@
 'use strict';
+const jwt = require('jsonwebtoken');
 const cloudinaryC = require('../../cloudinary');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
 const fs = require('fs-extra');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const cedulaValidator = require('../../helpers/cedulaHelper');
 
@@ -532,6 +535,27 @@ let controller = {
         return res.json({ message: 'Se ha resitrado al Personal de institución' })
     },
     /**Fin funciones validadas */
+    verifyToken: async (req, res, next) => {
+        try {
+            if (!req.headers.authorization) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            let token = req.headers.authorization.split(' ')[1];
+            if (token === 'null') {
+                return res.status(401).send('Unauhtorized Request');
+            }
+
+            const payload = await jwt.verify(token, process.env.Secret_key);
+            if (!payload) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            req.userId = payload._id;
+            next();
+        } catch (e) {
+            //console.log(e)
+            return res.status(401).send('Unauhtorized Request');
+        }
+    }
 }
 
 module.exports = controller;

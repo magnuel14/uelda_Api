@@ -1,6 +1,8 @@
 'use strict';
+const jwt = require('jsonwebtoken');
 const models = require('../models');
-const asistenciaxDia = require('../models/asistenciaxDia');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const Persona = models.persona;
 const AnioLectivo = models.anioLectivo;
@@ -4708,8 +4710,28 @@ let controller = {
         return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
-
     /**Fin funciones validadas */
+    verifyToken: async (req, res, next) => {
+        try {
+            if (!req.headers.authorization) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            let token = req.headers.authorization.split(' ')[1];
+            if (token === 'null') {
+                return res.status(401).send('Unauhtorized Request');
+            }
+
+            const payload = await jwt.verify(token, process.env.Secret_key);
+            if (!payload) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            req.userId = payload._id;
+            next();
+        } catch (e) {
+            //console.log(e)
+            return res.status(401).send('Unauhtorized Request');
+        }
+    }
 }
 
 module.exports = controller;

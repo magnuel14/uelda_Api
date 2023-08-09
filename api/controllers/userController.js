@@ -4,6 +4,8 @@ const models = require('../models');
 const bcrypt = require('bcryptjs');
 const cloudinaryC = require('../../cloudinary');
 const fs = require('fs-extra');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
@@ -13,7 +15,7 @@ let controller = {
     /** Implementado try cath*/
     getUsers: async (req, res) => {
         const users = await Persona.findAll({
-            attributes: ['id','nombre', 'apellido'] // Especifica los atributos que quieres obtener
+            attributes: ['id', 'nombre', 'apellido'] // Especifica los atributos que quieres obtener
         });
         res.json(users);
     },
@@ -149,7 +151,28 @@ let controller = {
             message: 'Se ha actualizado el estado de la cuenta de: ',
             apellido: infoPersona.apellido, nombre: infoPersona.nombre
         });
-    }
+    },
     /** fin Implementado try cath*/
+    verifyToken: async (req, res, next) => {
+        try {
+            if (!req.headers.authorization) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            let token = req.headers.authorization.split(' ')[1];
+            if (token === 'null') {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            const payload = await jwt.verify(token, process.env.Secret_key);
+            if (!payload) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            req.userId = payload.id;
+
+            next();
+        } catch (e) {
+            //console.log(e)
+            return res.status(401).send('Unauhtorized Request');
+        }
+    }
 }
 module.exports = controller;
