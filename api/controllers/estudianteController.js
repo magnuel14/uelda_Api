@@ -49,14 +49,16 @@ let controller = {
     res.json(estudiantes);
   },
   /**
-    * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
-    * @param {*} req externalId
-    * @param {*} res 
-    * @returns Una lista en formato json de la información del estudiante en caso que exista
-    */
+   * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
+   * @param {*} req externalId
+   * @param {*} res
+   * @returns Una lista en formato json de la información del estudiante en caso que exista
+   */
   getEstudianteByEx: async (req, res) => {
     const { externalId } = req.params;
-    const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+    const infoEstudiante = await Persona.findOne({
+      where: { external_id: externalId },
+    });
     return res.json({ infoEstudiante });
   },
   /**
@@ -207,16 +209,48 @@ let controller = {
         where: { external_id: externalId },
       });
 
+      const response = {
+        infoEstudiante: estudiante,
+      };
+
+      return res.json(response);
+    } catch (error) {
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
+  },
+
+  /**
+   * Obtener calificaciones por estudiante external ID
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+
+  getCalificacionesEstudianteByExternalId: async (req, res) => {
+    try {
+      const { externalId } = req.params;
+
+      // Buscar el estudiante por externalId
+      const estudiante = await Persona.findOne({
+        where: { external_id: externalId },
+        attributes: ["id", "nombre", "apellido", "numeroId", "correoPersonal"],
+      });
+
+      console.log(estudiante);
+
       if (!estudiante) {
         return res.status(404).json({ error: "Estudiante no encontrado" });
       }
 
       const anioLectivoActual = await AnioLectivo.findOne({
         where: { estadoAniolectivo: 0 },
+        attributes: ["id"],
       });
 
       if (!anioLectivoActual) {
-        return res.status(404).json({ error: "No existe un año lectivo activo" });
+        return res
+          .status(404)
+          .json({ error: "No existe un año lectivo activo" });
       }
 
       // Buscar la matrícula del estudiante
@@ -233,28 +267,45 @@ let controller = {
           .json({ error: "Matrícula no encontrada para este estudiante" });
       }
 
+      //buscar paralelo del estudiante
+      const paralelo = await Paralelo.findOne({
+        where: { id: matricula.id_paralelo },
+        include: [Curso],
+      });
+
       // Buscar las calificaciones por trimestre o quimestre de la matrícula
       let calificaciones = [];
-      let tipoCalificacion = '';
+      let tipoCalificacion = "";
 
       if (anioLectivoActual.tipoCalificacion == 0) {
         calificaciones = await CalificacionQ.findAll({
           where: { id_matricula: matricula.id },
+          include: [
+            {
+              model: Materia,
+              attributes: ["nombre", "area"],
+            },
+          ],
         });
-        tipoCalificacion = 'quimestre';
+        tipoCalificacion = "quimestre";
       } else {
         calificaciones = await CalificacionT.findAll({
           where: { id_matricula: matricula.id },
+          include: [
+            {
+              model: Materia,
+              attributes: ["nombre", "area"],
+            },
+          ],
         });
-        tipoCalificacion = 'trimestre';
+        tipoCalificacion = "trimestre";
       }
 
-      // Crear una respuesta con toda la información recolectada
       const response = {
         infoEstudiante: estudiante,
-        matricula: matricula,
         calificaciones: calificaciones,
         tipoCalificacion: tipoCalificacion,
+        paralelo: paralelo,
       };
 
       return res.json(response);
@@ -262,6 +313,7 @@ let controller = {
       return res.status(500).json({ error: "Error interno del servidor" });
     }
   },
+
   /**
    * updateEstudiante: Esta función sirve para editar la información del estudiante
    * @param {*} req

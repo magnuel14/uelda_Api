@@ -7,8 +7,11 @@ const estudianteController = require('../controllers/estudianteController');
 router.get('/getEstudiantes', estudianteController.verifyToken, tryCatch(estudianteController.getEstudiantes));
 router.get('/getEstudiantesExternal', estudianteController.verifyToken, tryCatch(estudianteController.getEstudiantesExternal));
 
+
+router.get('/getCalificacionesEstudianteByExternal/:externalId', estudianteController.verifyToken, estudianteController.getCalificacionesEstudianteByExternalId);
 router.get('/getEstudianteByEx/:externalId', estudianteController.verifyToken, tryCatch(estudianteController.getEstudianteByEx));
 router.post('/update_infoEstudiante', estudianteController.verifyToken, tryCatch(estudianteController.updateEstudiante));
+
 
 router.post('/registrar_estudiante', estudianteController.verifyToken, tryCatch(estudianteController.createEstudiante));
 router.post('/registrar_lista_estudiantes', estudianteController.verifyToken, tryCatch(estudianteController.registroEstudiantes));
