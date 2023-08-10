@@ -201,116 +201,19 @@ function file(path) {
   }
 }
 
-
-async function mailOptionsGenerator(template, nameMail, headerMail, productsArray, order, additionalInfo, mailToSend, subjectMail, codeFlag) {
-  let htmlCompiled = template({ nameToSend: nameMail, headerMail: headerMail, products: productsArray, order: order, codeFlag: codeFlag, timeStamp: new Date().toLocaleString("es-ES", 'America/Bogota'), additionalInfo: additionalInfo, logo: process.env.LOGO_EMAIL, miniLogo: process.env.MINI_LOGO_EMAIL });
-  let mailOptions = {
-    from: '"Menfri Tienda Virtual" <notifiaciones@tecsicom.com>', // sender address
-    to: mailToSend,// list of receivers additionalInfo.email + ', cris.ivancola@gmail.com',
-    subject: subjectMail, // Subject line
-    text: 'Se ha generado', // plain text body
-    html: htmlCompiled // html body
-  };
-  let answer = await sendMail(mailOptions);
-}
-mailing.sendGuideInfo = async (guide, req) => {
-  const path = './public/email_templates/courierGuide.html';
-  let htmlF = file(path);
-  //console.log(htmlF)
-  let template = handlebars.compile(htmlF);
-  let { nombre, ruc, ciudad, direccion, postal, telefono, celular, correo, casa, refe, cantidad, peso, contenido, valorseguro, comentario } = req;
-  let courierObj = {
-    nameToSend: nombre,
-    headerMail: 'Información de Guía',
-    guia: guide,
-    nombre: nombre,
-    cedula: ruc,
-    ciudad: "",
-    direccion: direccion,
-    refe: refe,
-    telefono: telefono,
-    celular: "0" + celular,
-    contenido: contenido,
-    peso: peso,
-    cantidad: cantidad,
-    comentario: comentario,
-    correo: correo
-  }
-  let htmlCompiled = template(courierObj);
-  let mailOptions = {
-    from: '"Menfri Tienda Virtual" <notifiaciones@tecsicom.com>', // sender address
-    to: correo, // list of receivers
-    subject: 'Información de Guía', // Subject line
-    text: 'Menfri', // plain text body {{name}} {{lastname}}
-    html: htmlCompiled // html body
-  };
-  let answer = await sendMail(mailOptions);
-}
-mailing.sendMailOpenCase = async (message, email, name, phone) => {
-  const path = './public/email_templates/contactRequest.html';
-  let htmlF = file(path);
-  if (!htmlF) {
-    return 0
-  } else {
-    let mailOptions = {
-      from: '"Menfri Tienda Virtual" <notifiaciones@tecsicom.com>', // sender address
-      to: 'eddytorresmi@gmail.com , rodnyledesma@gmail.com', // list of receivers eddytorresmi@gmail.com
-      subject: 'Nueva solicitud de contacto', // Subject line
-      text: 'Menfri', // plain text body
-      html: htmlF.replace('{{message_body}}', message).replace('{{email}}', email).replace('{{name}}', name).replace('{{phone}}', phone) // html body
-    };
-    let answer = await sendMail(mailOptions);
-    return answer;
-  }
-}
-mailing.sendMailValidation = async (rows, token) => {
-  const path = './public/email_templates/verification.html';
-  let htmlF = file(path);
-  if (!htmlF) {
-    return 0
-  } else {
-    let mailOptions = {
-      from: '"Menfri Tienda Virtual" <notifiaciones@tecsicom.com>', // sender address
-      to: rows[0].email, // list of receivers eddytorresmi@gmail.com
-      subject: 'Activacion de cuenta', // Subject line
-      text: 'Menfri', // plain text body {{name}} {{lastname}}
-      html: htmlF.replace('{{name}}', rows[0].name).replace('{{token}}', token).replace('{{token}}', token).replace('{{token}}', token) // html body
-    };
-    let answer = await sendMail(mailOptions);
-    return answer;
-  }
-}
-mailing.sendMailPasswordReset = async (rows, token) => {
-  const path = './public/email_templates/password-reset.html';
-  let htmlF = file(path);
-  if (!htmlF) {
-    return 0
-  } else {
-    let mailOptions = {
-      from: '"Menfri Tienda Virtual" <notifiaciones@tecsicom.com>', // sender address
-      to: 'rodnyledesma@gmail.com', // list of receivers
-      subject: 'Actualización de contraseña', // Subject line
-      text: 'Menfri', // plain text body {{name}} {{lastname}}
-      html: htmlF.replace('{{name}}', rows[0].name).replace('{{token}}', token).replace('{{token}}', token).replace('{{token}}', token) // html body
-    };
-    let answer = await sendMail(mailOptions);
-    return answer;
-  }
-}
-
 async function sendMail(mailOptions) {
   try {
-    let result = await transporter.sendMail(mailOptions)
-    //console.log('mail sent')
+    await transporter.sendMail(mailOptions)
+    console.log('mail sent')
     return 1;
   } catch (error) {
-    //console.log("error al enviar");
+    console.log("error al enviar");
     return 0;
   }
 }
 
 mailing.sendSystemErrorMail = async (data) => {
-  const path = './public/email_templates/error_handling.html';
+  const path = './public/email_templates/newUserEmail.html';
   let htmlF = fs.readFileSync(path).toString();
   if (!htmlF) {
     return 0
