@@ -1,6 +1,9 @@
 'use strict';
+const jwt = require('jsonwebtoken');
 const models = require('../models');
 const { Op } = require("sequelize");
+const dotenv = require('dotenv');
+dotenv.config();
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
@@ -338,7 +341,7 @@ let controller = {
 
 
             const info_estudiante = await Persona.findOne({
-                attributes: ['id', 'nombre', 'apellido', 'numeroId','estadoAc'],
+                attributes: ['id', 'nombre', 'apellido', 'numeroId', 'estadoAc'],
                 where: { id: id_persona }
             });
 
@@ -957,13 +960,13 @@ let controller = {
         for (let i = 0; i < lista_externalAsistencias.length; i++) {
             const {
                 externalId, asistencia
-            } = lista_externalAsistencias[i];            
+            } = lista_externalAsistencias[i];
 
             const info_AsistenciaXDia = await AsistenciaXDia.findOne(
                 {
                     where: { external_id: externalId }
                 });
-                
+
             const info_AsistenciaXMate = await AsistenciaXMate.findOne(
                 {
                     where: { external_id: externalId }
@@ -1016,7 +1019,7 @@ let controller = {
                     console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas })
 
                 } else if (info_AsistenciaXMate) {
-                    const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });                    
+                    const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
                     const _horasClase_programadas = info_materia.horasClase_programadas;
                     var _horasClase_dictadas = parseInt(info_AsistenciaXMate.horasClase_dictadas, 10) + periodosAcademicos_dictados;
 
@@ -1196,6 +1199,27 @@ let controller = {
         return res.json({ message: 'Se ha registrado la asistencia' });
     },
     /**Fin funciones validadas */
+    verifyToken: async (req, res, next) => {
+        try {
+            if (!req.headers.authorization) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            let token = req.headers.authorization.split(' ')[1];
+            if (token === 'null') {
+                return res.status(401).send('Unauhtorized Request');
+            }
+
+            const payload = await jwt.verify(token, process.env.Secret_key);
+            if (!payload) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            req.userId = payload._id;
+            next();
+        } catch (e) {
+            //console.log(e)
+            return res.status(401).send('Unauhtorized Request');
+        }
+    }
 }
 
 module.exports = controller;

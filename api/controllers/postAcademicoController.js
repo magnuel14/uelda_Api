@@ -1,7 +1,10 @@
 'use strict';
+const jwt = require('jsonwebtoken');
 const models = require('../models');
 const cloudinaryC = require('../../cloudinary');
 const { Op } = require('sequelize');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const Persona = models.persona;
 const PostAcademico = models.postAcademico;
@@ -190,7 +193,6 @@ let controller = {
      * @returns 
      */
     createpostAcademico: async (req, res) => {
-
         const {
             externalId,
             titulo, tipoArchivo, descripcion,
@@ -374,7 +376,29 @@ let controller = {
                 message: 'Se ha producido un error'
             });
         }
-    }
+    },
     /** fin Implementado try cath*/
+    verifyToken: async (req, res, next) => {
+        console.log(req.headers.authorization)
+        try {
+            if (!req.headers.authorization) {
+                return res.status(401).send('Unauhtorized Request 1');
+            }
+            let token = req.headers.authorization.split(' ')[1];
+            if (token === 'null') {
+                return res.status(401).send('Unauhtorized Request 2');
+            }
+
+            const payload = await jwt.verify(token, process.env.Secret_key);
+            if (!payload) {
+                return res.status(401).send('Unauhtorized Request 3');
+            }
+            req.userId = payload._id;
+            next();
+        } catch (e) {
+            console.log(e)
+            return res.status(401).send('Unauhtorized Request 4');
+        }
+    }
 }
 module.exports = controller;
