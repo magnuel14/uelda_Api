@@ -1,6 +1,9 @@
 'use strict';
+const jwt = require('jsonwebtoken');
 const models = require('../models');
 const { Op } = require("sequelize");
+const dotenv = require('dotenv');
+dotenv.config();
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
@@ -141,8 +144,29 @@ let controller = {
         if (subnivel_asignado == 5) {
             return res.json({ message: 'Se ha asiganado al/o docente/s al subnivel de bachillerato' })
         }
-    }
+    },
     /**Fin funciones validadas */
+    verifyToken: async (req, res, next) => {
+        try {
+            if (!req.headers.authorization) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            let token = req.headers.authorization.split(' ')[1];
+            if (token === 'null') {
+                return res.status(401).send('Unauhtorized Request');
+            }
+
+            const payload = await jwt.verify(token, process.env.Secret_key);
+            if (!payload) {
+                return res.status(401).send('Unauhtorized Request');
+            }
+            req.userId = payload._id;
+            next();
+        } catch (e) {
+            //console.log(e)
+            return res.status(401).send('Unauhtorized Request');
+        }
+    }
 }
 
 module.exports = controller;

@@ -4,27 +4,30 @@ const router = express.Router();
 const estudianteController = require('../controllers/estudianteController');
 
 //estudiante
-router.get('/getEstudiantes', tryCatch(estudianteController.getEstudiantes));
-router.get('/getEstudiantesExternal', tryCatch(estudianteController.getEstudiantesExternal));
+router.get('/getEstudiantes', estudianteController.verifyToken, tryCatch(estudianteController.getEstudiantes));
+router.get('/getEstudiantesExternal', estudianteController.verifyToken, tryCatch(estudianteController.getEstudiantesExternal));
 
-router.get('/getEstudianteByEx/:externalId', tryCatch(estudianteController.getEstudianteByEx));
-router.post('/update_infoEstudiante', tryCatch(estudianteController.updateEstudiante));
 
-router.post('/registrar_estudiante', tryCatch(estudianteController.createEstudiante));
-router.post('/registrar_lista_estudiantes', tryCatch(estudianteController.registroEstudiantes));
+router.get('/getCalificacionesEstudianteByExternal/:externalId', estudianteController.verifyToken, estudianteController.getCalificacionesEstudianteByExternalId);
+router.get('/getEstudianteByEx/:externalId', estudianteController.verifyToken, tryCatch(estudianteController.getEstudianteByEx));
+router.post('/update_infoEstudiante', estudianteController.verifyToken, tryCatch(estudianteController.updateEstudiante));
+
+
+router.post('/registrar_estudiante', estudianteController.verifyToken, tryCatch(estudianteController.createEstudiante));
+router.post('/registrar_lista_estudiantes', estudianteController.verifyToken, tryCatch(estudianteController.registroEstudiantes));
 
 //representante
-router.get('/getRepresentanteByEx/:externalId', tryCatch(estudianteController.getRepresentantesByEx));
-router.get('/getRepresentanteByDNI/:numeroId', tryCatch(estudianteController.getRepresentanteByDNI));
-router.post('/registrar_representante', tryCatch(estudianteController.createRepresentante));
-router.post('/update_infoRepresentante', tryCatch(estudianteController.updateRepresentante));
-router.post('/delete_infoRepresentante', tryCatch(estudianteController.deleteRepresentante));
+router.get('/getRepresentanteByEx/:externalId', estudianteController.verifyToken, tryCatch(estudianteController.getRepresentantesByEx));
+router.get('/getRepresentanteByDNI/:numeroId', estudianteController.verifyToken, tryCatch(estudianteController.getRepresentanteByDNI));
+router.post('/registrar_representante', estudianteController.verifyToken, tryCatch(estudianteController.createRepresentante));
+router.post('/update_infoRepresentante', estudianteController.verifyToken, tryCatch(estudianteController.updateRepresentante));
+router.post('/delete_infoRepresentante', estudianteController.verifyToken, tryCatch(estudianteController.deleteRepresentante));
 //hernanos
-router.get('/getHermanosByEx/:externalId', tryCatch(estudianteController.getAllhermanos));
-router.post('/registrar_hermano', tryCatch(estudianteController.addHermano));
-router.post('/delete_hermano', tryCatch(estudianteController.deleteHermano));
+router.get('/getHermanosByEx/:externalId', estudianteController.verifyToken, tryCatch(estudianteController.getAllhermanos));
+router.post('/registrar_hermano', estudianteController.verifyToken, tryCatch(estudianteController.addHermano));
+router.post('/delete_hermano', estudianteController.verifyToken, tryCatch(estudianteController.deleteHermano));
 //calificaciones - asistencias
-router.get('/getCalifiaciones_asistencias/:externalId', (estudianteController.getCalifiaciones_asistencias));
+router.get('/getCalifiaciones_asistencias/:externalId', estudianteController.verifyToken, tryCatch(estudianteController.getCalifiaciones_asistencias));
 
 module.exports = router;
 
