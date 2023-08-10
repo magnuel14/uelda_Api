@@ -7,6 +7,7 @@ const { Op } = require("sequelize");
 const fs = require('fs-extra');
 const dotenv = require('dotenv');
 dotenv.config();
+const mailing = require('../../helpers/emailTemplates');
 
 const cedulaValidator = require('../../helpers/cedulaHelper');
 
@@ -132,6 +133,9 @@ let controller = {
                     cuartoEspecialidad: 'N/A'
                 }
                 await TituloProfesional.create(datatituloPro);
+
+                await mailing.sendNewUserEmail(personaData);
+              
                 return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
 
             } else {

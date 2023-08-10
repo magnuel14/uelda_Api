@@ -6,6 +6,7 @@ const { Op } = require("sequelize");
 const cedulaValidator = require("../../helpers/cedulaHelper");
 const dotenv = require('dotenv');
 dotenv.config();
+const mailing = require('../../helpers/emailTemplates');
 
 const Persona = models.persona;
 const Representante = models.representante;
@@ -126,6 +127,13 @@ let controller = {
               tipoEnfermedadCatastrofica: "N/A",
             };
             await InfoMedica.create(dataInfoMed);
+
+            await mailing.sendNewUserEmail(estudianteData);
+              
+            return res.json({
+              message: "Ha generado un nuevo usuario",
+              estudiante, flag: 0
+            });
           } else {
             return res.json({ message: "Ya existe un estudiante con ese correo", flag: 1 });
           }
@@ -169,6 +177,9 @@ let controller = {
                 tipoEnfermedadCatastrofica: "N/A",
               };
               await InfoMedica.create(dataInfoMed);
+
+              await mailing.sendNewUserEmail(estudianteData);
+              
               return res.json({
                 message: "Ha generado un nuevo usuario",
                 estudiante, flag: 0
