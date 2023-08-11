@@ -5,8 +5,10 @@ const cloudinaryC = require('../../cloudinary');
 const { Op } = require('sequelize');
 const dotenv = require('dotenv');
 dotenv.config();
+const mailing = require('../../helpers/emailTemplates');
 
 const Persona = models.persona;
+const Cuenta = models.cuenta;
 const PostAcademico = models.postAcademico;
 const AnioLectivo = models.anioLectivo;
 const ListaVisibilidad = models.listaVisibilidad;
@@ -224,7 +226,108 @@ let controller = {
                 };
 
                 const newPost = await PostAcademico.create(data_newPost);
-                return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+                if (newPost.visibilidad === 0) {
+                    const personas = await Persona.findAll({
+                        include: [
+                            {
+                                model: Cuenta,
+                                where: {
+                                    estado: 0
+                                }
+                            }
+                        ],
+                    });
+
+                    for (let i = 0; i < personas.length; i++) {
+
+                        const dataPost = {
+                            nombre: personas[i].nombre,
+                            apellido: personas[i].apellido,
+                            correoUsuario: personas[i].correoPersonal,
+                            nombreAutor: infoPersona.nombre,
+                            apellidoAutor: infoPersona.apellido,
+                            titulo: newPost.titulo,
+                            tipoArchivo: newPost.tipoArchivo,
+                            url_imagen: newPost.url_imagen,
+                            url_archivo: newPost.url_archivo,
+                        };
+                        await mailing.sendNewPostEmail(dataPost);
+                    }
+                    return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+                } else if (newPost.visibilidad === 1) {
+                    const personas = await Persona.findAll({
+                        where: {
+                            [Op.or]: [
+                                { id_rol: 1 },
+                                { id_rol: 2 },
+                                { id_rol: 3 },
+                                { id_rol: 4 },
+                                { id_rol: 5 }
+                            ]
+                        },
+                        include: [
+                            {
+                                model: Cuenta,
+                                where: {
+                                    estado: 0
+                                }
+                            }
+                        ],
+                    });
+
+                    for (let i = 0; i < personas.length; i++) {
+
+                        const dataPost = {
+                            nombre: personas[i].nombre,
+                            apellido: personas[i].apellido,
+                            correoUsuario: personas[i].correoPersonal,
+                            nombreAutor: infoPersona.nombre,
+                            apellidoAutor: infoPersona.apellido,
+                            titulo: newPost.titulo,
+                            tipoArchivo: newPost.tipoArchivo,
+                            url_imagen: newPost.url_imagen,
+                            url_archivo: newPost.url_archivo,
+                        };
+                        await mailing.sendNewPostEmail(dataPost);
+
+                    }
+                    return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+                } else if (newPost.visibilidad === 2) {
+
+                    const id = newPost.id_ListaVisibilidad;
+                    const info_lista = await ListaVisibilidad.findOne({
+                        include: [
+                            { model: ListaVisibilidad_persona }
+                        ],
+                        where: { id: id }
+                    });
+                    for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
+                        const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
+                        const personas = await Persona.findOne({
+                            attributes: ['id', 'nombre', 'apellido', 'correoPersonal', 'external_id'],
+                            where: { external_id: external_id }
+                        });
+                        const dataPost = {
+                            nombre: personas.nombre,
+                            apellido: personas.apellido,
+                            correoUsuario: personas.correoPersonal,
+                            nombreAutor: infoPersona.nombre,
+                            apellidoAutor: infoPersona.apellido,
+                            titulo: newPost.titulo,
+                            tipoArchivo: newPost.tipoArchivo,
+                            visibilidad: newPost.visibilidad,
+                            url_imagen: newPost.url_imagen,
+                            url_archivo: newPost.url_archivo,
+                        };
+                        await mailing.sendNewPostEmail(dataPost);
+                    }
+                    return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+                }
+
             }
         } else {
 
@@ -235,17 +338,219 @@ let controller = {
                 visibilidad: visibilidad,
                 url_imagen: urlImagen,
                 url_archivo: urlArchivo,
-
+                nombreAutor: infoPersona.nombre,
+                apellidoAutor: infoPersona.apellido,
                 id_anioLectivo_actual: info_AnioLectivo_actual.id,
                 id_ListaVisibilidad: id_ListaVisibilidad,
                 id_persona: infoPersona.id,
                 estado: 0
             };
-
             const newPost = await PostAcademico.create(data_newPost);
-            return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+            if (newPost.visibilidad === 0) {
+                const personas = await Persona.findAll({
+                    include: [
+                        {
+                            model: Cuenta,
+                            where: {
+                                estado: 0
+                            }
+                        }
+                    ],
+                });
+
+                for (let i = 0; i < personas.length; i++) {
+
+                    const dataPost = {
+                        nombre: personas[i].nombre,
+                        apellido: personas[i].apellido,
+                        correoUsuario: personas[i].correoPersonal,
+                        nombreAutor: infoPersona.nombre,
+                        apellidoAutor: infoPersona.apellido,
+                        titulo: newPost.titulo,
+                        tipoArchivo: newPost.tipoArchivo,
+                        url_imagen: newPost.url_imagen,
+                        url_archivo: newPost.url_archivo,
+                    };
+                    await mailing.sendNewPostEmail(dataPost);
+                }
+                return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+            } else if (newPost.visibilidad === 1) {
+                const personas = await Persona.findAll({
+                    where: {
+                        [Op.or]: [
+                            { id_rol: 1 },
+                            { id_rol: 2 },
+                            { id_rol: 3 },
+                            { id_rol: 4 },
+                            { id_rol: 5 }
+                        ]
+                    },
+                    include: [
+                        {
+                            model: Cuenta,
+                            where: {
+                                estado: 0
+                            }
+                        }
+                    ],
+                });
+
+                for (let i = 0; i < personas.length; i++) {
+
+                    const dataPost = {
+                        nombre: personas[i].nombre,
+                        apellido: personas[i].apellido,
+                        correoUsuario: personas[i].correoPersonal,
+                        nombreAutor: infoPersona.nombre,
+                        apellidoAutor: infoPersona.apellido,
+                        titulo: newPost.titulo,
+                        tipoArchivo: newPost.tipoArchivo,
+                        url_imagen: newPost.url_imagen,
+                        url_archivo: newPost.url_archivo,
+                    };
+                    await mailing.sendNewPostEmail(dataPost);
+
+                }
+                return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+            } else if (newPost.visibilidad === 2) {
+
+                const id = newPost.id_ListaVisibilidad;
+                const info_lista = await ListaVisibilidad.findOne({
+                    include: [
+                        { model: ListaVisibilidad_persona }
+                    ],
+                    where: { id: id }
+                });
+                for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
+                    const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
+                    const personas = await Persona.findOne({
+                        attributes: ['id', 'nombre', 'apellido', 'correoPersonal', 'external_id'],
+                        where: { external_id: external_id }
+                    });
+                    const dataPost = {
+                        nombre: personas.nombre,
+                        apellido: personas.apellido,
+                        correoUsuario: personas.correoPersonal,
+                        nombreAutor: infoPersona.nombre,
+                        apellidoAutor: infoPersona.apellido,
+                        titulo: newPost.titulo,
+                        tipoArchivo: newPost.tipoArchivo,
+                        visibilidad: newPost.visibilidad,
+                        url_imagen: newPost.url_imagen,
+                        url_archivo: newPost.url_archivo,
+                    };
+                    await mailing.sendNewPostEmail(dataPost);
+                }
+                return res.json({ message: 'Se ha creado el post Académico', newPost });
+
+            }
+
         }
 
+    },
+    /**
+     * 
+     */
+    sendMailnewPost: async (newPost) => {
+
+        if (newPost.visibilidad === 0) {
+            const personas = await Persona.findAll({
+                include: [
+                    {
+                        model: Cuenta,
+                        where: {
+                            estado: 0
+                        }
+                    }
+                ],
+            });
+
+            for (let i = 0; i < personas.length; i++) {
+
+                const dataPost = {
+                    nombre: personas[i].nombre,
+                    apellido: personas[i].apellido,
+                    correoUsuario: personas[i].correoPersonal,
+                    titulo: newPost.titulo,
+                    tipoArchivo: newPost.tipoArchivo,
+                    descripcion: newPost.descripcion,
+                    visibilidad: newPost.visibilidad,
+                    url_imagen: newPost.urlImagen,
+                    url_archivo: newPost.urlArchivo,
+                };
+                await mailing.sendNewPostEmail(dataPost);
+            }
+
+        } else if (newPost.visibilidad === 1) {
+            const personas = await Persona.findAll({
+                where: {
+                    [Op.or]: [
+                        { id_rol: 1 },
+                        { id_rol: 2 },
+                        { id_rol: 3 },
+                        { id_rol: 4 },
+                        { id_rol: 5 }
+                    ]
+                },
+                include: [
+                    {
+                        model: Cuenta,
+                        where: {
+                            estado: 0
+                        }
+                    }
+                ],
+            });
+
+            for (let i = 0; i < personas.length; i++) {
+
+                const dataPost = {
+                    nombre: personas[i].nombre,
+                    apellido: personas[i].apellido,
+                    correoUsuario: personas[i].correoPersonal,
+                    titulo: newPost.titulo,
+                    tipoArchivo: newPost.tipoArchivo,
+                    descripcion: newPost.descripcion,
+                    visibilidad: newPost.visibilidad,
+                    url_imagen: newPost.urlImagen,
+                    url_archivo: newPost.urlArchivo,
+                };
+                await mailing.sendNewPostEmail(dataPost);
+
+            }
+
+        } else if (newPost.visibilidad === 2) {
+
+            const id = newPost.id_ListaVisibilidad;
+            const info_lista = await ListaVisibilidad.findOne({
+                include: [
+                    { model: ListaVisibilidad_persona }
+                ],
+                where: { id: id }
+            });
+            for (let j = 0; j < info_lista.listaVisibilidad_personas.length; j++) {
+                const external_id = info_lista.listaVisibilidad_personas[j].external_id_persona;
+                const personas = await Persona.findOne({
+                    attributes: ['id', 'nombre', 'apellido', 'correoPersonal', 'external_id'],
+                    where: { external_id: external_id }
+                });
+                const dataPost = {
+                    nombre: personas[i].nombre,
+                    apellido: personas[i].apellido,
+                    correoUsuario: personas[i].correoPersonal,
+                    titulo: newPost.titulo,
+                    tipoArchivo: newPost.tipoArchivo,
+                    descripcion: newPost.descripcion,
+                    visibilidad: newPost.visibilidad,
+                    url_imagen: newPost.urlImagen,
+                    url_archivo: newPost.urlArchivo,
+                };
+                await mailing.sendNewPostEmail(dataPost);
+            }
+        }
     },
     /**
       * 
@@ -379,7 +684,6 @@ let controller = {
     },
     /** fin Implementado try cath*/
     verifyToken: async (req, res, next) => {
-        console.log(req.headers.authorization)
         try {
             if (!req.headers.authorization) {
                 return res.status(401).send('Unauhtorized Request 1');

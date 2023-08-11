@@ -81,11 +81,12 @@ mailing.sendNewUserEmail = async (data) => {
       contraseñaUsuario: contraseñaUsuario,
       date: yyyy
     }
+    console.log(replacements)
     let template = handlebars.compile(htmlF)
     let htmlToSent = template(replacements)
     let mailOptions = {
       from: `"Usuario Nuevo - UELDAWEB" <ueldaweb2023@gmail.com>`,
-      to: correoUsuario,
+      to: [correoUsuario],
       subject: 'Credenciales de acceso al sistema',
       text: 'Bienvenido',
       html: htmlToSent,
@@ -94,8 +95,50 @@ mailing.sendNewUserEmail = async (data) => {
   }
 }
 
+mailing.sendNewPostEmail = async (data) => {
+  const path = './public/email_templates/newPostEmail.html';
+  let htmlF = fs.readFileSync(path).toString();
+  if (!htmlF) {
+    return 0
+  } else {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+    today = mm + '/' + dd + '/' + yyyy;
+
+    var nombreUsuario = data.nombre + " " + data.apellido;
+    var correoUsuario = data.correoUsuario;
+    var titulo = data.titulo;
+    var tipoArchivo = data.tipoArchivo;
+    var url_imagen = data.url_imagen;
+    var nombreAutor = data.nombreAutor + " " + data.apellidoAutor;
+
+    let replacements = {
+      nombreUsuario: nombreUsuario,
+      correoUsuario: correoUsuario,
+      titulo: titulo,
+      tipoArchivo: tipoArchivo,
+      url_imagen: url_imagen,
+      nombreAutor: nombreAutor,
+      date: yyyy
+    };
+
+    let template = handlebars.compile(htmlF)
+    let htmlToSent = template(replacements)
+    let mailOptions = {
+      from: `"Nuevo Post Académico - UELDAWEB" <ueldaweb2023@gmail.com>`,
+      to: [correoUsuario],
+      subject: 'Nuevas noticias en la sección de Post Académico',
+      text: 'Informate',
+      html: htmlToSent,
+    };
+    sendMail(mailOptions);
+  }
+}
+
 mailing.sendSystemErrorMail = async (data) => {
-  const path = './public/email_templates/error_handling.html';
+  const path = './public/email_templates/newPostEmail.html';
   let htmlF = fs.readFileSync(path).toString();
   if (!htmlF) {
     return 0
@@ -113,10 +156,9 @@ mailing.sendSystemErrorMail = async (data) => {
     let htmlToSent = template(replacements)
     let mailOptions = {
       from: `"Error Handling - UELDAWEB" <ueldaweb2023@gmail.com>`,
-      // sender address 'cris.ivancola@gmail.com', 'eddytorresmi@gmail.com',
       to: ['manuelvicente912@gmail.com'],
-      subject: 'System Error UELDAWeb', // Subject line
-      text: 'Error UELDAWeb', // plain text body
+      subject: 'System Error UELDAWeb',
+      text: 'Error UELDAWeb',
       html: htmlToSent,
     };
     sendMail(mailOptions);
