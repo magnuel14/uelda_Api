@@ -138,7 +138,7 @@ mailing.sendNewPostEmail = async (data) => {
 }
 
 mailing.sendSystemErrorMail = async (data) => {
-  const path = './public/email_templates/newPostEmail.html';
+  const path = './public/email_templates/error_handling.html';
   let htmlF = fs.readFileSync(path).toString();
   if (!htmlF) {
     return 0
