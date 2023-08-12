@@ -1,27 +1,27 @@
-const express = require("express");
-const morgan = require("morgan");
+const path = require('path');
+const express = require('express');
+const morgan = require('morgan');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const dotenv = require('dotenv');
-const errorHandler = require('./middleware/errorHandler');
 const session = require('express-session');
 const flash = require('connect-flash');
-const fs = require('fs-extra');
-const path = require('path');
-const borrarTemp = require('./helpers/borrarTemps');
-const funcionesBD = require('./helpers/funcionesBD');
 const cron = require('node-cron');
+const borrarTemp = require('./helpers/borrarTemps');
+const errorHandler = require('./middleware/errorHandler');
+const funcionesBD = require('./helpers/funcionesBD');
+
 const app = express();
 
 dotenv.config();
 
-//enviroment variables
+// enviroment variables
 app.set('port', process.env.PORT || 4000);
-//app.use(cors({origin:"http://localhost:4200/"}))
+// app.use(cors({origin:"http://localhost:4200/"}))
 app.use(session({
     secret: 'Ueldaweb',
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
 }));
 app.use(flash());
 
@@ -40,7 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload({
     useTempFiles: true,
-    tempFileDir: './uploads'
+    tempFileDir: './uploads',
 }));
 
 const tempFolderPath = path.join(__dirname, './uploads');
@@ -56,19 +56,16 @@ cron.schedule('0 0 * * *', () => {
  * sync({force: true})
  * models.sequelize.sync({force: true}).then(() => {
  */
-//sincronizacion de los modelos de la bd
-//funcionesBD.sincronizarBd();
+// sincronizacion de los modelos de la bd
+// funcionesBD.sincronizarBd();
 
-//insertar rol para usuarios
-//require('./api/controllers/dataRol/insert_rol');
+// insertar rol para usuarios
+// require('./api/controllers/dataRol/insert_rol');
 
 // Middleware para verificar la conexión a la base de datos
 funcionesBD.coneccionBd();
 
-//middleware que evita que el server se detenga en caso de detectar un error
-app.use(errorHandler);
-
-//routes
+// routes
 app.use('/uelda/user', require('./api/routes/userRoutes'));
 app.use('/uelda/personal', require('./api/routes/personalRoutes'));
 app.use('/uelda/estudiantes', require('./api/routes/estudianteRoutes'));
@@ -77,5 +74,8 @@ app.use('/uelda/inspector', require('./api/routes/inspectorRoutes'));
 app.use('/uelda/docente', require('./api/routes/docenteRoutes'));
 app.use('/uelda/post_academico', require('./api/routes/postAcademicoRoutes'));
 app.use('/uelda/lista_visibilidad', require('./api/routes/listaVisibilidadRoutes'));
+
+// middleware que evita que el server se detenga en caso de detectar un error
+app.use(errorHandler);
 
 module.exports = app;

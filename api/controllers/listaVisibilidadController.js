@@ -47,7 +47,9 @@ let controller = {
                     where: { external_id: external_id }
                 });
 
-                personas.push(info_personaLista);
+                if (info_personaLista) {
+                    personas.push(info_personaLista);
+                }
 
             }
 
@@ -87,7 +89,10 @@ let controller = {
                     attributes: ['id', 'nombre', 'apellido', 'numeroId', 'external_id'],
                     where: { external_id: external_id }
                 });
-                personas.push(info_personaLista);
+                
+                if (info_personaLista) {
+                    personas.push(info_personaLista);
+                }
 
             }
             lista_postAca_personas.push({

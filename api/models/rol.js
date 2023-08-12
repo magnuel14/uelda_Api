@@ -8,7 +8,13 @@ module.exports = function (sequelize, DataTypes) {
         // rector - vicerrectora - secretaria - inspector - docente - estudiante
         nombre: {
             type: DataTypes.STRING(200)
+        },
+        /**
+        external_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
         }
+         */
     }, {
         timestamps: false,
         freezeTableName: true

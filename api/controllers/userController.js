@@ -14,7 +14,7 @@ const Rol = models.rol;
 let controller = {
     /** Implementado try cath*/
     getUsers: async (req, res) => {
-        const users = await Persona.findAll({
+        const users = await Personas.findAll({
             attributes: ['id', 'nombre', 'apellido'] // Especifica los atributos que quieres obtener
         });
         res.json(users);
