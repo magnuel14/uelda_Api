@@ -99,9 +99,9 @@ let controller = {
         });
 
         for (let i = 0; i < lista_externalid_estudiantes.length; i++) {
-            const { externalId } = lista_externalid_estudiantes[i];
+            const { external_id } = lista_externalid_estudiantes[i];
 
-            const infoEstudiante = await Persona.findOne({ where: { external_id: externalId } });
+            const infoEstudiante = await Persona.findOne({ where: { external_id: external_id } });
 
             if (infoEstudiante.estadoAc !== '0' || infoEstudiante.estadoAc === null) {
 
@@ -4713,6 +4713,12 @@ let controller = {
         return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     matriculaPDF: async (req, res) => {
         const { external_id } = req.body;
         const inforPerson = await Persona.findOne({
@@ -4735,33 +4741,52 @@ let controller = {
             attributes: ['id', 'nombre', 'apellido', 'numeroId'],
             where: { id_rol: 1 }
         });
-        await pdfGenerator.matriculaReport( inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector )
+        await pdfGenerator.matriculaReport(inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector)
         let filePath = 'reporte.pdf'
         let docName = 'reporte.pdf'
         if (fs.existsSync(filePath)) {
             // Send the file as a response
-            res.download(filePath, docName+'.pdf', (err) => {
-              if (err) {
-                console.log('Error sending file:', err);
-              } else {
-                console.log("Se envió el archivo");
-                // Delete the file after the download is completed
-                fs.unlink(filePath, (unlinkErr) => {
-                  if (unlinkErr) {
-                    console.log('Error deleting file:', unlinkErr);
-                    return
-                  } else {
-                    console.log('File deleted successfully');
-                  }
-                });
-              }
+            res.download(filePath, docName + '.pdf', (err) => {
+                if (err) {
+                    console.log('Error sending file:', err);
+                } else {
+                    console.log("Se envió el archivo");
+                    // Delete the file after the download is completed
+                    fs.unlink(filePath, (unlinkErr) => {
+                        if (unlinkErr) {
+                            console.log('Error deleting file:', unlinkErr);
+                            return
+                        } else {
+                            console.log('File deleted successfully');
+                        }
+                    });
+                }
             });
-          } else {
+        } else {
             return res.status(200).send({
                 status: 'error',
                 data: 'No se encontro el archivo'
             });
-          }
+        }
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     */
+    calificacionesPDF: async (req, res) => {
+        const { external_id } = req.body;
+
+        const estudiante = await Persona.findOne({
+            include: [Matricula],
+            where: { external_id }
+        });
+        if (estudiante) {
+
+            return res.json(estudiante.matriculas);
+        } else {
+            return res.json({ message: "Ocurrio un error." });
+        }
     },
     /**Fin funciones validadas */
     verifyToken: async (req, res, next) => {
