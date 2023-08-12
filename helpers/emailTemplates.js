@@ -91,7 +91,7 @@ mailing.sendNewUserEmail = async (data) => {
       text: 'Bienvenido',
       html: htmlToSent,
     };
-    sendMail(mailOptions);
+    //sendMail(mailOptions);
   }
 }
 
@@ -133,7 +133,7 @@ mailing.sendNewPostEmail = async (data) => {
       text: 'Informate',
       html: htmlToSent,
     };
-    sendMail(mailOptions);
+    //sendMail(mailOptions);
   }
 }
 

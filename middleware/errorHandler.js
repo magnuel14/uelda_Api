@@ -1,7 +1,7 @@
 const errorHandler = async (error, req, res, next) => {
     const mailing = require('../helpers/emailTemplates');
     const mode = process.env.NODE_ENV;
-    if (mode == 'production') {
+    if (mode == 'development') {
         console.log(error.stack);
         return res.status(400).send(error.message);
     } else {
