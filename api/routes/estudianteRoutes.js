@@ -27,7 +27,7 @@ router.get('/getHermanosByEx/:externalId', estudianteController.verifyToken, try
 router.post('/registrar_hermano', estudianteController.verifyToken, tryCatch(estudianteController.addHermano));
 router.post('/delete_hermano', estudianteController.verifyToken, tryCatch(estudianteController.deleteHermano));
 //calificaciones - asistencias
-router.get('/getCalifiaciones_asistencias/:externalId', estudianteController.verifyToken, tryCatch(estudianteController.getCalifiaciones_asistencias));
+router.get('/getCalifiaciones_asistencias/:externalId', estudianteController.verifyToken, tryCatch(estudianteController.getAsistenciasEstudiante));
 
 module.exports = router;
 
