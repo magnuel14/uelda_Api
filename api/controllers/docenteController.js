@@ -268,20 +268,22 @@ let controller = {
                 const lista_paralelo = [];
                 const lista_materia = [];
 
-                const info_paralelo_tutor = await Paralelo.findOne({ where: { id: info_cargaHoraria.id_paralelo_tutor } });
-                const info_curso_tutor = await Curso.findOne(
-                    {
-                        attributes: ['nivelAcademico', 'gradoAcademico'],
-                        where: { id: info_paralelo_tutor.id_curso }
-                    }
-                );
-                const info_paralelo_tutor_curso = {
-                    ...info_paralelo_tutor.dataValues,
-                    nivelAcademico: info_curso_tutor.nivelAcademico,
-                    gradoAcademico: info_curso_tutor.gradoAcademico
-                };
+                if (info_cargaHoraria.id_paralelo_tutor != null || info_cargaHoraria.id_paralelo_tutor != undefined) {
+                    const info_paralelo_tutor = await Paralelo.findOne({ where: { id: info_cargaHoraria.id_paralelo_tutor } });
+                    const info_curso_tutor = await Curso.findOne(
+                        {
+                            attributes: ['nivelAcademico', 'gradoAcademico'],
+                            where: { id: info_paralelo_tutor.id_curso }
+                        }
+                    );
+                    const info_paralelo_tutor_curso = {
+                        ...info_paralelo_tutor.dataValues,
+                        nivelAcademico: info_curso_tutor.nivelAcademico,
+                        gradoAcademico: info_curso_tutor.gradoAcademico
+                    };
 
-                info_paraleloTutor.push(info_paralelo_tutor_curso);
+                    info_paraleloTutor.push(info_paralelo_tutor_curso);
+                }
 
                 for (let i = 0; i < info_cargaHoraria.cargaHoraria_Paralelos.length; i++) {
                     const id_paralelo = info_cargaHoraria.cargaHoraria_Paralelos[i].id_paralelo;
