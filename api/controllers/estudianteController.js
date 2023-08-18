@@ -1,12 +1,12 @@
 "use strict";
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const models = require("../models");
 const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 const cedulaValidator = require("../../helpers/cedulaHelper");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
-const mailing = require('../../helpers/emailTemplates');
+const mailing = require("../../helpers/emailTemplates");
 
 const Persona = models.persona;
 const Representante = models.representante;
@@ -75,9 +75,18 @@ let controller = {
    * @returns La información de la persona y su cuenta.
    */
   createEstudiante: async (req, res) => {
-    const { externalId, nombre, apellido, tipoDocId, numeroId, correoPersonal } = req.body;
-    const numeroIdString = numeroId + '';
-    const infoPersonal = await Persona.findOne({ where: { external_id: externalId } });
+    const {
+      externalId,
+      nombre,
+      apellido,
+      tipoDocId,
+      numeroId,
+      correoPersonal,
+    } = req.body;
+    const numeroIdString = numeroId + "";
+    const infoPersonal = await Persona.findOne({
+      where: { external_id: externalId },
+    });
     if (infoPersonal.id_rol === 2 || infoPersonal.id_rol === 4) {
       const searchPersona = await Persona.findOne({
         where: {
@@ -85,12 +94,12 @@ let controller = {
             {
               [Op.or]: [
                 { numeroId: numeroIdString },
-                { correoPersonal: correoPersonal }
-              ]
+                { correoPersonal: correoPersonal },
+              ],
             },
-            { id_rol: 6 }
-          ]
-        }
+            { id_rol: 6 },
+          ],
+        },
       });
       if (!searchPersona) {
         if (tipoDocId == "pasaporte") {
@@ -116,7 +125,12 @@ let controller = {
               id_persona: estudiante.id,
             };
             const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta) return res.json({ message: "La cuenta no se puedo crear, revise bien su informacion.", flag: 1 });
+            if (!newEstudianteCuenta)
+              return res.json({
+                message:
+                  "La cuenta no se puedo crear, revise bien su informacion.",
+                flag: 1,
+              });
             const dataInfoMed = {
               id_persona: estudiante.id,
               discapacidad: "1",
@@ -129,13 +143,17 @@ let controller = {
             await InfoMedica.create(dataInfoMed);
 
             await mailing.sendNewUserEmail(estudianteData);
-              
+
             return res.json({
               message: "Ha generado un nuevo usuario",
-              estudiante, flag: 0
+              estudiante,
+              flag: 0,
             });
           } else {
-            return res.json({ message: "Ya existe un estudiante con ese correo", flag: 1 });
+            return res.json({
+              message: "Ya existe un estudiante con ese correo",
+              flag: 1,
+            });
           }
         } else {
           const cedulaValida = cedulaValidator.validator(numeroIdString);
@@ -165,7 +183,8 @@ let controller = {
               if (!newEstudianteCuenta)
                 return res.json({
                   message:
-                    "La cuenta no se puedo crear, revise bien su informacion.", flag: 1
+                    "La cuenta no se puedo crear, revise bien su informacion.",
+                  flag: 1,
                 });
               const dataInfoMed = {
                 id_persona: estudiante.id,
@@ -179,14 +198,16 @@ let controller = {
               await InfoMedica.create(dataInfoMed);
 
               await mailing.sendNewUserEmail(estudianteData);
-              
+
               return res.json({
                 message: "Ha generado un nuevo usuario",
-                estudiante, flag: 0
+                estudiante,
+                flag: 0,
               });
             } else {
               return res.json({
-                message: "Ya existe un estudiante con ese correo", flag: 1
+                message: "Ya existe un estudiante con ese correo",
+                flag: 1,
               });
             }
           } else {
@@ -195,13 +216,14 @@ let controller = {
         }
       } else {
         return res.json({
-          message: "Ya existe un estudiante con esta información", flag: 1
+          message: "Ya existe un estudiante con esta información",
+          flag: 1,
         });
       }
     } else {
       return res.json({
         message: "No tiene los permisos para crear un usuario nuevo.",
-        flag: 1
+        flag: 1,
       });
     }
   },
@@ -929,12 +951,10 @@ let controller = {
    * @param {*} res
    * @returns
    */
-  getCalifiaciones_asistencias: async (req, res) => {
+  getAsistenciasEstudiante: async (req, res) => {
     const { externalId } = req.params;
-    let lista_calificaionesQ = [];
-    let lista_calificaionesT = [];
+
     let lista_asistenciasXmateria = [];
-    let info_Matricula = [];
 
     const info_anioLectivo = await AnioLectivo.findOne({
       where: { estadoAniolectivo: "0" },
@@ -953,117 +973,62 @@ let controller = {
       attributes: ["id", "titulo", "id_curso"],
       where: { id: info_matricula_actual.id_paralelo },
     });
-    console.log(info_paralelo);
 
     const info_curso = await Curso.findOne({
       attributes: ["id", "nivelAcademico", "gradoAcademico"],
       where: { id: info_paralelo.id_curso },
     });
-    console.log(info_curso);
 
-    const info_matricula = {
+    const infoMatricula = {
       ...info_matricula_actual.dataValues,
       titulo_paralelo: info_paralelo.titulo,
       id_curso: info_curso.id,
       nivelAcademico: info_curso.nivelAcademico,
       gradoAcademico: info_curso.gradoAcademico,
     };
-    info_Matricula.push(info_matricula);
 
-    const info_AsistenciaXDia = await AsistenciaXDia.findOne({
-      where: { id_matricula: info_matricula_actual.id },
-    });
-    const info_AsistenciaXMate = await AsistenciaXMate.findAll({
-      where: { id_matricula: info_matricula_actual.id },
-    });
-    const info_calificacionT = await CalificacionT.findAll({
-      where: { id_matricula: info_matricula_actual.id },
-    });
-    const info_CalificacionQ = await CalificacionQ.findAll({
+    const asistenciaPorDia = await AsistenciaXDia.findOne({
       where: { id_matricula: info_matricula_actual.id },
     });
 
-    for (let i = 0; i < info_AsistenciaXMate.length; i++) {
-      const id = info_AsistenciaXMate[i].id;
-      const id_materia = info_AsistenciaXMate[i].id_materia;
-
-      const asistenciaXmateria = await AsistenciaXMate.findOne({
-        where: { id: id },
-      });
-      const info_materia = await Materia.findOne({
-        attributes: ["nombre", "area"],
-        where: { id: id_materia },
-      });
-      const info_asistenciaXmateria = {
-        ...asistenciaXmateria.dataValues,
-        area: info_materia.area,
-        nombre: info_materia.nombre,
-      };
-      lista_asistenciasXmateria.push(info_asistenciaXmateria);
-    }
-    for (let i = 0; i < info_calificacionT.length; i++) {
-      const id = info_calificacionT[i].id;
-      const id_materia = info_calificacionT[i].id_materia;
-
-      const calificacionT = await CalificacionT.findOne({ where: { id: id } });
-      const info_materia = await Materia.findOne({
-        attributes: ["nombre", "area"],
-        where: { id: id_materia },
-      });
-      const info_CalificacionT = {
-        ...calificacionT.dataValues,
-        area: info_materia.area,
-        nombre: info_materia.nombre,
-      };
-      lista_calificaionesT.push(info_CalificacionT);
-    }
-    for (let i = 0; i < info_CalificacionQ.length; i++) {
-      const id = info_CalificacionQ[i].id;
-      const id_materia = info_CalificacionQ[i].id_materia;
-
-      const calificacionQ = await CalificacionQ.findOne({ where: { id: id } });
-      const info_materia = await Materia.findOne({
-        attributes: ["nombre", "area"],
-        where: { id: id_materia },
-      });
-      const info_calificacionQ = {
-        ...calificacionQ.dataValues,
-        area: info_materia.area,
-        nombre: info_materia.nombre,
-      };
-      lista_calificaionesQ.push(info_calificacionQ);
-    }
+    const asistenciaPorMateria = await AsistenciaXMate.findAll({
+      where: { id_matricula: info_matricula_actual.id },
+      include: [
+        {
+          model: Materia,
+          attributes: ["nombre", "area"],
+        },
+      ],
+    });
 
     return res.json({
-      info_Matricula,
-      lista_asistenciasXmateria,
-      info_AsistenciaXDia,
-      lista_calificaionesT,
-      lista_calificaionesQ,
+      infoMatricula,
+      asistenciaPorMateria,
+      asistenciaPorDia,
     });
   },
   /**Fin funciones validadas */
   verifyToken: async (req, res, next) => {
     try {
       if (!req.headers.authorization) {
-        return res.status(401).send('Unauhtorized Request');
+        return res.status(401).send("Unauhtorized Request");
       }
-      let token = req.headers.authorization.split(' ')[1];
-      if (token === 'null') {
-        return res.status(401).send('Unauhtorized Request');
+      let token = req.headers.authorization.split(" ")[1];
+      if (token === "null") {
+        return res.status(401).send("Unauhtorized Request");
       }
 
       const payload = await jwt.verify(token, process.env.Secret_key);
       if (!payload) {
-        return res.status(401).send('Unauhtorized Request');
+        return res.status(401).send("Unauhtorized Request");
       }
       req.userId = payload._id;
       next();
     } catch (e) {
       //console.log(e)
-      return res.status(401).send('Unauhtorized Request');
+      return res.status(401).send("Unauhtorized Request");
     }
-  }
+  },
 };
 
 module.exports = controller;
