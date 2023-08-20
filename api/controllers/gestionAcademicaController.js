@@ -27,12 +27,15 @@ let controller = {
      * @returns 
      */
     getAllCursos_Materias: async (req, res) => {
-        const { id_anioLectivo } = req.params;
+        const infoAnioLectivo = await AnioLectivo.findOne({
+            where: {
+                estadoAniolectivo: 0
+            }
+        })
         const curso = await Curso.findAll({
             include: [Paralelo, Materia],
-            where: { id_anioLectivo: id_anioLectivo }
+            where: { id_anioLectivo: infoAnioLectivo.id }
         });
-        //console.log(aniosLectivos)
         return res.json({ curso });
     },
     /**
@@ -4735,33 +4738,33 @@ let controller = {
             attributes: ['id', 'nombre', 'apellido', 'numeroId'],
             where: { id_rol: 1 }
         });
-        await pdfGenerator.matriculaReport( inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector )
+        await pdfGenerator.matriculaReport(inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector)
         let filePath = 'reporte.pdf'
         let docName = 'reporte.pdf'
         if (fs.existsSync(filePath)) {
             // Send the file as a response
-            res.download(filePath, docName+'.pdf', (err) => {
-              if (err) {
-                console.log('Error sending file:', err);
-              } else {
-                console.log("Se envió el archivo");
-                // Delete the file after the download is completed
-                fs.unlink(filePath, (unlinkErr) => {
-                  if (unlinkErr) {
-                    console.log('Error deleting file:', unlinkErr);
-                    return
-                  } else {
-                    console.log('File deleted successfully');
-                  }
-                });
-              }
+            res.download(filePath, docName + '.pdf', (err) => {
+                if (err) {
+                    console.log('Error sending file:', err);
+                } else {
+                    console.log("Se envió el archivo");
+                    // Delete the file after the download is completed
+                    fs.unlink(filePath, (unlinkErr) => {
+                        if (unlinkErr) {
+                            console.log('Error deleting file:', unlinkErr);
+                            return
+                        } else {
+                            console.log('File deleted successfully');
+                        }
+                    });
+                }
             });
-          } else {
+        } else {
             return res.status(200).send({
                 status: 'error',
                 data: 'No se encontro el archivo'
             });
-          }
+        }
     },
     /**Fin funciones validadas */
     verifyToken: async (req, res, next) => {
