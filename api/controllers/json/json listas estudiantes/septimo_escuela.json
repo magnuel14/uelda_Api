@@ -1,19 +1,26 @@
 [
     {
-        "inicial_3_a": [
+        "A": [
             {
-                "nombre": "nombre",
-                "apellido": "apellido",
-                "correoPersonal": "si tiene correro poern el correro/ si no combinar los nombres nombre1.apellido1_MAYUSCULAAPLELLIDO2 ejemplo: manuel.vicenteP",
-                "tipoDocId": "cedula o pasaporte",
-                "numeroId": "0151323862"
+                "nombre": "JEREMY JOSUE",
+                "apellido": "AGUIRRE MEDINA",
+                "correoPersonal": "agmejejo5725384@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150639639"
             },
             {
-                "nombre": "nombre",
-                "apellido": "apellido",
-                "correoPersonal": "si tiene correro poern el correro/ si no combinar los nombres nombre1.apellido1_MAYUSCULAAPLELLIDO2 ejemplo: manuel.vicenteP",
-                "tipoDocId": "cedula o pasaporte",
-                "numeroId": "0151323862"
+                "nombre": "JOSELYN ANAHI",
+                "apellido": "AGUIRRE SARMIENTO",
+                "correoPersonal": "agsajoan9644596@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1150004479"
+            },
+            {
+                "nombre": "JUSTIN ALEXANDER",
+                "apellido": "ALDAZ LUZURIAGA",
+                "correoPersonal": "allujual1426089@estudiantes.edu.ec",
+                "tipoDocId": "cedula",
+                "numeroId": "1950149383"
             }
         ]
     },

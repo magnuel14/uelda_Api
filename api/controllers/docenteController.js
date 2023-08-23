@@ -600,6 +600,23 @@ let controller = {
                     aprobado,
                     supletorio
                 } = lista_externalsMateria_calificacion[i];
+                console.log(externalId,
+                    aportesPrimerTimestre,
+                    proIntegradorFase_1,
+                    evaluacion_estructurada_1,
+
+                    aportesSegundoTimestre,
+                    proIntegradorFase_2,
+                    evaluacion_estructurada_2,
+
+                    aportesTercerTimestre,
+                    proIntegradorFase_3,
+                    evaluacion_estructurada_3,
+
+                    proyecto_Final,
+                    evaluacion_nivel,
+                    aprobado,
+                    supletorio)
 
                 const info_calificacionT = await CalificacionT.findOne(
                     {
@@ -767,23 +784,23 @@ let controller = {
                             if (total_Final >= 7) {
 
                                 const dataCalificacionT = {
-                                    aportesPrimerTimestre: _aportesPrimerTimestre,
-                                    proIntegradorFase_1: _proIntegradorFase_1,
-                                    evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                    aportesPrimerTimestre: aportesPrimerTimestre,
+                                    proIntegradorFase_1: proIntegradorFase_1,
+                                    evaluacion_estructurada_1: evaluacion_estructurada_1,
                                     totalPT: totalPT,
 
-                                    aportesSegundoTimestre: _aportesSegundoTimestre,
-                                    proIntegradorFase_2: _proIntegradorFase_2,
-                                    evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                    aportesSegundoTimestre: aportesSegundoTimestre,
+                                    proIntegradorFase_2: proIntegradorFase_2,
+                                    evaluacion_estructurada_2: evaluacion_estructurada_2,
                                     totalST: totalST,
 
-                                    aportesTercerTimestre: _aportesTercerTimestre,
-                                    proIntegradorFase_3: _proIntegradorFase_3,
-                                    evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                    aportesTercerTimestre: aportesTercerTimestre,
+                                    proIntegradorFase_3: proIntegradorFase_3,
+                                    evaluacion_estructurada_3: evaluacion_estructurada_3,
                                     totalTT: totalTT,
 
-                                    proyecto_Final: _proyecto_Final,
-                                    evaluacion_nivel: _evaluacion_nivel,
+                                    proyecto_Final: proyecto_Final,
+                                    evaluacion_nivel: evaluacion_nivel,
 
                                     total_Final: total_Final,
 
@@ -797,22 +814,23 @@ let controller = {
 
                                 if (supletorio >= 7) {
                                     const dataCalificacionT = {
-                                        aportesPrimerTimestre: _aportesPrimerTimestre,
-                                        proIntegradorFase_1: _proIntegradorFase_1,
-                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        aportesPrimerTimestre: aportesPrimerTimestre,
+                                        proIntegradorFase_1: proIntegradorFase_1,
+                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
                                         totalPT: totalPT,
 
-                                        aportesSegundoTimestre: _aportesSegundoTimestre,
-                                        proIntegradorFase_2: _proIntegradorFase_2,
-                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        aportesSegundoTimestre: aportesSegundoTimestre,
+                                        proIntegradorFase_2: proIntegradorFase_2,
+                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
                                         totalST: totalST,
 
-                                        aportesTercerTimestre: _aportesTercerTimestre,
-                                        proIntegradorFase_3: _proIntegradorFase_3,
-                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        aportesTercerTimestre: aportesTercerTimestre,
+                                        proIntegradorFase_3: proIntegradorFase_3,
+                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
                                         totalTT: totalTT,
                                         total_Final: total_Final,
-                                        evaluacion_nivel: _evaluacion_nivel,
+                                        proyecto_Final: proyecto_Final,
+                                        evaluacion_nivel: evaluacion_nivel,
 
                                         aprobado: 0
                                     };
@@ -821,22 +839,23 @@ let controller = {
                                     console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
                                 } else {
                                     const dataCalificacionT = {
-                                        aportesPrimerTimestre: _aportesPrimerTimestre,
-                                        proIntegradorFase_1: _proIntegradorFase_1,
-                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        aportesPrimerTimestre: aportesPrimerTimestre,
+                                        proIntegradorFase_1: proIntegradorFase_1,
+                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
                                         totalPT: totalPT,
 
-                                        aportesSegundoTimestre: _aportesSegundoTimestre,
-                                        proIntegradorFase_2: _proIntegradorFase_2,
-                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        aportesSegundoTimestre: aportesSegundoTimestre,
+                                        proIntegradorFase_2: proIntegradorFase_2,
+                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
                                         totalST: totalST,
 
-                                        aportesTercerTimestre: _aportesTercerTimestre,
-                                        proIntegradorFase_3: _proIntegradorFase_3,
-                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        aportesTercerTimestre: aportesTercerTimestre,
+                                        proIntegradorFase_3: proIntegradorFase_3,
+                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
                                         totalTT: totalTT,
                                         total_Final: total_Final,
-                                        evaluacion_nivel: _evaluacion_nivel,
+                                        proyecto_Final: proyecto_Final,
+                                        evaluacion_nivel: evaluacion_nivel,
 
                                         aprobado: 1
                                     };
@@ -863,22 +882,22 @@ let controller = {
                             if (total_Final >= 7) {
 
                                 const dataCalificacionT = {
-                                    aportesPrimerTimestre: _aportesPrimerTimestre,
-                                    proIntegradorFase_1: _proIntegradorFase_1,
-                                    evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                    aportesPrimerTimestre: aportesPrimerTimestre,
+                                    proIntegradorFase_1: proIntegradorFase_1,
+                                    evaluacion_estructurada_1: evaluacion_estructurada_1,
                                     totalPT: totalPT,
 
-                                    aportesSegundoTimestre: _aportesSegundoTimestre,
-                                    proIntegradorFase_2: _proIntegradorFase_2,
-                                    evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                    aportesSegundoTimestre: aportesSegundoTimestre,
+                                    proIntegradorFase_2: proIntegradorFase_2,
+                                    evaluacion_estructurada_2: evaluacion_estructurada_2,
                                     totalST: totalST,
 
-                                    aportesTercerTimestre: _aportesTercerTimestre,
-                                    proIntegradorFase_3: _proIntegradorFase_3,
-                                    evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                    aportesTercerTimestre: aportesTercerTimestre,
+                                    proIntegradorFase_3: proIntegradorFase_3,
+                                    evaluacion_estructurada_3: evaluacion_estructurada_3,
                                     totalTT: totalTT,
 
-                                    proyecto_Final: _proyecto_Final,
+                                    proyecto_Final: proyecto_Final,
 
                                     total_Final: total_Final,
 
@@ -891,21 +910,22 @@ let controller = {
                             } else {
                                 if (supletorio >= 7) {
                                     const dataCalificacionT = {
-                                        aportesPrimerTimestre: _aportesPrimerTimestre,
-                                        proIntegradorFase_1: _proIntegradorFase_1,
-                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        aportesPrimerTimestre: aportesPrimerTimestre,
+                                        proIntegradorFase_1: proIntegradorFase_1,
+                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
                                         totalPT: totalPT,
 
-                                        aportesSegundoTimestre: _aportesSegundoTimestre,
-                                        proIntegradorFase_2: _proIntegradorFase_2,
-                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        aportesSegundoTimestre: aportesSegundoTimestre,
+                                        proIntegradorFase_2: proIntegradorFase_2,
+                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
                                         totalST: totalST,
 
-                                        aportesTercerTimestre: _aportesTercerTimestre,
+                                        aportesTercerTimestre: aportesTercerTimestre,
                                         proIntegradorFase_3: _proIntegradorFase_3,
-                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
                                         totalTT: totalTT,
                                         total_Final: total_Final,
+                                        proyecto_Final: proyecto_Final,
 
                                         aprobado: 0
                                     };
@@ -914,21 +934,22 @@ let controller = {
                                     console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
                                 } else {
                                     const dataCalificacionT = {
-                                        aportesPrimerTimestre: _aportesPrimerTimestre,
-                                        proIntegradorFase_1: _proIntegradorFase_1,
-                                        evaluacion_estructurada_1: _evaluacion_estructurada_1,
+                                        aportesPrimerTimestre: aportesPrimerTimestre,
+                                        proIntegradorFase_1: proIntegradorFase_1,
+                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
                                         totalPT: totalPT,
 
-                                        aportesSegundoTimestre: _aportesSegundoTimestre,
-                                        proIntegradorFase_2: _proIntegradorFase_2,
-                                        evaluacion_estructurada_2: _evaluacion_estructurada_2,
+                                        aportesSegundoTimestre: aportesSegundoTimestre,
+                                        proIntegradorFase_2: proIntegradorFase_2,
+                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
                                         totalST: totalST,
 
-                                        aportesTercerTimestre: _aportesTercerTimestre,
-                                        proIntegradorFase_3: _proIntegradorFase_3,
-                                        evaluacion_estructurada_3: _evaluacion_estructurada_3,
+                                        aportesTercerTimestre: aportesTercerTimestre,
+                                        proIntegradorFase_3: proIntegradorFase_3,
+                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
                                         totalTT: totalTT,
                                         total_Final: total_Final,
+                                        proyecto_Final: proyecto_Final,
 
                                         aprobado: 1
                                     };
