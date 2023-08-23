@@ -13,6 +13,8 @@ router.post('/update_EstadoAnioLectivo', gestionAcademicaController.verifyToken,
 //gestion de matricula o promociones de estudiantes
 router.post('/matricular_Estudiante', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.matricularEstudiantes));
 router.post('/update_matricula_Estudiante', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.updateMatriculaEstudiante));
+router.get('/get-allMatriculas', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.getAllMatriculas));
+router.get('/get-estudiantes-no-matriculados', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.getAllEstudiantesNoMatriculados));
 
 router.post('/promover_Estudiante', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.promoverEstudiantes));
 
