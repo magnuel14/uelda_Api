@@ -4,7 +4,12 @@
   
   <p align="center">BackEnd para la aplicación de gestión academica de la <a href="#" target="_blank">Unidad Educativa Lauro Damerval Ayora</p>
     <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/badge/npm-8.3.1-green" alt="NPM Version" /></a>
+<p align="center">
+
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/badge/npm-9.8.1-green" alt="NPM Version" />
+</a>
+  <img src="https://img.shields.io/badge/Angular-15.2.9-red" alt="Versión de Angular" />
+</p>
 
 
 </p>

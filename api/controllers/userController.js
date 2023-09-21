@@ -5,19 +5,23 @@ const bcrypt = require('bcryptjs');
 const cloudinaryC = require('../../cloudinary');
 const fs = require('fs-extra');
 const dotenv = require('dotenv');
+const pg = require('pg');
 dotenv.config();
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
 const Rol = models.rol;
+const AuditUELDA = models.uditUELDA;
+
 
 let controller = {
     /** Implementado try cath*/
     getUsers: async (req, res) => {
-        const users = await Personas.findAll({
+        const users = await Persona.findAll({
             attributes: ['id', 'nombre', 'apellido'] // Especifica los atributos que quieres obtener
         });
-        res.json(users);
+
+        return res.json(users, auditUELDA);
     },
     /**
      * Funcion para ingresar al sistema

@@ -8,7 +8,7 @@ router.get('/getPersonal', personalController.verifyToken, tryCatch(personalCont
 router.get('/getPersonByEx/:externalId', personalController.verifyToken, tryCatch(personalController.getPersonByEx));
 router.post('/update_infoPersona', personalController.verifyToken, tryCatch(personalController.updatePersona));
 router.post('/registrar_persona', personalController.verifyToken, tryCatch(personalController.createPerson));
-router.post('/registrar_Listapersonal', personalController.verifyToken, tryCatch(personalController.registrarPersonal));
+router.post('/registrar_Listapersonal',  tryCatch(personalController.registrarPersonal));
 //id_rol
 router.post('/update_rolPersona', personalController.verifyToken, tryCatch(personalController.updatePersonalRol));
 //información medica
