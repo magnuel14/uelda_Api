@@ -6,7 +6,7 @@ const gestionAcademicaController = require('../controllers/gestionAcademicaContr
 //gestion de año lectivo
 router.get('/get-allAniosLectivos', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.getAllAniosLectivos));
 router.get('/get-AllCursos_Materias', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.getAllCursos_Materias));
-router.post('/create_AnioLectivo', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.createAnioLectivo));
+router.post('/create_AnioLectivo',  tryCatch(gestionAcademicaController.createAnioLectivo));
 router.post('/update_AnioLectivo', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.updateAnioLectivo));
 router.post('/update_EstadoAnioLectivo', gestionAcademicaController.verifyToken, tryCatch(gestionAcademicaController.updateEstadoAnioLectivo));
 

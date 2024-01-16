@@ -1,6 +1,9 @@
 const models = require("../../models");
 const Rol = models.rol;
 
+/**
+ * Inserts predefined roles into the database.
+ */
 let insert_rol = function () {
     Rol.findOrCreate({ where: { nombre: 'Rector/a' }, defaults: { id: '1' } });
     Rol.findOrCreate({ where: { nombre: 'Vicerrector/a' }, defaults: { id: '2' } });

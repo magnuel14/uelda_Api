@@ -5,177 +5,153 @@ const bcrypt = require('bcryptjs');
 const cloudinaryC = require('../../cloudinary');
 const fs = require('fs-extra');
 const dotenv = require('dotenv');
-const pg = require('pg');
 dotenv.config();
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
 const Rol = models.rol;
-const AuditUELDA = models.uditUELDA;
 
-
+/**
+ * Controller object that contains various methods for handling user-related operations.
+ *
+ * @typedef {Object} Controller
+ * @property {Function} getUsers - Retrieves a list of users.
+ * @property {Function} singnin - Handles user sign-in.
+ * @property {Function} updateCuenta - Updates user account information.
+ * @property {Function} updateEstadoCuenta - Updates the status of a user account.
+ * @property {Function} verifyToken - Verifies the authenticity of a token.
+ */
 let controller = {
-    /** Implementado try cath*/
     getUsers: async (req, res) => {
+        /**
+         * Retrieves a list of users.
+         *
+         * @returns {Promise<Array<Object>>} The list of users.
+         */
         const users = await Persona.findAll({
-            attributes: ['id', 'nombre', 'apellido'] // Especifica los atributos que quieres obtener
+            attributes: ['id', 'nombre', 'apellido'] 
         });
 
-        return res.json(users, auditUELDA);
+        return res.json(users);
     },
-    /**
-     * Funcion para ingresar al sistema
-     * @param {*} req 
-     * @param {*} res 
-     * Recibe el correro, clave del usuario
-     * checkedT esta es la comporbacion del usuario si desa ser recordado.
-     * @returns Un token de sesión e información del usuario
-     */
+
     singnin: async (req, res) => {
         const { correo, clave, checkedT } = req.body;
-        //busca que el correro sea valido
-        const userCuenta = await Cuenta.findOne({ where: { correo: correo } });
-        if (!userCuenta) return res.json({ message: 'No existe una cuenta ligada a ese correro', flag: 1 });
-        if (userCuenta.estado != 0) return res.json(
-            { message: 'La cuenta esta inactiva, comuniquese con la UELDA', flag: 1 });
-        //console.log(userCuenta);
-        let passwordEncript = userCuenta.clave;
-        //console.log(passwordEncript);
-        const passwordValide = await bcrypt.compare(clave, passwordEncript);
-        //console.log(passwordValide)
-        if (!passwordValide) return res.json({ message: 'Contraseña equivocada', flag: 1 });
-        const persona = await Persona.findOne({ where: { id: userCuenta.id_persona } })
-        const rol = await Rol.findOne({ where: { id: persona.id_rol } })
-        if (!checkedT) {
-            const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '8h' });
-            res.json({ token, persona, rol });
-            //console.log('8 horas')
-        } else {
-            const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn: '30d' });
-            res.json({ token, persona, rol });
-            //console.log('30 dias')
+        const userCuenta = await Cuenta.findOne({ where: { correo } });
+
+        if (!userCuenta) {
+            return res.json({ message: 'No existe una cuenta ligada a ese correo', flag: 1 });
         }
+
+        if (userCuenta.estado !== 0) {
+            return res.json({ message: 'La cuenta está inactiva, comuníquese con la UELDA', flag: 1 });
+        }
+
+        const passwordValide = await bcrypt.compare(clave, userCuenta.clave);
+
+        if (!passwordValide) {
+            return res.json({ message: 'Contraseña equivocada', flag: 1 });
+        }
+
+        const persona = await Persona.findOne({ where: { id: userCuenta.id_persona } });
+        const rol = await Rol.findOne({ where: { id: persona.id_rol } });
+        const expiresIn = checkedT ? '30d' : '8h';
+        const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn });
+
+        return res.json({ token, persona, rol });
     },
-    /**
-    * updateCuenta: Esta funcion sirve para actualizar los datos de cuenta
-    * @param {*} req 
-    * @param {*} res 
-    * Esta lista se compone externalId, correo y clave.
-    * Se hace una busqueda en cuenta por id
-    * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
-    * Y la dataCuenta que es la información nueva de cuenta
-    * Esta clave es encriptada para enviarla a la BD
-    * @returns Un mensaje de comprobación de estado de la tarea
-    */
+
     updateCuenta: async (req, res) => {
-        const { externalId, clave } = req.body
+        const { externalId, clave } = req.body;
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
         const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-        //console.log(req.files)
+
         if (!req.files) {
             var salt = bcrypt.genSaltSync(10);
             let password = bcrypt.hashSync(clave, salt);
             const dataCuenta = {
                 clave: password,
             };
-            if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+            if (!updateDataCuenta) {
+                return res.json({ message: 'Ocurrio un error' });
+            }
             await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
             return res.json({ message: 'Se ha actualizado su contraseña' });
-        } else {
-            if (infoPersona.public_id != null) {
-                await cloudinaryC.deleteFile(infoPersona.public_id);
-                if (req.files?.foto) {
-                    const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
-                    const dataFoto = {
-                        foto: result.secure_url,
-                        public_id: result.public_id
-                    }
-                    if (clave != 'null') {
-                        var salt = bcrypt.genSaltSync(10);
-                        let password = bcrypt.hashSync(clave, salt);
-                        const dataCuenta = {
-                            clave: password,
-                        };
-                        await fs.unlink(req.files.foto.tempFilePath)
-                        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
-                        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
-                    } else {
-                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
-                    }
+        }
+
+        if (infoPersona.public_id != null) {
+            await cloudinaryC.deleteFile(infoPersona.public_id);
+        }
+
+        if (req.files?.foto) {
+            const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
+            const dataFoto = {
+                foto: result.secure_url,
+                public_id: result.public_id
+            };
+
+            if (clave != 'null') {
+                var salt = bcrypt.genSaltSync(10);
+                let password = bcrypt.hashSync(clave, salt);
+                const dataCuenta = {
+                    clave: password,
+                };
+                await fs.unlink(req.files.foto.tempFilePath);
+                if (!updateDataCuenta) {
+                    return res.json({ message: 'Ocurrio un error' });
                 }
+                await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+                await Persona.update(dataFoto, { where: { id: infoPersona.id } });
+                return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
             } else {
-                if (req.files?.foto) {
-                    const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
-                    const dataFoto = {
-                        foto: result.secure_url,
-                        public_id: result.public_id
-                    }
-                    if (clave != 'null') {
-                        var salt = bcrypt.genSaltSync(10);
-                        let password = bcrypt.hashSync(clave, salt);
-                        const dataCuenta = {
-                            clave: password,
-                        };
-                        await fs.unlink(req.files.foto.tempFilePath)
-                        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
-                        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
-                    } else {
-                        await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                        return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
-                    }
-                }
+                await Persona.update(dataFoto, { where: { id: infoPersona.id } });
+                return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
             }
         }
     },
-    /**
-    * updateEstadoCuenta: Esta funcion sirve para actualizar el estado de una cuenta
-    * @param {*} req 
-    * @param {*} res 
-    * Esta lista se compone idP y estado.
-    * Se hace una busqueda en cuenta por id de persona
-    * Se carga el id de cuenta el cual se usa en la condicion "where" (sql)
-    * Y la dataCuenta que es la información nueva de cuenta
-    * @returns Un mensaje de comprobación de estado de la tarea
-    */
+
     updateEstadoCuenta: async (req, res) => {
-        const { externalId, estado } = req.body
+        const { externalId, estado } = req.body;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+
+        if (!updateDataCuenta) {
+            return res.json({ message: 'Ocurrió un error' });
+        }
+
         const dataCuenta = {
             estado: estado
         };
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-        if (!updateDataCuenta) return res.json({ message: 'Ocurrio un error' })
+
         await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
+
         return res.json({
-            message: 'Se ha actualizado el estado de la cuenta de: ',
-            apellido: infoPersona.apellido, nombre: infoPersona.nombre
+            message: 'Se ha actualizado el estado de la cuenta de:',
+            apellido: infoPersona.apellido,
+            nombre: infoPersona.nombre
         });
     },
-    /** fin Implementado try cath*/
+    
     verifyToken: async (req, res, next) => {
         try {
             if (!req.headers.authorization) {
-                return res.status(401).send('Unauhtorized Request');
+                return res.status(401).send('Unauthorized Request');
             }
-            let token = req.headers.authorization.split(' ')[1];
+
+            const token = req.headers.authorization.split(' ')[1];
             if (token === 'null') {
-                return res.status(401).send('Unauhtorized Request');
+                return res.status(401).send('Unauthorized Request');
             }
+
             const payload = await jwt.verify(token, process.env.Secret_key);
             if (!payload) {
-                return res.status(401).send('Unauhtorized Request');
+                return res.status(401).send('Unauthorized Request');
             }
-            req.userId = payload.id;
 
+            req.userId = payload.id;
             next();
-        } catch (e) {
-            //console.log(e)
-            return res.status(401).send('Unauhtorized Request');
+        } catch (error) {
+            return res.status(401).send('Unauthorized Request');
         }
     }
 }
