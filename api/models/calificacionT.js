@@ -8,58 +8,31 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //primer timestre 3 puntos
-        //aportes 90%
-        aportesPrimerTimestre: {
+        //primer trimestre 3 puntos
+        //total primer trimestre cuantitativo
+        totalPrimerTriCuantity: {
             type: DataTypes.STRING(50)
         },
-        //Evaluación de periodo académico 1er T
-        //Proyecto Integrador fase 1 (5%)
-        proIntegradorFase_1: {
-            type: DataTypes.STRING(50)
-        },
-        //Mecanismo de evaluación estructurado (5%)
-        evaluacion_estructurada_1: {
-            type: DataTypes.STRING(50)
-        },
-        //total primer trimestre equivalencia se suma las 3 secciones: 10 == 3
-        totalPT: {
+        //total primer trimestre cualitativo
+        totalPrimerTriQuality: {
             type: DataTypes.STRING(50)
         },
         //segundo timestre 3 puntos
-        //aportes 90%
-        aportesSegundoTimestre: {
+        //total segundo trimestre cuantitativo
+        totalSegundoTriCuantity: {
             type: DataTypes.STRING(50)
         },
-        //Evaluación de periodo académico 2do T
-        //Proyecto Integrador fase 2 (5%)
-        proIntegradorFase_2: {
+        //total segundo trimestre cualitativo
+        totalSegundoTriQuality: {
             type: DataTypes.STRING(50)
         },
-        //Mecanismo de evaluación estructurado (5%)
-        evaluacion_estructurada_2: {
+        //tercer trimestre 3 puntos
+        //total tercer trimestre cuantitativo
+        totalTercerTriCuantity: {
             type: DataTypes.STRING(50)
         },
-        //total segundo trimestre equivalencia se suma las 3 secciones: 10 == 3
-        totalST: {
-            type: DataTypes.STRING(50)
-        },
-        //segundo timestre 3 puntos
-        //aportes 90%
-        aportesTercerTimestre: {
-            type: DataTypes.STRING(50)
-        },
-        //Evaluación de periodo académico 2do T
-        //Proyecto Integrador fase 3 (5%)
-        proIntegradorFase_3: {
-            type: DataTypes.STRING(50)
-        },
-        //Mecanismo de evaluación estructurado (5%)
-        evaluacion_estructurada_3: {
-            type: DataTypes.STRING(50)
-        },
-        //total tercer trimestre equivalencia se suma las 3 secciones: 10 == 3
-        totalTT: {
+        //total tercer trimestre cualitativo
+        totalTercerTriQuality: {
             type: DataTypes.STRING(50)
         },
         // Proyecto Final (10%)
@@ -67,15 +40,25 @@ module.exports = function (sequelize, DataTypes) {
         //para septimo - decimo - 3ro bachillerato
         //se agrega Evaluación de nivel/subnivel
         //en este caso proyecto final cambia su valor (5%) 0.5
-        proyecto_Final: {
+        proyectoFinalQuality: {
+            type: DataTypes.STRING(50)
+        },
+        proyectoFinalCuantity: {
             type: DataTypes.STRING(50)
         },
         //Evaluación de nivel/subnivel(5%) 0.5
-        evaluacion_nivel: {
+        evaluacionNivelQuality: {
+            type: DataTypes.STRING(50)
+        },
+        evaluacionNivelCuantity: {
             type: DataTypes.STRING(50)
         },
         //Nota final (100%): suma de los trimestres - el proyecto final y si es el caso Evaluación de nivel
         total_Final: {
+            type: DataTypes.STRING(50)
+        },
+        //comportamiento
+        comportamiento: {
             type: DataTypes.STRING(50)
         },
         supletorio: {

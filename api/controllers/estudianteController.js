@@ -342,6 +342,7 @@ let controller = {
       };
 
       return res.json(response);
+      console.log(response);
     } catch (error) {
       return res.status(500).json({ error: "Error interno del servidor" });
     }
