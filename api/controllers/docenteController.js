@@ -64,6 +64,37 @@ let controller = {
             return res.json({ message: 'Error al asignar la caraga horaria' });
         }
     },
+
+    createCargaHorariaV2: async (req, res) => {
+        const { externalId, id_paralelo_tutor, horas_asignadas, cargaHoraria } = req.body;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+
+        const dataCargaHoraria = {
+            id_paralelo_tutor: id_paralelo_tutor,
+            horas_asignadas: horas_asignadas,
+            id_persona: infoPersona.id,
+            id_anioLectivo_actual: info_AnioLectivo.id
+        };
+
+        console.log('dataCargaHoraria', cargaHoraria);
+
+        const newCargaHoraria = await CargaHoraria.create(dataCargaHoraria);
+        if (newCargaHoraria) {
+            for (let i = 0; i < cargaHoraria.length; i++) {
+                const { listaIdParalelo, listaIdMateria } = cargaHoraria[i];
+                const dataMateria_asignada = {
+                    id_materia: listaIdMateria,
+                    idCargaParelo: listaIdParalelo,
+                    id_cargaHoraria: newCargaHoraria.id
+                }
+                await CargaHoraria_Materias.create(dataMateria_asignada);
+            }
+            return res.json({ message: 'Se ha asignado la carga horaria', newCargaHoraria });
+        } else {
+            return res.json({ message: 'Error al asignar la caraga horaria' });
+        }
+    },
     /**
      * 
      * @param {*} req 
@@ -169,6 +200,40 @@ let controller = {
 
         return res.json({ cargaHoraria_docente })
     },
+
+    getCargaHorariaByExternalID: async (req, res) => {
+
+        const { externalId } = req.body;
+        const cargaHoraria_docente = await Persona.findOne({
+            attributes: [
+                'id',
+                'nombre',
+                'apellido',
+                'numeroId'
+            ],
+            include: [
+                {
+                    model: Cuenta,
+                    attributes: ['id', 'correo'],
+                    where: {
+                        estado: 0
+                    }
+                },
+                {
+                    model: CargaHoraria,
+                    include: [
+                        CargaHoraria_Materias
+                    ]
+                }
+            ],
+            where: {
+                external_id: externalId
+            }
+        });
+
+        return res.json({ cargaHoraria_docente })
+    },
+
     /**
     * 
     * @param {*} req 
@@ -245,7 +310,7 @@ let controller = {
         const { externalId } = req.params;
         const infoAniosLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        console.log('info persona',infoPersona);
+        console.log('info persona', infoPersona);
         if (infoPersona) {
             const info_cargaHoraria = await CargaHoraria.findOne({
                 where: {
@@ -263,7 +328,7 @@ let controller = {
                     }
                 ]
             });
-            console.log('info carga',info_cargaHoraria);
+            console.log('info carga', info_cargaHoraria);
 
             if (info_cargaHoraria) {
                 const info_paraleloTutor = [];

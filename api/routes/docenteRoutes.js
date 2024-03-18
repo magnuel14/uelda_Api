@@ -10,6 +10,11 @@ router.get('/get_AllCargaHoraria', tryCatch(docenteController.getAllCargaHoraria
 router.post('/create_CargaHoraria', tryCatch(docenteController.createCargaHoraria));
 router.post('/update_CargaHoraria', tryCatch(docenteController.updateCargaHoraria));
 
+router.post('/create_CargaHorariaV2', tryCatch(docenteController.createCargaHorariaV2));
+router.get('/getCargaHorariaByExternalID', tryCatch(docenteController.getCargaHorariaByExternalID));
+
+
+
 //califiaciones
 router.post('/update_Calicaciones', tryCatch(docenteController.updateCalicaciones));
 

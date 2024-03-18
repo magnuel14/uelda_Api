@@ -8,7 +8,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         //id del paralelo en el cual da clases el docente
         id_paralelo: {
-            type: DataTypes.INTEGER
+            type: DataTypes.STRING(250)
         },
         external_id: {
             type: DataTypes.UUID,
