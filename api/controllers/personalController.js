@@ -491,7 +491,7 @@ let controller = {
                     };
                     const newPersonaCuenta = await Cuenta.create(dataCuenta);
                     //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
-                    if (!newPersonaCuenta) return res.json({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
+                    if (!newPersonaCuenta) console.log({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
                     //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
                     const dataInfoMed = {
                         id_persona: newPersona.id,
@@ -524,13 +524,13 @@ let controller = {
                         cuartoEspecialidad: 'N/A'
                     }
                     const newtituloProfesional = await TituloProfesional.create(datatituloPro);
-                   return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
+                    console.log({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
 
                 } else {
-                   return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
+                    console.log({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
                 }
             } else {
-               return res.json({ message: cedulaValida.message });
+                console.log({ message: cedulaValida.message });
             }
         }
         return res.json({ message: 'Se ha resitrado al Personal de institución' })
