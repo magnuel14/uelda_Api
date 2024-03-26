@@ -135,7 +135,7 @@ let controller = {
                 await TituloProfesional.create(datatituloPro);
 
                 await mailing.sendNewUserEmail(personaData);
-              
+
                 return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
 
             } else {
@@ -190,7 +190,6 @@ let controller = {
 
                         if (infoCuenta.id == searchCuentaByEmail.id) {
                             await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                            //console.log('datos: ', udatepersonaData)
                             await Persona.update(udatepersonaData, { where: { external_id: externalId } });
                             return res.json({ message: 'Se ha actualizado la información de usuario' });
                         } else {
@@ -198,7 +197,6 @@ let controller = {
                         }
                     } else if (!searchCuentaByEmail) {
                         await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                        //console.log('datos: ', udatepersonaData)
                         await Persona.update(udatepersonaData, { where: { external_id: externalId } });
                         return res.json({ message: 'Se ha actualizado la información de usuario' });
                     }
@@ -493,7 +491,7 @@ let controller = {
                     };
                     const newPersonaCuenta = await Cuenta.create(dataCuenta);
                     //if (newuserCuenta) return res.status(200).json({ message: 'Ha generado un nuevo usuario' })
-                    if (!newPersonaCuenta) console.log({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
+                    if (!newPersonaCuenta) return res.json({ message: 'Su cuenta no se puedo crear, revise bien si informacion.' })
                     //const token = jwt.sign({ id: newPersona.id }, process.env.Secret_key);
                     const dataInfoMed = {
                         id_persona: newPersona.id,
@@ -505,7 +503,6 @@ let controller = {
                         tipoEnfermedadCatastrofica: "N/A"
                     };
                     //const persona = await Persona.findOne({ where: { id: idP } });
-                    //console.log({persona });
                     const newInfoMedica = await InfoMedica.create(dataInfoMed);
                     const dataPerfilProfe = {
                         id_persona: newPersona.id,
@@ -527,13 +524,13 @@ let controller = {
                         cuartoEspecialidad: 'N/A'
                     }
                     const newtituloProfesional = await TituloProfesional.create(datatituloPro);
-                    console.log({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
+                   return res.json({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
 
                 } else {
-                    console.log({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
+                   return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });
                 }
             } else {
-                console.log({ message: cedulaValida.message });
+               return res.json({ message: cedulaValida.message });
             }
         }
         return res.json({ message: 'Se ha resitrado al Personal de institución' })
@@ -556,7 +553,6 @@ let controller = {
             req.userId = payload._id;
             next();
         } catch (e) {
-            //console.log(e)
             return res.status(401).send('Unauhtorized Request');
         }
     }

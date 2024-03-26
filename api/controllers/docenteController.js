@@ -79,7 +79,6 @@ let controller = {
         const newCargaHoraria = await CargaHoraria.create(dataCargaHoraria);
         if (newCargaHoraria) {
             for (let i = 0; i < cargaHoraria.length; i++) {
-                console.log(cargaHoraria[i]);
                 const { listaIdParalelo, materiasIds } = cargaHoraria[i];
                 const cargaHorariaPorParalelo = {
                     id_materia: materiasIds,
@@ -337,11 +336,9 @@ let controller = {
 
                     info_paraleloTutor.push(info_paralelo_tutor_curso);
                 }
-                console.log(info_cargaHoraria.cargaHorariaPorParalelos)
                 for (let i = 0; i < info_cargaHoraria.cargaHorariaPorParalelos.length; i++) {
                     const idCargaParelo = info_cargaHoraria.cargaHorariaPorParalelos[i].idCargaParelo;
                     const idCargaPareloArray = idCargaParelo.split(',').map(Number);
-                    console.log(idCargaPareloArray)
 
                     for (const id of idCargaPareloArray) {
                         const info_paralelo_docente = await Paralelo.findOne({ where: { id: id } });
@@ -661,7 +658,6 @@ let controller = {
                     };
 
                     await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } });
-                    console.log({ dataCalificacionQ });
 
                 } else {
 
@@ -702,7 +698,6 @@ let controller = {
                         };
 
                         await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                        console.log({ dataCalificacionQ })
 
                     } else {
 
@@ -727,7 +722,6 @@ let controller = {
                             };
 
                             await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                            console.log({ dataCalificacionQ })
                         } else {
                             const dataCalificacionQ = {
                                 firstParcialPQ: firstParcialPQ,
@@ -748,7 +742,6 @@ let controller = {
                             };
 
                             await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                            console.log({ dataCalificacionQ })
                         }
 
                     }
