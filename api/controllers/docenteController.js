@@ -8,8 +8,7 @@ dotenv.config();
 const Persona = models.persona;
 const Cuenta = models.cuenta;
 const CargaHoraria = models.cargaHoraria;
-const CargaHoraria_Materias = models.cargaHoraria_Materias;
-const CargaHoraria_Paralelos = models.cargaHoraria_Paralelos;
+const CargaHorariaPorParalelo = models.cargaHorariaPorParalelo;
 const AsistenciaDocente = models.asistenciaDocente;
 const AnioLectivo = models.anioLectivo;
 const Curso = models.curso;
@@ -57,7 +56,7 @@ let controller = {
                     id_materia: id_materia,
                     id_cargaHoraria: newCargaHoraria.id
                 }
-                await CargaHoraria_Materias.create(dataMateria_asignada);
+                await cargaHorariaPorParalelo.create(dataMateria_asignada);
             }
             return res.json({ message: 'Se ha asignado la carga horaria', newCargaHoraria });
         } else {
@@ -77,18 +76,17 @@ let controller = {
             id_anioLectivo_actual: info_AnioLectivo.id
         };
 
-        console.log('dataCargaHoraria', cargaHoraria);
-
         const newCargaHoraria = await CargaHoraria.create(dataCargaHoraria);
         if (newCargaHoraria) {
             for (let i = 0; i < cargaHoraria.length; i++) {
-                const { listaIdParalelo, listaIdMateria } = cargaHoraria[i];
-                const dataMateria_asignada = {
-                    id_materia: listaIdMateria,
+                console.log(cargaHoraria[i]);
+                const { listaIdParalelo, materiasIds } = cargaHoraria[i];
+                const cargaHorariaPorParalelo = {
+                    id_materia: materiasIds,
                     idCargaParelo: listaIdParalelo,
                     id_cargaHoraria: newCargaHoraria.id
                 }
-                await CargaHoraria_Materias.create(dataMateria_asignada);
+                await CargaHorariaPorParalelo.create(cargaHorariaPorParalelo);
             }
             return res.json({ message: 'Se ha asignado la carga horaria', newCargaHoraria });
         } else {
@@ -108,7 +106,6 @@ let controller = {
         const info_cargaHoraria = await CargaHoraria.findOne({
             include: [
                 { model: CargaHoraria_Paralelos, as: 'cargaHoraria_Paralelos' },
-                { model: CargaHoraria_Materias, as: 'cargaHoraria_Materias' }
             ],
             where: {
                 external_id: externalId,
@@ -117,7 +114,7 @@ let controller = {
         });
 
         const lista_paralelos = await info_cargaHoraria.getCargaHoraria_Paralelos();
-        const lista_materia = await info_cargaHoraria.getCargaHoraria_Materias();
+        const lista_materia = await info_cargaHoraria.getcargaHorariaPorParalelo();
 
 
         for (let i = 0; i < lista_paralelos.length; i++) {
@@ -129,7 +126,7 @@ let controller = {
         }
         for (let i = 0; i < lista_materia.length; i++) {
             const { id } = lista_materia[i];
-            await CargaHoraria_Materias.destroy({
+            await cargaHorariaPorParalelo.destroy({
                 where: { id: id }
             });
         }
@@ -155,7 +152,7 @@ let controller = {
                 id_materia: id_materia,
                 id_cargaHoraria: info_cargaHoraria.id
             }
-            await CargaHoraria_Materias.create(dataMateria_asignada);
+            await cargaHorariaPorParalelo.create(dataMateria_asignada);
         }
         return res.json({ message: 'Se ha asignado la carga horaria', info_cargaHoraria });
 
@@ -188,7 +185,7 @@ let controller = {
                 {
                     model: CargaHoraria,
                     include: [
-                        CargaHoraria_Materias,
+                        cargaHorariaPorParalelo,
                         CargaHoraria_Paralelos
                     ]
                 }
@@ -222,7 +219,7 @@ let controller = {
                 {
                     model: CargaHoraria,
                     include: [
-                        CargaHoraria_Materias
+                        CargaHorariaPorParalelo
                     ]
                 }
             ],
@@ -256,7 +253,6 @@ let controller = {
                     {
                         model: CargaHoraria,
                         include: [
-                            CargaHoraria_Materias,
                             CargaHoraria_Paralelos
                         ]
                     }
@@ -287,8 +283,7 @@ let controller = {
                 {
                     model: CargaHoraria,
                     include: [
-                        CargaHoraria_Materias,
-                        CargaHoraria_Paralelos
+                        CargaHorariaPorParalelo
                     ]
                 }
             ],
@@ -310,26 +305,17 @@ let controller = {
         const { externalId } = req.params;
         const infoAniosLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        console.log('info persona', infoPersona);
         if (infoPersona) {
             const info_cargaHoraria = await CargaHoraria.findOne({
                 where: {
                     id_persona: infoPersona.id,
                     id_anioLectivo_actual: infoAniosLectivo.id
                 },
+                model: CargaHoraria,
                 include: [
-                    {
-                        model: CargaHoraria_Materias,
-                        as: 'cargaHoraria_Materias'
-                    },
-                    {
-                        model: CargaHoraria_Paralelos,
-                        as: 'cargaHoraria_Paralelos'
-                    }
+                    CargaHorariaPorParalelo
                 ]
             });
-            console.log('info carga', info_cargaHoraria);
-
             if (info_cargaHoraria) {
                 const info_paraleloTutor = [];
                 const lista_paralelo = [];
@@ -351,32 +337,153 @@ let controller = {
 
                     info_paraleloTutor.push(info_paralelo_tutor_curso);
                 }
+                console.log(info_cargaHoraria.cargaHorariaPorParalelos)
+                for (let i = 0; i < info_cargaHoraria.cargaHorariaPorParalelos.length; i++) {
+                    const idCargaParelo = info_cargaHoraria.cargaHorariaPorParalelos[i].idCargaParelo;
+                    const idCargaPareloArray = idCargaParelo.split(',').map(Number);
+                    console.log(idCargaPareloArray)
 
-                for (let i = 0; i < info_cargaHoraria.cargaHoraria_Paralelos.length; i++) {
-                    const id_paralelo = info_cargaHoraria.cargaHoraria_Paralelos[i].id_paralelo;
-                    const info_paralelo_docente = await Paralelo.findOne({ where: { id: id_paralelo } });
-                    const info_curso = await Curso.findOne(
-                        {
+                    for (const id of idCargaPareloArray) {
+                        const info_paralelo_docente = await Paralelo.findOne({ where: { id: id } });
+                        const info_curso = await Curso.findOne({
                             attributes: ['nivelAcademico', 'gradoAcademico'],
                             where: { id: info_paralelo_docente.id_curso }
-                        }
-                    );
-                    const info_paralelo_con_curso = {
-                        ...info_paralelo_docente.dataValues,
-                        nivelAcademico: info_curso.nivelAcademico,
-                        gradoAcademico: info_curso.gradoAcademico
-                    };
+                        });
 
-                    lista_paralelo.push(info_paralelo_con_curso);
+                        const info_paralelo_con_curso = {
+                            ...info_paralelo_docente.dataValues,
+                            nivelAcademico: info_curso.nivelAcademico,
+                            gradoAcademico: info_curso.gradoAcademico
+                        };
+
+                        lista_paralelo.push(info_paralelo_con_curso);
+                    }
                 }
+                for (let j = 0; j < info_cargaHoraria.cargaHorariaPorParalelos.length; j++) {
+                    const id_materia = info_cargaHoraria.cargaHorariaPorParalelos[j].id_materia;
 
-                for (let j = 0; j < info_cargaHoraria.cargaHoraria_Materias.length; j++) {
-                    const id_materia = info_cargaHoraria.cargaHoraria_Materias[j].id_materia;
-                    const info_materia_docente = await Materia.findOne({ where: { id: id_materia } });
-                    lista_materia.push(info_materia_docente);
+                    const id_materiaArray = id_materia.split(',').map(Number);
+
+                    for (const id of id_materiaArray) {
+
+                        const info_materia_docente = await Materia.findOne({ where: { id: id } });
+                        lista_materia.push(info_materia_docente);
+                    }
+
                 }
 
                 return res.json({ info_paraleloTutor, lista_paralelo, lista_materia });
+            } else {
+                return res.json({ message: 'Sin carga asignada' });
+            }
+        } else {
+            return res.json({ message: 'Ocurrió un error 2' });
+        }
+    },
+
+    getParaleloTutor_docenteV2: async (req, res) => {
+        const { externalId } = req.params;
+        const infoAniosLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        if (infoPersona) {
+            const info_cargaHoraria = await CargaHoraria.findOne({
+                where: {
+                    id_persona: infoPersona.id,
+                    id_anioLectivo_actual: infoAniosLectivo.id
+                },
+                model: CargaHoraria,
+                include: [
+                    CargaHorariaPorParalelo
+                ]
+            });
+            if (info_cargaHoraria) {
+                const info_paraleloTutor = [];
+                let lista_paralelo = [];
+                let lista_materia = [];
+                let listaCargaHoraria = [];
+
+
+                if (info_cargaHoraria.id_paralelo_tutor != null || info_cargaHoraria.id_paralelo_tutor != undefined) {
+                    const info_paralelo_tutor = await Paralelo.findOne({ where: { id: info_cargaHoraria.id_paralelo_tutor } });
+                    const info_curso_tutor = await Curso.findOne(
+                        {
+                            attributes: ['nivelAcademico', 'gradoAcademico'],
+                            where: { id: info_paralelo_tutor.id_curso }
+                        }
+                    );
+                    const info_paralelo_tutor_curso = {
+                        ...info_paralelo_tutor.dataValues,
+                        nivelAcademico: info_curso_tutor.nivelAcademico,
+                        gradoAcademico: info_curso_tutor.gradoAcademico
+                    };
+
+                    info_paraleloTutor.push(info_paralelo_tutor_curso);
+                }
+
+                for (let i = 0; i < info_cargaHoraria.cargaHorariaPorParalelos.length; i++) {
+                    const idCargaParelo = info_cargaHoraria.cargaHorariaPorParalelos[i].idCargaParelo;
+                    const idCargaPareloArray = idCargaParelo.split(',').map(Number);
+
+                    for (const id of idCargaPareloArray) {
+                        const info_paralelo_docente = await Paralelo.findOne({ where: { id: id } });
+                        const info_curso = await Curso.findOne({
+                            attributes: ['nivelAcademico', 'gradoAcademico'],
+                            where: { id: info_paralelo_docente.id_curso }
+                        });
+
+                        const info_paralelo_con_curso = {
+                            ...info_paralelo_docente.dataValues,
+                            nivelAcademico: info_curso.nivelAcademico,
+                            gradoAcademico: info_curso.gradoAcademico
+                        };
+
+                        lista_paralelo.push(info_paralelo_con_curso);
+                    }
+
+
+                    //extraer y ordenar las los paralelos
+                    let lista_paraleloArray = [];
+
+                    for (let i = 0; i < lista_paralelo.length; i++) {
+                        const {
+                            titulo,
+                            nivelAcademico,
+                            gradoAcademico,
+                        } = lista_paralelo[i];
+                        const paraleloExtraido = `${gradoAcademico} ${nivelAcademico} ${titulo}`;
+                        lista_paraleloArray.push(paraleloExtraido);
+                    }
+                    const listaParalelo = lista_paraleloArray.join(', ');
+
+
+                    const id_materia = info_cargaHoraria.cargaHorariaPorParalelos[i].id_materia;
+
+                    const id_materiaArray = id_materia.split(',').map(Number);
+
+                    for (const id of id_materiaArray) {
+                        const info_materia_docente = await Materia.findOne({ where: { id: id } });
+                        lista_materia.push(info_materia_docente);
+                    }
+
+                    //extraer y ordenar las materias
+
+                    let lista_materiaArray = [];
+                    for (let i = 0; i < lista_materia.length; i++) {
+                        const {
+                            nombre,
+                        } = lista_materia[i];
+                        const materiaExtraida = `${nombre}`;
+                        lista_materiaArray.push(materiaExtraida);
+                    }
+
+                    const listaMateria = lista_materiaArray.join(', ');
+
+                    listaCargaHoraria.push({ listaMateria, listaParalelo });
+                    lista_materia = [];
+                    lista_paralelo = [];
+                }
+
+                return res.json({ info_paraleloTutor, listaCargaHoraria });
             } else {
                 return res.json({ message: 'Sin carga asignada' });
             }
