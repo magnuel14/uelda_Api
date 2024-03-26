@@ -105,7 +105,7 @@ let controller = {
                 return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
             } else {
                 await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
+                return res.json({ message: 'Se ha actualizado su foto de usuario', dataFoto });
             }
         }
     },
@@ -153,6 +153,12 @@ let controller = {
         } catch (error) {
             return res.status(401).send('Unauthorized Request');
         }
+    },
+
+    getUserByExternalId: async (req, res) => {
+        const { externalId } = req.params;
+        const user = await Persona.findOne({ where: { external_id: externalId } });
+        return res.json(user);
     }
 }
 module.exports = controller;

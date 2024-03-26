@@ -8,8 +8,11 @@ router.get('/get-allUsers', userController.verifyToken, tryCatch(userController.
 //inicar sesión
 router.post('/signin', (userController.singnin));
 //cuenta
-router.post('/update_infoCuenta', userController.verifyToken, tryCatch(userController.updateCuenta));
-router.post('/update_estadoC', userController.verifyToken, tryCatch(userController.updateEstadoCuenta));
+router.post('/update_infoCuenta', tryCatch(userController.updateCuenta));
+router.post('/update_estadoC', tryCatch(userController.updateEstadoCuenta));
+
+//get user
+router.get('/getUserByEx/:externalId', tryCatch(userController.getUserByExternalId));
 
 
 module.exports = router;

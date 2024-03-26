@@ -81,7 +81,6 @@ mailing.sendNewUserEmail = async (data) => {
       contraseñaUsuario: contraseñaUsuario,
       date: yyyy
     }
-    console.log(replacements)
     let template = handlebars.compile(htmlF)
     let htmlToSent = template(replacements)
     let mailOptions = {

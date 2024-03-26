@@ -269,8 +269,6 @@ let controller = {
         attributes: ["id", "nombre", "apellido", "numeroId", "correoPersonal"],
       });
 
-      console.log(estudiante);
-
       if (!estudiante) {
         return res.status(404).json({ error: "Estudiante no encontrado" });
       }
@@ -418,9 +416,7 @@ let controller = {
       where: { correoPersonal: correoPersonal },
     });
     if (infoPersona) {
-      console.log("1", infoPersona.id == infoEstudianteCuenta);
       if (infoEstudianteCuenta) {
-        console.log("2:", infoPersona.id == infoEstudianteCuenta.id);
         if (infoPersona.id == infoEstudianteCuenta.id) {
           const updateDataCuenta = await Cuenta.findOne({
             where: { id_persona: infoPersona.id },
@@ -428,7 +424,6 @@ let controller = {
           await Cuenta.update(dataCuenta, {
             where: { id: updateDataCuenta.id },
           });
-          //console.log('datos: ', upateEstudianteData)
           await Persona.update(upateEstudianteData, {
             where: { external_id: externalId },
           });
@@ -443,7 +438,6 @@ let controller = {
           where: { id_persona: infoPersona.id },
         });
         await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-        //console.log('datos: ', upateEstudianteData)
         await Persona.update(upateEstudianteData, {
           where: { external_id: externalId },
         });
@@ -550,7 +544,6 @@ let controller = {
             autorizacionRetirarDoc: autorizacionRetirarDoc,
             id_persona: infoPersona.id,
           };
-          //console.log('datos: ', representnateData)
           const newRepresentante = await Representante.create(
             representnateData
           );
@@ -578,7 +571,6 @@ let controller = {
               autorizacionRetirarDoc: autorizacionRetirarDoc,
               id_persona: infoPersona.id,
             };
-            //console.log('datos: ', representnateData)
             const newRepresentante = await Representante.create(
               representnateData
             );
@@ -652,17 +644,13 @@ let controller = {
         [Op.and]: [{ numeroId: numeroId }, { id_persona: infoPersona.id }],
       },
     });
-    console.log(searchRepresentante.correoPersonal);
 
     if (searchRepresentante) {
       const searchRepresentanteByemail = await Representante.findOne({
         where: { correoPersonal: correoPersonal },
       });
-      console.log(searchRepresentanteByemail.correoPersonal);
       if (searchRepresentanteByemail) {
-        console.log(searchRepresentante.id == searchRepresentanteByemail.id);
         if (searchRepresentante.id == searchRepresentanteByemail.id) {
-          //console.log('datos: ', updateRepresentanteData)
           const updateRepresentante = await Representante.update(
             updateRepresentanteData,
             { where: { numeroId: numeroId } }
@@ -677,7 +665,6 @@ let controller = {
           });
         }
       } else if (!searchRepresentanteByemail) {
-        //console.log('datos: ', updateRepresentanteData)
         const updateRepresentante = await Representante.update(
           updateRepresentanteData,
           { where: { numeroId: numeroId } }
@@ -713,7 +700,6 @@ let controller = {
       where: { numeroId: numeroId },
     });
     if (searchRepresentante) {
-      //console.log(infoRepresentantes)
       if (infoRepresentantes.length == 1) {
         return res.json({
           message:
@@ -851,7 +837,6 @@ let controller = {
           [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }],
         },
       });
-      //console.log(tipoDocId)
       if (!searchPersona) {
         if (tipoDocId == "pasaporte") {
           const infoEstudianteCuenta = await Persona.findOne({
@@ -871,11 +856,11 @@ let controller = {
               id_persona: newEstudiante.id,
             };
             const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta)
-              console.log({
-                message:
-                  "La cuenta no se puedo crear, revise bien su informacion.",
-              });
+            if (!newEstudianteCuenta) return res.json({
+              message:
+                "La cuenta no se puedo crear, revise bien su informacion.",
+            });
+
             const dataInfoMed = {
               id_persona: newEstudiante.id,
               discapacidad: "1",
@@ -886,14 +871,14 @@ let controller = {
               tipoEnfermedadCatastrofica: "N/A",
             };
             const newInfoMedica = await InfoMedica.create(dataInfoMed);
-            console.log({
+            return res.json({
               message: "Ha generado un nuevo usuario",
               estudiante,
               newEstudianteCuenta,
               newInfoMedica,
             });
           } else {
-            console.log({ message: "Ya existe un estudiante con ese correo" });
+            return res.json({ message: "Ya existe un estudiante con ese correo" });
           }
         } else {
           const cedulaValida = cedulaValidator.validator(numeroId);
@@ -912,11 +897,10 @@ let controller = {
               id_persona: newEstudiante.id,
             };
             const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta)
-              console.log({
-                message:
-                  "La cuenta no se puedo crear, revise bien su informacion.",
-              });
+            if (!newEstudianteCuenta) return res.json({
+              message:
+                "La cuenta no se puedo crear, revise bien su informacion.",
+            });
             const dataInfoMed = {
               id_persona: newEstudiante.id,
               discapacidad: "1",
@@ -927,18 +911,18 @@ let controller = {
               tipoEnfermedadCatastrofica: "N/A",
             };
             const newInfoMedica = await InfoMedica.create(dataInfoMed);
-            console.log({
+            return res.json({
               message: "Ha generado un nuevo usuario",
               estudiante,
               newEstudianteCuenta,
               newInfoMedica,
             });
           } else {
-            console.log({ message: cedulaValida.message });
+            return res.json({ message: cedulaValida.message });
           }
         }
       } else {
-        console.log({
+        return res.json({
           message: "Ya existe un estudiante con esta información",
         });
       }
@@ -1025,7 +1009,6 @@ let controller = {
       req.userId = payload._id;
       next();
     } catch (e) {
-      //console.log(e)
       return res.status(401).send("Unauhtorized Request");
     }
   },

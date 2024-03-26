@@ -11,16 +11,16 @@ cloudinary.config({
 });
 
 cloudinaryControl.uploadImage = async (filePath) => cloudinary.uploader.upload(filePath, {
-  folder: 'ueldaContainer/Fotos_user',
+  folder: 'newUi/fotosUser',
 });
 cloudinaryControl.uploadFile = async (filePath) => cloudinary.uploader.upload(filePath, {
-  folder: 'ueldaContainer/Documentos_user',
+  folder: 'newUi/documentsUser',
 });
 cloudinaryControl.uploadImagePost = async (filePath) => cloudinary.uploader.upload(filePath, {
-  folder: 'ueldaContainer/postAcademico/img',
+  folder: 'newUi/postAcademico/img',
 });
 cloudinaryControl.uploadFilePost = async (filePath) => cloudinary.uploader.upload(filePath, {
-  folder: 'ueldaContainer/postAcademico/file',
+  folder: 'newUi/postAcademico/file',
 });
 cloudinaryControl.deleteFile = async (publicId) => cloudinary.uploader.destroy(publicId);
 

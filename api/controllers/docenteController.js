@@ -1,15 +1,14 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 const models = require('../models');
-const { Op } = require("sequelize");
+const { Op, json } = require("sequelize");
 const dotenv = require('dotenv');
 dotenv.config();
 
 const Persona = models.persona;
 const Cuenta = models.cuenta;
 const CargaHoraria = models.cargaHoraria;
-const CargaHoraria_Materias = models.cargaHoraria_Materias;
-const CargaHoraria_Paralelos = models.cargaHoraria_Paralelos;
+const CargaHorariaPorParalelo = models.cargaHorariaPorParalelo;
 const AsistenciaDocente = models.asistenciaDocente;
 const AnioLectivo = models.anioLectivo;
 const Curso = models.curso;
@@ -57,7 +56,36 @@ let controller = {
                     id_materia: id_materia,
                     id_cargaHoraria: newCargaHoraria.id
                 }
-                await CargaHoraria_Materias.create(dataMateria_asignada);
+                await cargaHorariaPorParalelo.create(dataMateria_asignada);
+            }
+            return res.json({ message: 'Se ha asignado la carga horaria', newCargaHoraria });
+        } else {
+            return res.json({ message: 'Error al asignar la caraga horaria' });
+        }
+    },
+
+    createCargaHorariaV2: async (req, res) => {
+        const { externalId, id_paralelo_tutor, horas_asignadas, cargaHoraria } = req.body;
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+
+        const dataCargaHoraria = {
+            id_paralelo_tutor: id_paralelo_tutor,
+            horas_asignadas: horas_asignadas,
+            id_persona: infoPersona.id,
+            id_anioLectivo_actual: info_AnioLectivo.id
+        };
+
+        const newCargaHoraria = await CargaHoraria.create(dataCargaHoraria);
+        if (newCargaHoraria) {
+            for (let i = 0; i < cargaHoraria.length; i++) {
+                const { listaIdParalelo, materiasIds } = cargaHoraria[i];
+                const cargaHorariaPorParalelo = {
+                    id_materia: materiasIds,
+                    idCargaParelo: listaIdParalelo,
+                    id_cargaHoraria: newCargaHoraria.id
+                }
+                await CargaHorariaPorParalelo.create(cargaHorariaPorParalelo);
             }
             return res.json({ message: 'Se ha asignado la carga horaria', newCargaHoraria });
         } else {
@@ -77,7 +105,6 @@ let controller = {
         const info_cargaHoraria = await CargaHoraria.findOne({
             include: [
                 { model: CargaHoraria_Paralelos, as: 'cargaHoraria_Paralelos' },
-                { model: CargaHoraria_Materias, as: 'cargaHoraria_Materias' }
             ],
             where: {
                 external_id: externalId,
@@ -86,7 +113,7 @@ let controller = {
         });
 
         const lista_paralelos = await info_cargaHoraria.getCargaHoraria_Paralelos();
-        const lista_materia = await info_cargaHoraria.getCargaHoraria_Materias();
+        const lista_materia = await info_cargaHoraria.getcargaHorariaPorParalelo();
 
 
         for (let i = 0; i < lista_paralelos.length; i++) {
@@ -98,7 +125,7 @@ let controller = {
         }
         for (let i = 0; i < lista_materia.length; i++) {
             const { id } = lista_materia[i];
-            await CargaHoraria_Materias.destroy({
+            await cargaHorariaPorParalelo.destroy({
                 where: { id: id }
             });
         }
@@ -124,7 +151,7 @@ let controller = {
                 id_materia: id_materia,
                 id_cargaHoraria: info_cargaHoraria.id
             }
-            await CargaHoraria_Materias.create(dataMateria_asignada);
+            await cargaHorariaPorParalelo.create(dataMateria_asignada);
         }
         return res.json({ message: 'Se ha asignado la carga horaria', info_cargaHoraria });
 
@@ -157,7 +184,7 @@ let controller = {
                 {
                     model: CargaHoraria,
                     include: [
-                        CargaHoraria_Materias,
+                        cargaHorariaPorParalelo,
                         CargaHoraria_Paralelos
                     ]
                 }
@@ -169,6 +196,40 @@ let controller = {
 
         return res.json({ cargaHoraria_docente })
     },
+
+    getCargaHorariaByExternalID: async (req, res) => {
+
+        const { externalId } = req.body;
+        const cargaHoraria_docente = await Persona.findOne({
+            attributes: [
+                'id',
+                'nombre',
+                'apellido',
+                'numeroId'
+            ],
+            include: [
+                {
+                    model: Cuenta,
+                    attributes: ['id', 'correo'],
+                    where: {
+                        estado: 0
+                    }
+                },
+                {
+                    model: CargaHoraria,
+                    include: [
+                        CargaHorariaPorParalelo
+                    ]
+                }
+            ],
+            where: {
+                external_id: externalId
+            }
+        });
+
+        return res.json({ cargaHoraria_docente })
+    },
+
     /**
     * 
     * @param {*} req 
@@ -191,7 +252,6 @@ let controller = {
                     {
                         model: CargaHoraria,
                         include: [
-                            CargaHoraria_Materias,
                             CargaHoraria_Paralelos
                         ]
                     }
@@ -222,8 +282,7 @@ let controller = {
                 {
                     model: CargaHoraria,
                     include: [
-                        CargaHoraria_Materias,
-                        CargaHoraria_Paralelos
+                        CargaHorariaPorParalelo
                     ]
                 }
             ],
@@ -251,18 +310,11 @@ let controller = {
                     id_persona: infoPersona.id,
                     id_anioLectivo_actual: infoAniosLectivo.id
                 },
+                model: CargaHoraria,
                 include: [
-                    {
-                        model: CargaHoraria_Materias,
-                        as: 'cargaHoraria_Materias'
-                    },
-                    {
-                        model: CargaHoraria_Paralelos,
-                        as: 'cargaHoraria_Paralelos'
-                    }
+                    CargaHorariaPorParalelo
                 ]
             });
-
             if (info_cargaHoraria) {
                 const info_paraleloTutor = [];
                 const lista_paralelo = [];
@@ -284,34 +336,153 @@ let controller = {
 
                     info_paraleloTutor.push(info_paralelo_tutor_curso);
                 }
+                for (let i = 0; i < info_cargaHoraria.cargaHorariaPorParalelos.length; i++) {
+                    const idCargaParelo = info_cargaHoraria.cargaHorariaPorParalelos[i].idCargaParelo;
+                    const idCargaPareloArray = idCargaParelo.split(',').map(Number);
 
-                for (let i = 0; i < info_cargaHoraria.cargaHoraria_Paralelos.length; i++) {
-                    const id_paralelo = info_cargaHoraria.cargaHoraria_Paralelos[i].id_paralelo;
-                    const info_paralelo_docente = await Paralelo.findOne({ where: { id: id_paralelo } });
-                    const info_curso = await Curso.findOne(
-                        {
+                    for (const id of idCargaPareloArray) {
+                        const info_paralelo_docente = await Paralelo.findOne({ where: { id: id } });
+                        const info_curso = await Curso.findOne({
                             attributes: ['nivelAcademico', 'gradoAcademico'],
                             where: { id: info_paralelo_docente.id_curso }
-                        }
-                    );
-                    const info_paralelo_con_curso = {
-                        ...info_paralelo_docente.dataValues,
-                        nivelAcademico: info_curso.nivelAcademico,
-                        gradoAcademico: info_curso.gradoAcademico
-                    };
+                        });
 
-                    lista_paralelo.push(info_paralelo_con_curso);
+                        const info_paralelo_con_curso = {
+                            ...info_paralelo_docente.dataValues,
+                            nivelAcademico: info_curso.nivelAcademico,
+                            gradoAcademico: info_curso.gradoAcademico
+                        };
+
+                        lista_paralelo.push(info_paralelo_con_curso);
+                    }
                 }
+                for (let j = 0; j < info_cargaHoraria.cargaHorariaPorParalelos.length; j++) {
+                    const id_materia = info_cargaHoraria.cargaHorariaPorParalelos[j].id_materia;
 
-                for (let j = 0; j < info_cargaHoraria.cargaHoraria_Materias.length; j++) {
-                    const id_materia = info_cargaHoraria.cargaHoraria_Materias[j].id_materia;
-                    const info_materia_docente = await Materia.findOne({ where: { id: id_materia } });
-                    lista_materia.push(info_materia_docente);
+                    const id_materiaArray = id_materia.split(',').map(Number);
+
+                    for (const id of id_materiaArray) {
+
+                        const info_materia_docente = await Materia.findOne({ where: { id: id } });
+                        lista_materia.push(info_materia_docente);
+                    }
+
                 }
 
                 return res.json({ info_paraleloTutor, lista_paralelo, lista_materia });
             } else {
-                return res.json({ message: 'Ocurrió un error 1' });
+                return res.json({ message: 'Sin carga asignada' });
+            }
+        } else {
+            return res.json({ message: 'Ocurrió un error 2' });
+        }
+    },
+
+    getParaleloTutor_docenteV2: async (req, res) => {
+        const { externalId } = req.params;
+        const infoAniosLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
+        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        if (infoPersona) {
+            const info_cargaHoraria = await CargaHoraria.findOne({
+                where: {
+                    id_persona: infoPersona.id,
+                    id_anioLectivo_actual: infoAniosLectivo.id
+                },
+                model: CargaHoraria,
+                include: [
+                    CargaHorariaPorParalelo
+                ]
+            });
+            if (info_cargaHoraria) {
+                const info_paraleloTutor = [];
+                let lista_paralelo = [];
+                let lista_materia = [];
+                let listaCargaHoraria = [];
+
+
+                if (info_cargaHoraria.id_paralelo_tutor != null || info_cargaHoraria.id_paralelo_tutor != undefined) {
+                    const info_paralelo_tutor = await Paralelo.findOne({ where: { id: info_cargaHoraria.id_paralelo_tutor } });
+                    const info_curso_tutor = await Curso.findOne(
+                        {
+                            attributes: ['nivelAcademico', 'gradoAcademico'],
+                            where: { id: info_paralelo_tutor.id_curso }
+                        }
+                    );
+                    const info_paralelo_tutor_curso = {
+                        ...info_paralelo_tutor.dataValues,
+                        nivelAcademico: info_curso_tutor.nivelAcademico,
+                        gradoAcademico: info_curso_tutor.gradoAcademico
+                    };
+
+                    info_paraleloTutor.push(info_paralelo_tutor_curso);
+                }
+
+                for (let i = 0; i < info_cargaHoraria.cargaHorariaPorParalelos.length; i++) {
+                    const idCargaParelo = info_cargaHoraria.cargaHorariaPorParalelos[i].idCargaParelo;
+                    const idCargaPareloArray = idCargaParelo.split(',').map(Number);
+
+                    for (const id of idCargaPareloArray) {
+                        const info_paralelo_docente = await Paralelo.findOne({ where: { id: id } });
+                        const info_curso = await Curso.findOne({
+                            attributes: ['nivelAcademico', 'gradoAcademico'],
+                            where: { id: info_paralelo_docente.id_curso }
+                        });
+
+                        const info_paralelo_con_curso = {
+                            ...info_paralelo_docente.dataValues,
+                            nivelAcademico: info_curso.nivelAcademico,
+                            gradoAcademico: info_curso.gradoAcademico
+                        };
+
+                        lista_paralelo.push(info_paralelo_con_curso);
+                    }
+
+
+                    //extraer y ordenar las los paralelos
+                    let lista_paraleloArray = [];
+
+                    for (let i = 0; i < lista_paralelo.length; i++) {
+                        const {
+                            titulo,
+                            nivelAcademico,
+                            gradoAcademico,
+                        } = lista_paralelo[i];
+                        const paraleloExtraido = `${gradoAcademico} ${nivelAcademico} ${titulo}`;
+                        lista_paraleloArray.push(paraleloExtraido);
+                    }
+                    const listaParalelo = lista_paraleloArray.join(', ');
+
+
+                    const id_materia = info_cargaHoraria.cargaHorariaPorParalelos[i].id_materia;
+
+                    const id_materiaArray = id_materia.split(',').map(Number);
+
+                    for (const id of id_materiaArray) {
+                        const info_materia_docente = await Materia.findOne({ where: { id: id } });
+                        lista_materia.push(info_materia_docente);
+                    }
+
+                    //extraer y ordenar las materias
+
+                    let lista_materiaArray = [];
+                    for (let i = 0; i < lista_materia.length; i++) {
+                        const {
+                            nombre,
+                        } = lista_materia[i];
+                        const materiaExtraida = `${nombre}`;
+                        lista_materiaArray.push(materiaExtraida);
+                    }
+
+                    const listaMateria = lista_materiaArray.join(', ');
+
+                    listaCargaHoraria.push({ listaMateria, listaParalelo });
+                    lista_materia = [];
+                    lista_paralelo = [];
+                }
+
+                return res.json({ info_paraleloTutor, listaCargaHoraria });
+            } else {
+                return res.json({ message: 'Sin carga asignada' });
             }
         } else {
             return res.json({ message: 'Ocurrió un error 2' });
@@ -447,7 +618,8 @@ let controller = {
     updateCalicaciones: async (req, res) => {
         //tipo de califiacion: cualitativa:0 || cuantitativamente: 1
         const { lista_externalsMateria_calificacion, tipo_asignacionNota } = req.body;
-        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } })
+        const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
+
         for (let i = 0; i < lista_externalsMateria_calificacion.length; i++) {
 
             if (info_anioLectivo.tipoCalificacion == 0) {
@@ -486,7 +658,6 @@ let controller = {
                     };
 
                     await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } });
-                    console.log({ dataCalificacionQ });
 
                 } else {
 
@@ -527,7 +698,6 @@ let controller = {
                         };
 
                         await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                        console.log({ dataCalificacionQ })
 
                     } else {
 
@@ -552,7 +722,6 @@ let controller = {
                             };
 
                             await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                            console.log({ dataCalificacionQ })
                         } else {
                             const dataCalificacionQ = {
                                 firstParcialPQ: firstParcialPQ,
@@ -573,7 +742,6 @@ let controller = {
                             };
 
                             await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                            console.log({ dataCalificacionQ })
                         }
 
                     }
@@ -583,392 +751,60 @@ let controller = {
 
                 const {
                     externalId,
-                    aportesPrimerTimestre,
-                    proIntegradorFase_1,
-                    evaluacion_estructurada_1,
 
-                    aportesSegundoTimestre,
-                    proIntegradorFase_2,
-                    evaluacion_estructurada_2,
+                    totalPrimerTriCuantity,
+                    totalPrimerTriQuality,
 
-                    aportesTercerTimestre,
-                    proIntegradorFase_3,
-                    evaluacion_estructurada_3,
+                    totalSegundoTriCuantity,
+                    totalSegundoTriQuality,
 
-                    proyecto_Final,
-                    evaluacion_nivel,
+                    totalTercerTriCuantity,
+                    totalTercerTriQuality,
+
+                    proyectoFinalQuality,
+                    proyectoFinalCuantity,
+
+                    evaluacionNivelQuality,
+                    evaluacionNivelCuantity,
+
+                    total_Final,
+                    comportamiento,
+
                     aprobado,
                     supletorio
                 } = lista_externalsMateria_calificacion[i];
-                console.log(externalId,
-                    aportesPrimerTimestre,
-                    proIntegradorFase_1,
-                    evaluacion_estructurada_1,
 
-                    aportesSegundoTimestre,
-                    proIntegradorFase_2,
-                    evaluacion_estructurada_2,
+                const dataCalificacionT = {
+                    totalPrimerTriCuantity: totalPrimerTriCuantity,
+                    totalPrimerTriQuality: totalPrimerTriQuality,
 
-                    aportesTercerTimestre,
-                    proIntegradorFase_3,
-                    evaluacion_estructurada_3,
+                    totalSegundoTriCuantity: totalSegundoTriCuantity,
+                    totalSegundoTriQuality: totalSegundoTriQuality,
 
-                    proyecto_Final,
-                    evaluacion_nivel,
-                    aprobado,
-                    supletorio)
+                    totalTercerTriCuantity: totalTercerTriCuantity,
+                    totalTercerTriQuality: totalTercerTriQuality,
 
-                const info_calificacionT = await CalificacionT.findOne(
-                    {
-                        attributes: ['id_materia'],
-                        where: { external_id: externalId }
-                    });
+                    proyectoFinalQuality: proyectoFinalQuality,
+                    proyectoFinalCuantity: proyectoFinalCuantity,
 
-                const info_Materia = await Materia.findOne(
-                    {
-                        attributes: ['id_curso'],
-                        where: { id: info_calificacionT.id_materia }
-                    });
+                    evaluacionNivelQuality: evaluacionNivelQuality,
+                    evaluacionNivelCuantity: evaluacionNivelCuantity,
 
-                const info_Curso = await Curso.findOne(
-                    {
-                        attributes: ['nivelAcademico', 'gradoAcademico'],
-                        where: { id: info_Materia.id_curso }
-                    });
-                if (info_Curso.nivelAcademico == "Inicial 3 años"
-                    || info_Curso.nivelAcademico == "Inicial 4 años"
-                    || info_Curso.nivelAcademico == "Básica Preparatoria") {
-
-                    const dataCalificacionT = {
-
-                        evaluacion_estructurada_1: evaluacion_estructurada_1,
-
-                        evaluacion_estructurada_2: evaluacion_estructurada_2,
-
-                        evaluacion_estructurada_3: evaluacion_estructurada_3,
-
-                        aprobado: aprobado
-                    };
-
-                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                    console.log({ dataCalificacionT })
-
-                } else if (info_Curso.nivelAcademico == "Básica Elemental") {
-
-                    const dataCalificacionT = {
-                        aportesPrimerTimestre: aportesPrimerTimestre,
-                        proIntegradorFase_1: proIntegradorFase_1,
-                        evaluacion_estructurada_1: evaluacion_estructurada_1,
-
-                        aportesSegundoTimestre: aportesSegundoTimestre,
-                        proIntegradorFase_2: proIntegradorFase_2,
-                        evaluacion_estructurada_2: evaluacion_estructurada_2,
-
-                        aportesTercerTimestre: aportesTercerTimestre,
-                        proIntegradorFase_3: proIntegradorFase_3,
-                        evaluacion_estructurada_3: evaluacion_estructurada_3,
-
-                        proyecto_Final: proyecto_Final,
-
-                        aprobado: aprobado
-                    };
-
-                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
-
-                } else if (
-                    info_Curso.nivelAcademico == "Básica Media" ||
-                    info_Curso.nivelAcademico == "Básica Superior" ||
-                    info_Curso.nivelAcademico == "Bachillerato") {
-
-                    if (tipo_asignacionNota == 0) {
-
-                        if (info_Curso.nivelAcademico == 'Bachillerato' && info_Curso.gradoAcademico == 3 ||
-                            info_Curso.gradoAcademico == 10 || info_Curso.gradoAcademico == 7) {
-
-                            const dataCalificacionT = {
-                                aportesPrimerTimestre: aportesPrimerTimestre,
-                                proIntegradorFase_1: proIntegradorFase_1,
-                                evaluacion_estructurada_1: evaluacion_estructurada_1,
-
-                                aportesSegundoTimestre: aportesSegundoTimestre,
-                                proIntegradorFase_2: proIntegradorFase_2,
-                                evaluacion_estructurada_2: evaluacion_estructurada_2,
-
-                                aportesTercerTimestre: aportesTercerTimestre,
-                                proIntegradorFase_3: proIntegradorFase_3,
-                                evaluacion_estructurada_3: evaluacion_estructurada_3,
-
-                                proyecto_Final: proyecto_Final,
-                                evaluacion_nivel: evaluacion_nivel,
-
-                                aprobado: aprobado
-                            };
-
-                            await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                            console.log({ dataCalificacionT })
-
-                        } else {
-
-                            const dataCalificacionT = {
-                                aportesPrimerTimestre: aportesPrimerTimestre,
-                                proIntegradorFase_1: proIntegradorFase_1,
-                                evaluacion_estructurada_1: evaluacion_estructurada_1,
-
-                                aportesSegundoTimestre: aportesSegundoTimestre,
-                                proIntegradorFase_2: proIntegradorFase_2,
-                                evaluacion_estructurada_2: evaluacion_estructurada_2,
-
-                                aportesTercerTimestre: aportesTercerTimestre,
-                                proIntegradorFase_3: proIntegradorFase_3,
-                                evaluacion_estructurada_3: evaluacion_estructurada_3,
-
-                                proyecto_Final: proyecto_Final,
-
-                                aprobado: aprobado
-                            };
-
-                            await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                            console.log({ dataCalificacionT })
-                        }
-                    } else {
-
-                        //primer tirmestre
-                        var _aportesPrimerTimestre = aportesPrimerTimestre * 0.9;
-                        _aportesPrimerTimestre = Number(_aportesPrimerTimestre.toFixed(2));
-                        var _proIntegradorFase_1 = (proIntegradorFase_1 * 0.5) / 10;
-                        _proIntegradorFase_1 = Number(_proIntegradorFase_1.toFixed(2));
-                        var _evaluacion_estructurada_1 = (evaluacion_estructurada_1 * 0.5) / 10;
-                        _evaluacion_estructurada_1 = Number(_evaluacion_estructurada_1.toFixed(2));
-                        var totalPT = _aportesPrimerTimestre + _proIntegradorFase_1 + _evaluacion_estructurada_1;
-                        totalPT = Number(totalPT.toFixed(2));
-
-                        //segundo trimestre
-                        var _aportesSegundoTimestre = aportesSegundoTimestre * 0.9;
-                        _aportesSegundoTimestre = Number(_aportesSegundoTimestre.toFixed(2));
-                        var _proIntegradorFase_2 = (proIntegradorFase_2 * 0.5) / 10;
-                        _proIntegradorFase_2 = Number(_proIntegradorFase_2.toFixed(2));
-                        var _evaluacion_estructurada_2 = (evaluacion_estructurada_2 * 0.5) / 10;
-                        _evaluacion_estructurada_2 = Number(_evaluacion_estructurada_2.toFixed(2));
-                        var totalST = _aportesSegundoTimestre + _proIntegradorFase_2 + _evaluacion_estructurada_2;
-                        totalST = Number(totalST.toFixed(2));
-
-                        //tercer trimestre
-                        var _aportesTercerTimestre = aportesTercerTimestre * 0.9;
-                        _aportesTercerTimestre = Number(_aportesTercerTimestre.toFixed(2));
-                        var _proIntegradorFase_3 = (proIntegradorFase_3 * 0.5) / 10;
-                        _proIntegradorFase_3 = Number(_proIntegradorFase_3.toFixed(2));
-                        var _evaluacion_estructurada_3 = (evaluacion_estructurada_3 * 0.5) / 10;
-                        _evaluacion_estructurada_3 = Number(_evaluacion_estructurada_3.toFixed(2));
-                        var totalTT = _aportesTercerTimestre + _proIntegradorFase_3 + _evaluacion_estructurada_3;
-                        totalTT = Number(totalTT.toFixed(2));
-
-                        if (info_Curso.nivelAcademico == 'Bachillerato' && info_Curso.gradoAcademico == 3 ||
-                            info_Curso.gradoAcademico == 10 || info_Curso.gradoAcademico == 7) {
-
-                            //proyecto final 0.5
-                            var _proyecto_Final = (proyecto_Final * 0.5) / 10;
-                            _proyecto_Final = Number(_proyecto_Final.toFixed(2));
-                            //evaluacion x nivel 0.5
-                            var _evaluacion_nivel = (evaluacion_nivel * 0.5) / 10;
-                            _evaluacion_nivel = Number(_evaluacion_nivel.toFixed(2));
-
-                            //calculo promedio total
-                            //90% total de los 3 trimestres 
-                            var total_3t = ((totalPT + totalST + totalTT) / 3) * 0.9;
-                            total_3t = Number(total_3t.toFixed(2));
-
-                            var total_Final = total_3t + _proyecto_Final + _evaluacion_nivel;
-                            total_Final = Number(total_Final.toFixed(2));
-
-                            if (total_Final >= 7) {
-
-                                const dataCalificacionT = {
-                                    aportesPrimerTimestre: aportesPrimerTimestre,
-                                    proIntegradorFase_1: proIntegradorFase_1,
-                                    evaluacion_estructurada_1: evaluacion_estructurada_1,
-                                    totalPT: totalPT,
-
-                                    aportesSegundoTimestre: aportesSegundoTimestre,
-                                    proIntegradorFase_2: proIntegradorFase_2,
-                                    evaluacion_estructurada_2: evaluacion_estructurada_2,
-                                    totalST: totalST,
-
-                                    aportesTercerTimestre: aportesTercerTimestre,
-                                    proIntegradorFase_3: proIntegradorFase_3,
-                                    evaluacion_estructurada_3: evaluacion_estructurada_3,
-                                    totalTT: totalTT,
-
-                                    proyecto_Final: proyecto_Final,
-                                    evaluacion_nivel: evaluacion_nivel,
-
-                                    total_Final: total_Final,
-
-                                    aprobado: 0
-                                };
-
-                                await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                                console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
-
-                            } else {
-
-                                if (supletorio >= 7) {
-                                    const dataCalificacionT = {
-                                        aportesPrimerTimestre: aportesPrimerTimestre,
-                                        proIntegradorFase_1: proIntegradorFase_1,
-                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
-                                        totalPT: totalPT,
-
-                                        aportesSegundoTimestre: aportesSegundoTimestre,
-                                        proIntegradorFase_2: proIntegradorFase_2,
-                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
-                                        totalST: totalST,
-
-                                        aportesTercerTimestre: aportesTercerTimestre,
-                                        proIntegradorFase_3: proIntegradorFase_3,
-                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
-                                        totalTT: totalTT,
-                                        total_Final: total_Final,
-                                        proyecto_Final: proyecto_Final,
-                                        evaluacion_nivel: evaluacion_nivel,
-
-                                        aprobado: 0
-                                    };
-
-                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
-                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
-                                } else {
-                                    const dataCalificacionT = {
-                                        aportesPrimerTimestre: aportesPrimerTimestre,
-                                        proIntegradorFase_1: proIntegradorFase_1,
-                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
-                                        totalPT: totalPT,
-
-                                        aportesSegundoTimestre: aportesSegundoTimestre,
-                                        proIntegradorFase_2: proIntegradorFase_2,
-                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
-                                        totalST: totalST,
-
-                                        aportesTercerTimestre: aportesTercerTimestre,
-                                        proIntegradorFase_3: proIntegradorFase_3,
-                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
-                                        totalTT: totalTT,
-                                        total_Final: total_Final,
-                                        proyecto_Final: proyecto_Final,
-                                        evaluacion_nivel: evaluacion_nivel,
-
-                                        aprobado: 1
-                                    };
-
-                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
-                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
-                                }
-
-                            }
-                        } else {
-
-                            //proyecto final
-                            var _proyecto_Final = proyecto_Final / 10
-                            _proyecto_Final = Number(_proyecto_Final.toFixed(2));
-
-                            //calculo promedio total
-                            //90% total de los 3 trimestres 
-                            var total_3t = ((totalPT + totalST + totalTT) / 3) * 0.9;
-                            total_3t = Number(total_3t.toFixed(2));
-
-                            var total_Final = total_3t + _proyecto_Final;
-                            total_Final = Number(total_Final.toFixed(2));
-
-                            if (total_Final >= 7) {
-
-                                const dataCalificacionT = {
-                                    aportesPrimerTimestre: aportesPrimerTimestre,
-                                    proIntegradorFase_1: proIntegradorFase_1,
-                                    evaluacion_estructurada_1: evaluacion_estructurada_1,
-                                    totalPT: totalPT,
-
-                                    aportesSegundoTimestre: aportesSegundoTimestre,
-                                    proIntegradorFase_2: proIntegradorFase_2,
-                                    evaluacion_estructurada_2: evaluacion_estructurada_2,
-                                    totalST: totalST,
-
-                                    aportesTercerTimestre: aportesTercerTimestre,
-                                    proIntegradorFase_3: proIntegradorFase_3,
-                                    evaluacion_estructurada_3: evaluacion_estructurada_3,
-                                    totalTT: totalTT,
-
-                                    proyecto_Final: proyecto_Final,
-
-                                    total_Final: total_Final,
-
-                                    aprobado: 0
-                                };
-
-                                await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-                                console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final })
-
-                            } else {
-                                if (supletorio >= 7) {
-                                    const dataCalificacionT = {
-                                        aportesPrimerTimestre: aportesPrimerTimestre,
-                                        proIntegradorFase_1: proIntegradorFase_1,
-                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
-                                        totalPT: totalPT,
-
-                                        aportesSegundoTimestre: aportesSegundoTimestre,
-                                        proIntegradorFase_2: proIntegradorFase_2,
-                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
-                                        totalST: totalST,
-
-                                        aportesTercerTimestre: aportesTercerTimestre,
-                                        proIntegradorFase_3: _proIntegradorFase_3,
-                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
-                                        totalTT: totalTT,
-                                        total_Final: total_Final,
-                                        proyecto_Final: proyecto_Final,
-
-                                        aprobado: 0
-                                    };
-
-                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
-                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
-                                } else {
-                                    const dataCalificacionT = {
-                                        aportesPrimerTimestre: aportesPrimerTimestre,
-                                        proIntegradorFase_1: proIntegradorFase_1,
-                                        evaluacion_estructurada_1: evaluacion_estructurada_1,
-                                        totalPT: totalPT,
-
-                                        aportesSegundoTimestre: aportesSegundoTimestre,
-                                        proIntegradorFase_2: proIntegradorFase_2,
-                                        evaluacion_estructurada_2: evaluacion_estructurada_2,
-                                        totalST: totalST,
-
-                                        aportesTercerTimestre: aportesTercerTimestre,
-                                        proIntegradorFase_3: proIntegradorFase_3,
-                                        evaluacion_estructurada_3: evaluacion_estructurada_3,
-                                        totalTT: totalTT,
-                                        total_Final: total_Final,
-                                        proyecto_Final: proyecto_Final,
-
-                                        aprobado: 1
-                                    };
-
-                                    await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
-                                    console.log({ totalPT, totalST, totalTT, _proyecto_Final, total_3t, total_Final });
-                                }
-
-                            }
-
-                        }
-                    }
-
+                    total_Final: total_Final,
+                    comportamiento: comportamiento,
+                    aprobado: aprobado,
+                    supletorio: supletorio
                 }
+                await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
 
+                return res.json({ message: 'Se han actualizado las calificaciones exitosamente' });
             }
 
         }
+
+
         return res.json({ message: 'Se han actualizado las calificaciones exitosamente' });
+
     },
     /**
     * 
@@ -1009,7 +845,6 @@ let controller = {
 
                     await AsistenciaXDia.update(data_Asistencia, { where: { id: info_AsistenciaXDia.id } })
 
-                    console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas, _horasClase_asistidas })
 
                 } else if (info_AsistenciaXMate) {
                     const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
@@ -1024,7 +859,6 @@ let controller = {
 
                     await AsistenciaXMate.update(data_Asistencia, { where: { id: info_AsistenciaXMate.id } })
 
-                    console.log({ info_AsistenciaXMate, _horasClase_programadas, _horasClase_dictadas, _horasClase_asistidas })
                 }
             } else {
 
@@ -1039,8 +873,6 @@ let controller = {
 
                     await AsistenciaXDia.update(data_Asistencia, { where: { id: info_AsistenciaXDia.id } })
 
-                    console.log({ info_AsistenciaXDia, _horasClase_programadas, _horasClase_dictadas })
-
                 } else if (info_AsistenciaXMate) {
                     const info_materia = await Materia.findOne({ where: { id: info_AsistenciaXMate.id_materia } });
                     const _horasClase_programadas = info_materia.horasClase_programadas;
@@ -1051,8 +883,6 @@ let controller = {
                     };
 
                     await AsistenciaXMate.update(data_Asistencia, { where: { id: info_AsistenciaXMate.id } })
-
-                    console.log({ info_AsistenciaXMate, _horasClase_programadas, _horasClase_dictadas })
 
                 }
             }
@@ -1239,7 +1069,6 @@ let controller = {
             req.userId = payload._id;
             next();
         } catch (e) {
-            //console.log(e)
             return res.status(401).send('Unauhtorized Request');
         }
     }

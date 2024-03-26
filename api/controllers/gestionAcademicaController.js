@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const models = require("../models");
 const dotenv = require("dotenv");
 dotenv.config();
-const asistenciaxDia = require("../models/asistenciaxDia");
 const pdfGenerator = require("../../helpers/pdf-generator");
 const fs = require("fs");
 
@@ -280,6 +279,7 @@ let controller = {
             const { tipoCalificacion } = infoCurso.materia[i];
             const id_materia = infoCurso.materia[i].id;
             if (tipoCalificacion == 0) {
+
               const dataCalificacionQ = {
                 firstParcialPQ: 0,
                 secondParcialPQ: 0,
@@ -304,19 +304,24 @@ let controller = {
                 infoCurso.gradoAcademico == 10 ||
                 infoCurso.gradoAcademico == 7
               ) {
+
                 const dataCalificacionT = {
-                  aportesPrimerTimestre: 0,
-                  proIntegradorFase_1: 0,
-                  evaluacion_estructurada_1: 0,
-                  aportesSegundoTimestre: 0,
-                  proIntegradorFase_2: 0,
-                  evaluacion_estructurada_2: 0,
-                  aportesTercerTimestre: 0,
-                  proIntegradorFase_3: 0,
-                  evaluacion_estructurada_3: 0,
-                  proyecto_Final: 0,
-                  evaluacion_nivel: 0,
+
+                  totalPrimerTriCuantity: 0,
+                  totalPrimerTriQuality: 0,
+                  totalSegundoTriCuantity: 0,
+                  totalSegundoTriQuality: 0,
+                  totalTercerTriCuantity: 0,
+                  totalTercerTriQuality: 0,
+                  proyectoFinalQuality: 0,
+                  proyectoFinalCuantity: 0,
+
+                  evaluacionNivelQuality: 0,
+                  evaluacionNivelCuantity: 0,
+
                   total_Final: 0,
+                  comportamiento: '',
+
                   aprobado: 1,
                   id_materia: id_materia,
                   id_matricula: newMatricula_estudiante.id,
@@ -324,18 +329,20 @@ let controller = {
                 await CalificacionT.create(dataCalificacionT);
               } else {
                 const dataCalificacionT = {
-                  aportesPrimerTimestre: 0,
-                  proIntegradorFase_1: 0,
-                  evaluacion_estructurada_1: 0,
-                  aportesSegundoTimestre: 0,
-                  proIntegradorFase_2: 0,
-                  evaluacion_estructurada_2: 0,
-                  aportesTercerTimestre: 0,
-                  proIntegradorFase_3: 0,
-                  evaluacion_estructurada_3: 0,
-                  proyecto_Final: 0,
-                  evaluacion_nivel: 0,
+                  totalPrimerTriCuantity: 0,
+                  totalPrimerTriQuality: 0,
+                  totalSegundoTriCuantity: 0,
+                  totalSegundoTriQuality: 0,
+                  totalTercerTriCuantity: 0,
+                  totalTercerTriQuality: 0,
+                  proyectoFinalQuality: 0,
+                  proyectoFinalCuantity: 0,
+
+                  evaluacionNivelQuality: '-1',
+                  evaluacionNivelCuantity: '-1',
+
                   total_Final: 0,
+                  comportamiento: '',
                   aprobado: 1,
                   id_materia: id_materia,
                   id_matricula: newMatricula_estudiante.id,
@@ -5546,7 +5553,6 @@ let controller = {
       req.userId = payload._id;
       next();
     } catch (e) {
-      //console.log(e)
       return res.status(401).send("Unauhtorized Request");
     }
   },

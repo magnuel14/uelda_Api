@@ -1,0 +1,76 @@
+{
+    "lo que se envia": [
+        {
+            "externalId": "b8daf578-5482-45f9-b7d2-978142b0b78f",
+            "id_paralelo_tutor": "13",
+            "horas_asignadas": "30",
+            "cargaHoraria": [
+                {
+                    "listaIdParalelo": "13",
+                    "listaIdMateria": "41,42,43,44,45,48,49"
+                },
+                {
+                    "listaIdParalelo": "13,14,15",
+                    "listaIdMateria": "50"
+                },
+                {
+                    "listaIdParalelo": "14",
+                    "listaIdMateria": "51"
+                }
+            ]
+        }
+    ],
+    "lo que se recibe": {
+        "cargaHoraria_docente": {
+            "id": 1,
+            "nombre": "SONNIA JULIANA",
+            "apellido": "AGUILAR MALDONADO",
+            "numeroId": "1900634278",
+            "cuentum": {
+                "id": 1,
+                "correo": "jhulyaguilarmaldonado@gmail.com"
+            },
+            "cargaHoraria": [
+                {
+                    "id": 1,
+                    "id_paralelo_tutor": 13,
+                    "horas_asignadas": "30",
+                    "id_anioLectivo_actual": 1,
+                    "external_id": "61bbc1c9-0c65-4880-966c-1cd29c914347",
+                    "fecha_registro": "2024-03-18T03:03:37.721Z",
+                    "fecha_modificacion": "2024-03-18T03:03:37.721Z",
+                    "id_persona": 1,
+                    "cargaHoraria_Materias": [
+                        {
+                            "id": 1,
+                            "id_materia": "41,42,43,44,45,48,49",
+                            "idCargaParelo": "13",
+                            "external_id": "20a42f6f-6562-4476-aa45-1aaf7a226b87",
+                            "fecha_registro": "2024-03-18T03:03:37.729Z",
+                            "fecha_modificacion": "2024-03-18T03:03:37.729Z",
+                            "id_cargaHoraria": 1
+                        },
+                        {
+                            "id": 2,
+                            "id_materia": "50",
+                            "idCargaParelo": "13,14,15",
+                            "external_id": "0a754d0b-4574-4d6d-96ef-1fd8dea705e6",
+                            "fecha_registro": "2024-03-18T03:03:37.732Z",
+                            "fecha_modificacion": "2024-03-18T03:03:37.732Z",
+                            "id_cargaHoraria": 1
+                        },
+                        {
+                            "id": 3,
+                            "id_materia": "51",
+                            "idCargaParelo": "14",
+                            "external_id": "d5a8b12b-bd7d-4dff-aed5-c0aa9a869dff",
+                            "fecha_registro": "2024-03-18T03:03:37.733Z",
+                            "fecha_modificacion": "2024-03-18T03:03:37.733Z",
+                            "id_cargaHoraria": 1
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

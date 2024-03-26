@@ -1,14 +1,17 @@
 module.exports = function (sequelize, DataTypes) {
     var CargaHoraria = require('./cargaHoraria')(sequelize, DataTypes);
-    var CargaHoraria_Paralelos = sequelize.define('cargaHoraria_Paralelos', {
+    var CargaHorariaPorParalelo = sequelize.define('cargaHorariaPorParalelo', {
         id: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //id del paralelo en el cual da clases el docente
-        id_paralelo: {
-            type: DataTypes.INTEGER
+        //id de la materia a cargo del docente
+        id_materia: {
+            type: DataTypes.STRING(250)
+        },
+        idCargaParelo: {
+            type: DataTypes.STRING(250)
         },
         external_id: {
             type: DataTypes.UUID,
@@ -19,8 +22,8 @@ module.exports = function (sequelize, DataTypes) {
         createdAt: 'fecha_registro',
         updatedAt: 'fecha_modificacion'
     });
-    CargaHoraria_Paralelos.belongsTo(CargaHoraria, {
+    CargaHorariaPorParalelo.belongsTo(CargaHoraria, {
         foreignKey: 'id_cargaHoraria'
     });
-    return CargaHoraria_Paralelos;
+    return CargaHorariaPorParalelo;
 };

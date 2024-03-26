@@ -700,7 +700,6 @@ let controller = {
             req.userId = payload._id;
             next();
         } catch (e) {
-            console.log(e)
             return res.status(401).send('Unauhtorized Request 4');
         }
     }
