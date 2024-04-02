@@ -822,19 +822,29 @@ let controller = {
   registroEstudiantes: async (req, res) => {
     const { lista_Estudiantes } = req.body;
     for (let i = 0; i < lista_Estudiantes.length; i++) {
-      const { nombre, apellido, tipoDocId, numeroId, correoPersonal } =
+      const { apellido_nombre, tipoDocId, numeroId, correoPersonal } =
         lista_Estudiantes[i];
+      // Separar la cadena en palabras individuales
+      let palabras = apellido_nombre.split(' ');
+
+      // Los dos primeros elementos son los apellidos
+      let apellidos = palabras.slice(0, 2).join(' ');
+
+      // Los demás elementos son los nombres
+      let nombres = palabras.slice(2).join(' ');
+      let numeroIdFormat = numeroId.toString();
+
       const estudianteData = {
-        nombre: nombre,
-        apellido: apellido,
+        nombre: nombres,
+        apellido: apellidos,
         tipoDocId: tipoDocId,
-        numeroId: numeroId,
+        numeroId: numeroIdFormat,
         id_rol: "6",
         correoPersonal: correoPersonal,
       };
       const searchPersona = await Persona.findOne({
         where: {
-          [Op.or]: [{ numeroId: numeroId }, { correoPersonal: correoPersonal }],
+          [Op.or]: [{ numeroId: numeroIdFormat }, { correoPersonal: correoPersonal }],
         },
       });
       if (!searchPersona) {
@@ -856,7 +866,7 @@ let controller = {
               id_persona: newEstudiante.id,
             };
             const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta) return res.json({
+            if (!newEstudianteCuenta)  console.log({
               message:
                 "La cuenta no se puedo crear, revise bien su informacion.",
             });
@@ -871,25 +881,25 @@ let controller = {
               tipoEnfermedadCatastrofica: "N/A",
             };
             const newInfoMedica = await InfoMedica.create(dataInfoMed);
-            return res.json({
+             console.log({
               message: "Ha generado un nuevo usuario",
               estudiante,
               newEstudianteCuenta,
               newInfoMedica,
             });
           } else {
-            return res.json({ message: "Ya existe un estudiante con ese correo" });
+             console.log({ message: "Ya existe un estudiante con ese correo" });
           }
         } else {
-          const cedulaValida = cedulaValidator.validator(numeroId);
+          const cedulaValida = cedulaValidator.validator(numeroIdFormat);
           if (cedulaValida.flag == 3) {
             //const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal: correoPersonal } });
             const estudiante = await Persona.create(estudianteData);
             const newEstudiante = await Persona.findOne({
-              where: { numeroId: numeroId },
+              where: { numeroId: numeroIdFormat },
             });
             var salt = bcrypt.genSaltSync(10);
-            let password = bcrypt.hashSync(numeroId, salt);
+            let password = bcrypt.hashSync(numeroIdFormat, salt);
             const dataCuenta = {
               correo: correoPersonal,
               clave: password,
@@ -897,7 +907,7 @@ let controller = {
               id_persona: newEstudiante.id,
             };
             const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta) return res.json({
+            if (!newEstudianteCuenta) console.log({
               message:
                 "La cuenta no se puedo crear, revise bien su informacion.",
             });
@@ -911,18 +921,18 @@ let controller = {
               tipoEnfermedadCatastrofica: "N/A",
             };
             const newInfoMedica = await InfoMedica.create(dataInfoMed);
-            return res.json({
+            console.log({
               message: "Ha generado un nuevo usuario",
               estudiante,
               newEstudianteCuenta,
               newInfoMedica,
             });
           } else {
-            return res.json({ message: cedulaValida.message });
+            console.log({ message: cedulaValida.message });
           }
         }
       } else {
-        return res.json({
+        console.log({
           message: "Ya existe un estudiante con esta información",
         });
       }
