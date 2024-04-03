@@ -855,10 +855,10 @@ let controller = {
           if (!infoEstudianteCuenta) {
             const estudiante = await Persona.create(estudianteData);
             const newEstudiante = await Persona.findOne({
-              where: { numeroId: numeroId },
+              where: { numeroId: numeroIdFormat },
             });
             var salt = bcrypt.genSaltSync(10);
-            let password = bcrypt.hashSync(numeroId, salt);
+            let password = bcrypt.hashSync(numeroIdFormat, salt);
             const dataCuenta = {
               correo: correoPersonal,
               clave: password,
