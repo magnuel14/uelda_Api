@@ -32,7 +32,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     // numero de identificacion
     numeroId: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(250),
     },
     // fecha nacimiento
     fechaNaci: {
