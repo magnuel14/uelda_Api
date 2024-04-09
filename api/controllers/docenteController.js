@@ -467,9 +467,9 @@ let controller = {
                     let lista_materiaArray = [];
                     for (let i = 0; i < lista_materia.length; i++) {
                         const {
-                            nombre,
+                            nombre, area 
                         } = lista_materia[i];
-                        const materiaExtraida = `${nombre}`;
+                        const materiaExtraida = `${nombre} - ${area}`;
                         lista_materiaArray.push(materiaExtraida);
                     }
 
