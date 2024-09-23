@@ -264,6 +264,7 @@ let controller = {
         }
         return res.json({ personal })
     },
+
     /**
      * 
      * @param {*} req 
@@ -294,6 +295,7 @@ let controller = {
         });
         return res.json({ personal })
     },
+
     /**
     * 
     * @param {*} req 
@@ -467,7 +469,7 @@ let controller = {
                     let lista_materiaArray = [];
                     for (let i = 0; i < lista_materia.length; i++) {
                         const {
-                            nombre, area 
+                            nombre, area
                         } = lista_materia[i];
                         const materiaExtraida = `${nombre} - ${area}`;
                         lista_materiaArray.push(materiaExtraida);
@@ -806,6 +808,7 @@ let controller = {
         return res.json({ message: 'Se han actualizado las calificaciones exitosamente' });
 
     },
+
     /**
     * 
     * @param {*} req 
@@ -891,6 +894,7 @@ let controller = {
         return res.json({ message: 'Se han actualizado las asistencias exitosamente' });
 
     },
+
     /**
      * 
      * @param {*} req 
@@ -1030,6 +1034,7 @@ let controller = {
         return res.json({ message: 'Se han promovido a los estudiantes que cumplen con los requisitos' });
 
     },
+
     /**
      * @param {*} res 
      * @returns 
@@ -1051,6 +1056,7 @@ let controller = {
         }
         return res.json({ message: 'Se ha registrado la asistencia' });
     },
+
     /**Fin funciones validadas */
     verifyToken: async (req, res, next) => {
         try {

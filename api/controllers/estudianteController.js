@@ -258,7 +258,6 @@ let controller = {
    * @param {*} res
    * @returns
    */
-
   getCalificacionesEstudianteByExternalId: async (req, res) => {
     try {
       const { externalId } = req.params;
@@ -594,6 +593,7 @@ let controller = {
       });
     }
   },
+
   /**
    *updateRepresentante: Función para actulizar datos de un representante
    *Se recibe una lista de atributos especificados en el modelo de representante
@@ -678,6 +678,7 @@ let controller = {
       return res.json({ message: "El representante no existe" });
     }
   },
+
   /**
    *deleteRepresentante: Función para eliminar al representante
    *Se recibe el externalId del estudiante y el numeroId del representante
@@ -720,6 +721,7 @@ let controller = {
       });
     }
   },
+
   /**
    * getAllhermanos: Función para recuperar todos los hermanos del estudiante segun
    * el externalId del estudiante
@@ -751,6 +753,7 @@ let controller = {
     }
     return res.json({ containerHermanos });
   },
+
   /**
    * addHermano: Funciónpra agregar un hermano que este registrado en el sistema
    * se hace la busqueda de un estudiante segun su numero de DNI
@@ -789,6 +792,7 @@ let controller = {
       });
     }
   },
+
   /**
    *
    * @param {*} req
@@ -807,6 +811,7 @@ let controller = {
       return res.json({ message: "Error al Eliminar" });
     }
   },
+
   /**
    * registroEstudiantes: Funcion para crear una lista de nuevos usuarios con el  rol de estudiante.
    * @param {*} req
@@ -939,6 +944,7 @@ let controller = {
     }
     return res.json({ message: "Se han registrado los estudiantes" });
   },
+
   /**
    *
    * @param {*} req
@@ -1001,6 +1007,7 @@ let controller = {
       asistenciaPorDia,
     });
   },
+  
   /**Fin funciones validadas */
   verifyToken: async (req, res, next) => {
     try {
