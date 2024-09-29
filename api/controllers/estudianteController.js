@@ -75,157 +75,100 @@ let controller = {
    * @returns La información de la persona y su cuenta.
    */
   createEstudiante: async (req, res) => {
-    const {
-      externalId,
-      nombre,
-      apellido,
-      tipoDocId,
-      numeroId,
-      correoPersonal,
-    } = req.body;
-    const numeroIdString = numeroId + "";
-    const infoPersonal = await Persona.findOne({
-      where: { external_id: externalId },
+    const { externalId, nombre, apellido, tipoDocId, numeroId, correoPersonal} = req.body;
+    const numeroIdString = String(numeroId);
+    // Verificar permisos
+    const infoPersonal = await controller.verificarPermisos(externalId);
+    if (!infoPersonal) { return res.json({ message: "No tiene los permisos para crear un usuario nuevo.", flag: 1 });}
+    // Verificar si el estudiante ya existe
+    const exists = await controller.verificarExistenciaEstudiante(numeroIdString, correoPersonal);
+    if (exists) { return res.json({ message: "Ya existe un estudiante con esta información", flag: 1}); }
+
+    // Validar correo
+    const infoEstudianteCuenta = await Persona.findOne({ where: { correoPersonal } });
+    if (infoEstudianteCuenta) { return res.json({message: "Ya existe un estudiante con ese correo", flag: 1}); }
+    // Preparar datos del estudiante
+    const estudianteData = { nombre, apellido, tipoDocId, numeroId: numeroIdString, correoPersonal, id_rol: "6" };
+    // Crear estudiante dependiendo del tipo de documento
+    if (tipoDocId === "pasaporte") {
+      return await controller.crearEstudiante(estudianteData, numeroIdString, res);
+    }
+    const cedulaValida = cedulaValidator.validator(numeroIdString);
+    if (cedulaValida.flag !== 3) {
+      return res.json({ message: cedulaValida.message, flag: 1 });
+    }
+    // Crear estudiante con cédula
+    return await controller.crearEstudiante(estudianteData, numeroIdString, res);
+  },
+
+  verificarPermisos: async (externalId) => {
+    const infoPersonal = await Persona.findOne({ where: { external_id: externalId } });
+    return infoPersonal && (infoPersonal.id_rol === 2 || infoPersonal.id_rol === 4);
+  },
+
+  verificarExistenciaEstudiante: async (numeroIdString, correoPersonal) => {
+    const searchPersona = await Persona.findOne({
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { numeroId: numeroIdString },
+              { correoPersonal: correoPersonal },
+            ],
+          },
+          { id_rol: 6 },
+        ],
+      },
     });
-    if (infoPersonal.id_rol === 2 || infoPersonal.id_rol === 4) {
-      const searchPersona = await Persona.findOne({
-        where: {
-          [Op.and]: [
-            {
-              [Op.or]: [
-                { numeroId: numeroIdString },
-                { correoPersonal: correoPersonal },
-              ],
-            },
-            { id_rol: 6 },
-          ],
-        },
-      });
-      if (!searchPersona) {
-        if (tipoDocId == "pasaporte") {
-          const infoEstudianteCuenta = await Persona.findOne({
-            where: { correoPersonal: correoPersonal },
-          });
-          if (!infoEstudianteCuenta) {
-            const estudianteData = {
-              nombre: nombre,
-              apellido: apellido,
-              tipoDocId: tipoDocId,
-              numeroId: numeroIdString,
-              correoPersonal: correoPersonal,
-              id_rol: "6",
-            };
-            const estudiante = await Persona.create(estudianteData);
-            var salt = bcrypt.genSaltSync(10);
-            let password = bcrypt.hashSync(numeroIdString, salt);
-            const dataCuenta = {
-              correo: correoPersonal,
-              clave: password,
-              estado: 0,
-              id_persona: estudiante.id,
-            };
-            const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta)
-              return res.json({
-                message:
-                  "La cuenta no se puedo crear, revise bien su informacion.",
-                flag: 1,
-              });
-            const dataInfoMed = {
-              id_persona: estudiante.id,
-              discapacidad: "1",
-              tipoDiscapacidad: "N/A",
-              porcentajeDiscapacidad: "N/A",
-              nCarnetDiscapacidad: "N/A",
-              enfermedadCatastrofica: "1",
-              tipoEnfermedadCatastrofica: "N/A",
-            };
-            await InfoMedica.create(dataInfoMed);
+    return !!searchPersona;
+  },
 
-            await mailing.sendNewUserEmail(estudianteData);
+  crearEstudiante: async (estudianteData, numeroIdString, res) => {
+    const estudiante = await Persona.create(estudianteData);
+    const password = await controller.generarContraseña(numeroIdString);
 
-            return res.json({
-              message: "Ha generado un nuevo usuario",
-              estudiante,
-              flag: 0,
-            });
-          } else {
-            return res.json({
-              message: "Ya existe un estudiante con ese correo",
-              flag: 1,
-            });
-          }
-        } else {
-          const cedulaValida = cedulaValidator.validator(numeroIdString);
-          if (cedulaValida.flag == 3) {
-            const infoEstudianteCuenta = await Persona.findOne({
-              where: { correoPersonal: correoPersonal },
-            });
-            if (!infoEstudianteCuenta) {
-              const estudianteData = {
-                nombre: nombre,
-                apellido: apellido,
-                tipoDocId: tipoDocId,
-                numeroId: numeroIdString,
-                correoPersonal: correoPersonal,
-                id_rol: "6",
-              };
-              const estudiante = await Persona.create(estudianteData);
-              var salt = bcrypt.genSaltSync(10);
-              let password = bcrypt.hashSync(numeroIdString, salt);
-              const dataCuenta = {
-                correo: correoPersonal,
-                clave: password,
-                estado: 0,
-                id_persona: estudiante.id,
-              };
-              const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-              if (!newEstudianteCuenta)
-                return res.json({
-                  message:
-                    "La cuenta no se puedo crear, revise bien su informacion.",
-                  flag: 1,
-                });
-              const dataInfoMed = {
-                id_persona: estudiante.id,
-                discapacidad: "1",
-                tipoDiscapacidad: "N/A",
-                porcentajeDiscapacidad: "N/A",
-                nCarnetDiscapacidad: "N/A",
-                enfermedadCatastrofica: "1",
-                tipoEnfermedadCatastrofica: "N/A",
-              };
-              await InfoMedica.create(dataInfoMed);
+    const dataCuenta = {
+      correo: estudianteData.correoPersonal,
+      clave: password,
+      estado: 0,
+      id_persona: estudiante.id,
+    };
 
-              await mailing.sendNewUserEmail(estudianteData);
-
-              return res.json({
-                message: "Ha generado un nuevo usuario",
-                estudiante,
-                flag: 0,
-              });
-            } else {
-              return res.json({
-                message: "Ya existe un estudiante con ese correo",
-                flag: 1,
-              });
-            }
-          } else {
-            return res.json({ message: cedulaValida.message, flag: 1 });
-          }
-        }
-      } else {
-        return res.json({
-          message: "Ya existe un estudiante con esta información",
-          flag: 1,
-        });
-      }
-    } else {
+    const newEstudianteCuenta = await Cuenta.create(dataCuenta);
+    if (!newEstudianteCuenta) {
       return res.json({
-        message: "No tiene los permisos para crear un usuario nuevo.",
+        message: "La cuenta no se pudo crear, revise bien su información.",
         flag: 1,
       });
     }
+
+    await controller.crearInfoMedica(estudiante.id);
+    await mailing.sendNewUserEmail(estudianteData);
+
+    return res.json({
+      message: "Ha generado un nuevo usuario",
+      estudiante,
+      flag: 0,
+    });
+  },
+
+  generarContraseña: async (numeroIdString) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(numeroIdString, salt);
+  },
+
+  crearInfoMedica: async (id_persona) => {
+    const dataInfoMed = {
+      id_persona,
+      discapacidad: "1",
+      tipoDiscapacidad: "N/A",
+      porcentajeDiscapacidad: "N/A",
+      nCarnetDiscapacidad: "N/A",
+      enfermedadCatastrofica: "1",
+      tipoEnfermedadCatastrofica: "N/A",
+    };
+
+    await InfoMedica.create(dataInfoMed);
   },
   /**
    * getEstudianteByEx: Función gte para recuperar un estudiante segun su external
@@ -871,7 +814,7 @@ let controller = {
               id_persona: newEstudiante.id,
             };
             const newEstudianteCuenta = await Cuenta.create(dataCuenta);
-            if (!newEstudianteCuenta)  console.log({
+            if (!newEstudianteCuenta) console.log({
               message:
                 "La cuenta no se puedo crear, revise bien su informacion.",
             });
@@ -886,14 +829,14 @@ let controller = {
               tipoEnfermedadCatastrofica: "N/A",
             };
             const newInfoMedica = await InfoMedica.create(dataInfoMed);
-             console.log({
+            console.log({
               message: "Ha generado un nuevo usuario",
               estudiante,
               newEstudianteCuenta,
               newInfoMedica,
             });
           } else {
-             console.log({ message: "Ya existe un estudiante con ese correo" });
+            console.log({ message: "Ya existe un estudiante con ese correo" });
           }
         } else {
           const cedulaValida = cedulaValidator.validator(numeroIdFormat);
@@ -1007,7 +950,7 @@ let controller = {
       asistenciaPorDia,
     });
   },
-  
+
   /**Fin funciones validadas */
   verifyToken: async (req, res, next) => {
     try {

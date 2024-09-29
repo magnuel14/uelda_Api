@@ -71,86 +71,103 @@ let controller = {
         const {
             nombre, apellido, tipoDocId, numeroId,
             correoPersonal, id_rol
-        } = req.body
-        const numeroIdString = numeroId + '';
+        } = req.body;
 
+        const numeroIdString = String(numeroId);
         const cedulaValida = cedulaValidator.validator(numeroIdString);
-        if (cedulaValida.flag == 3) {
-            const searchPersona = await Persona.findOne({
-                where: {
-                    [Op.or]: [{ numeroId: numeroIdString }, { correoPersonal: correoPersonal }]
-                }
-            });
-            if (!searchPersona) {
-                const personaData = {
-                    nombre: nombre, apellido: apellido,
-                    tipoDocId: tipoDocId, numeroId: numeroIdString,
-                    id_rol: id_rol,
-                    correoPersonal: correoPersonal,
-                }
-                const persona = await Persona.create(personaData);
-                const newPersona = await Persona.findOne({ where: { numeroId: numeroIdString } });
-                var salt = bcrypt.genSaltSync(10);
-                let password = bcrypt.hashSync(numeroIdString, salt);
-                const dataCuenta = {
-                    correo: correoPersonal,
-                    clave: password,
-                    estado: 0,
-                    id_persona: newPersona.id,
-                };
-                const newPersonaCuenta = await Cuenta.create(dataCuenta);
-                if (!newPersonaCuenta) return res.json({
-                    message: 'Su cuenta no se puedo crear, revise bien si informacion.',
-                    flag: 1
-                })
-                const dataInfoMed = {
-                    id_persona: newPersona.id,
-                    discapacidad: "1",
-                    tipoDiscapacidad: "N/A",
-                    porcentajeDiscapacidad: "N/A",
-                    nCarnetDiscapacidad: "N/A",
-                    enfermedadCatastrofica: "1",
-                    tipoEnfermedadCatastrofica: "N/A"
-                };
-                await InfoMedica.create(dataInfoMed);
-                const dataPerfilProfe = {
-                    id_persona: newPersona.id,
-                    fechaInMag: 'dia/mes/año',
-                    tiempoMagisterio: 'N/A',
-                    fechaInULEDA: 'dia/mes/año',
-                    tiempoUelda: 'N/A',
-                    categoria: 'N/A',
-                    aniosCategoria: 'N/A',
-                }
-                await PerfilProfesional.create(dataPerfilProfe);
-                const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona: newPersona.id } });
-                const datatituloPro = {
-                    id_perfilProfesional: infoPerfilPro.id,
-                    nivelEducacion: 'N/A',
-                    tercerNivel: 'N/A',
-                    tercerEspecialidad: 'N/A',
-                    cuartoNivel: 'N/A',
-                    cuartoEspecialidad: 'N/A'
-                }
-                await TituloProfesional.create(datatituloPro);
 
-                await mailing.sendNewUserEmail(personaData);
-
-                return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
-
-            } else {
-                return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal', flag: 1 });
-            }
-        } else {
+        if (cedulaValida.flag !== 3) {
             return res.json({ message: cedulaValida.message, flag: 1 });
         }
+
+        const searchPersona = await controller.findExistingPersona(numeroIdString, correoPersonal);
+        if (searchPersona) {
+            return res.json({ message: 'Ya existe un usuario con ese número de cédula o correo personal', flag: 1 });
+        }
+
+        const persona = await controller.createNewPersona({ nombre, apellido, tipoDocId, numeroId: numeroIdString, id_rol, correoPersonal });
+        const password = await controller.hashPassword(numeroIdString);
+        await controller.createCuenta(persona.id, correoPersonal, password);
+        await controller.createInfoMedica(persona.id);
+        await controller.createPerfilProfesional(persona.id);
+        await controller.createTituloProfesional(persona.id);
+        //await mailing.sendNewUserEmail({ nombre, apellido, correoPersonal, id_rol });
+
+        return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
+    },
+
+    findExistingPersona: async (numeroIdString, correoPersonal) => {
+        return await Persona.findOne({
+            where: {
+                [Op.or]: [{ numeroId: numeroIdString }, { correoPersonal: correoPersonal }]
+            }
+        });
+    },
+
+    createNewPersona: async (personaData) => {
+        return await Persona.create(personaData);
+    },
+
+    hashPassword: async (numeroIdString) => {
+        const salt = await bcrypt.genSalt(10);
+        return await bcrypt.hash(numeroIdString, salt);
+    },
+
+    createCuenta: async (id_persona, correo, password) => {
+        const dataCuenta = {
+            correo,
+            clave: password,
+            estado: 0,
+            id_persona,
+        };
+        await Cuenta.create(dataCuenta);
+    },
+
+    createInfoMedica: async (id_persona) => {
+        const dataInfoMed = {
+            id_persona,
+            discapacidad: "1",
+            tipoDiscapacidad: "N/A",
+            porcentajeDiscapacidad: "N/A",
+            nCarnetDiscapacidad: "N/A",
+            enfermedadCatastrofica: "1",
+            tipoEnfermedadCatastrofica: "N/A"
+        };
+        await InfoMedica.create(dataInfoMed);
+    },
+
+    createPerfilProfesional: async (id_persona) => {
+        const dataPerfilProfe = {
+            id_persona,
+            fechaInMag: 'dia/mes/año',
+            tiempoMagisterio: 'N/A',
+            fechaInULEDA: 'dia/mes/año',
+            tiempoUelda: 'N/A',
+            categoria: 'N/A',
+            aniosCategoria: 'N/A',
+        };
+        await PerfilProfesional.create(dataPerfilProfe);
+    },
+
+    createTituloProfesional: async (id_persona) => {
+        const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona } });
+
+        const datatituloPro = {
+            id_perfilProfesional: infoPerfilPro.id,
+            nivelEducacion: 'N/A',
+            tercerNivel: 'N/A',
+            tercerEspecialidad: 'N/A',
+            cuartoNivel: 'N/A',
+            cuartoEspecialidad: 'N/A'
+        };
+        await TituloProfesional.create(datatituloPro);
     },
     /**
      * updatePersona: Esta función sirve para editar la información de la persona 
      * @param {*} req 
      * @param {*} res 
      * Recibe la lista de atributos de su modelo descritos en Persona.
-     * Se carga el id de Perosna el cual se usa en la condicion "where" (sql)
+     * Se carga el id de Persona el cual se usa en la condicion "where" (sql)
      * Y la udatepersonaData que es la informacin nueva para la Persona
      * @returns Un mensaje de comprobación de estado de la tarea
      */
@@ -162,125 +179,53 @@ let controller = {
             estadoCivil, etnia, tipoGenero, nCarFamilia, nCarEdu, parroquia, barrio, refeCasa,
             idenCasa, callePrin, calleSecond
         } = req.body;
-
-        const dataCuenta = {
-            correo: correoPersonal,
-        };
+    
         const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        if (infoPersona) {
-
-            const infoCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-
-            if (!req.files) {
-
-                if (infoCuenta) {
-                    const udatepersonaData = {
-                        nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-                        provincia: provincia, fechaNaci: fechaNaci,
-                        edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
-                        celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
-                        tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
-                        barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
-                        calleSecond: calleSecond
-                    };
-
-                    const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
-
-                    if (searchCuentaByEmail) {
-
-                        if (infoCuenta.id == searchCuentaByEmail.id) {
-                            await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                            await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-                            return res.json({ message: 'Se ha actualizado la información de usuario' });
-                        } else {
-                            return res.json({ message: 'Este correo esta ligado a otro usuario' });
-                        }
-                    } else if (!searchCuentaByEmail) {
-                        await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                        await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-                        return res.json({ message: 'Se ha actualizado la información de usuario' });
-                    }
-                } else {
-                    return res.json({ message: 'No existe un usuario con esa información' });
-                }
-            } else {
-                if (infoCuenta) {
-                    if (infoPersona.public_id_documentos != null) {
-                        await cloudinaryC.deleteFile(infoPersona.public_id_documentos);
-                        if (req.files?.url_documentos_identificacion) {
-                            const result = await cloudinaryC.uploadFile(
-                                req.files.url_documentos_identificacion.tempFilePath,
-                                { resource_type: 'raw' });
-                            const udatepersonaData = {
-                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-                                provincia: provincia, fechaNaci: fechaNaci,
-                                edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
-                                celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
-                                tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
-                                barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
-                                calleSecond: calleSecond,
-                                url_documentos_identificacion: result.secure_url,
-                                public_id_documentos: result.public_id
-                            };
-                            const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
-                            if (searchCuentaByEmail) {
-                                if (infoCuenta.id == searchCuentaByEmail.id) {
-
-                                    await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
-
-                                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-                                    return res.json({ message: 'Se ha actualizado la información de usuario' });
-                                } else {
-                                    return res.json({ message: 'Este correo esta ligado a otro usuario' });
-                                }
-                            } else if (!searchCuentaByEmail) {
-                                await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-                                return res.json({ message: 'Se ha actualizado la información de usuario' });
-                            }
-                        }
-                    } else {
-                        if (req.files?.url_documentos_identificacion) {
-                            const result = await cloudinaryC.uploadFile(
-                                req.files.url_documentos_identificacion.tempFilePath,
-                                { resource_type: 'raw' });
-                            const udatepersonaData = {
-                                nombre: nombre, apellido: apellido, nacionalidad: nacionalidad, cuidadNaci: cuidadNaci,
-                                provincia: provincia, fechaNaci: fechaNaci,
-                                edad: edad, correoPersonal: correoPersonal, correroInstitucional: correroInstitucional,
-                                celular: celular, telefono: telefono, estadoCivil: estadoCivil, etnia: etnia,
-                                tipoGenero: tipoGenero, nCarFamilia: nCarFamilia, nCarEdu: nCarEdu, parroquia: parroquia,
-                                barrio: barrio, refeCasa: refeCasa, idenCasa: idenCasa, callePrin: callePrin,
-                                calleSecond: calleSecond,
-                                url_documentos_identificacion: result.secure_url,
-                                public_id_documentos: result.public_id
-                            };
-                            const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } })
-                            if (searchCuentaByEmail) {
-                                if (infoCuenta.id == searchCuentaByEmail.id) {
-                                    await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
-                                    await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-                                    return res.json({ message: 'Se ha actualizado la información de usuario' });
-                                } else {
-                                    return res.json({ message: 'Este correo esta ligado a otro usuario' });
-                                }
-                            } else if (!searchCuentaByEmail) {
-                                await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                await Persona.update(udatepersonaData, { where: { external_id: externalId } });
-                                return res.json({ message: 'Se ha actualizado la información de usuario' });
-                            }
-                        }
-                    }
-                } else {
-                    return res.json({ message: 'No existe un usuario con esa información' });
-                }
-
-            }
-        } else {
+        if (!infoPersona) {
             return res.json({ message: 'No existe un usuario con esa información' });
         }
+    
+        const infoCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+        if (!infoCuenta) {
+            return res.json({ message: 'No existe un usuario con esa información' });
+        }
+    
+        const searchCuentaByEmail = await Cuenta.findOne({ where: { correo: correoPersonal } });
+        
+        if (searchCuentaByEmail && infoCuenta.id !== searchCuentaByEmail.id) {
+            return res.json({ message: 'Este correo está ligado a otro usuario' });
+        }
+    
+        const dataCuenta = { correo: correoPersonal };
+        const udatepersonaData = {
+            nombre,
+            apellido,
+            nacionalidad,
+            cuidadNaci,
+            provincia,
+            fechaNaci,
+            edad,
+            correoPersonal,
+            correroInstitucional,
+            celular,
+            telefono,
+            estadoCivil,
+            etnia,
+            tipoGenero,
+            nCarFamilia,
+            nCarEdu,
+            parroquia,
+            barrio,
+            refeCasa,
+            idenCasa,
+            callePrin,
+            calleSecond
+        };
+    
+        await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
+        await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+    
+        return res.json({ message: 'Se ha actualizado la información de usuario' });
     },
     /**
     * 
@@ -524,7 +469,7 @@ let controller = {
                         cuartoEspecialidad: 'N/A'
                     }
                     const newtituloProfesional = await TituloProfesional.create(datatituloPro);
-                    console.log({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
+                    //console.log({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
 
                 } else {
                     console.log({ message: 'Ya existe un usuario con ese numero de DNI o correo personal' });

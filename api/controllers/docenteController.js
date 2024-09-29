@@ -66,32 +66,48 @@ let controller = {
 
     createCargaHorariaV2: async (req, res) => {
         const { externalId, id_paralelo_tutor, horas_asignadas, cargaHoraria } = req.body;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
 
-        const dataCargaHoraria = {
-            id_paralelo_tutor: id_paralelo_tutor,
-            horas_asignadas: horas_asignadas,
-            id_persona: infoPersona.id,
-            id_anioLectivo_actual: info_AnioLectivo.id
-        };
+        try {
+            const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+            if (!infoPersona) return res.json({ message: 'Persona no encontrada' });
 
-        const newCargaHoraria = await CargaHoraria.create(dataCargaHoraria);
-        if (newCargaHoraria) {
-            for (let i = 0; i < cargaHoraria.length; i++) {
-                const { listaIdParalelo, materiasIds } = cargaHoraria[i];
-                const cargaHorariaPorParalelo = {
-                    id_materia: materiasIds,
-                    idCargaParelo: listaIdParalelo,
-                    id_cargaHoraria: newCargaHoraria.id
-                }
-                await CargaHorariaPorParalelo.create(cargaHorariaPorParalelo);
+            const info_AnioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+            if (!info_AnioLectivo) return res.json({ message: 'Año lectivo no encontrado' });
+
+            const newCargaHoraria = await CargaHoraria.create({
+                id_paralelo_tutor,
+                horas_asignadas,
+                id_persona: infoPersona.id,
+                id_anioLectivo_actual: info_AnioLectivo.id,
+            });
+
+            if (!newCargaHoraria) {
+                return res.json({ message: 'Error al asignar la carga horaria' });
             }
+
+            await controller.asignarCargaHorariaPorParalelo(newCargaHoraria.id, cargaHoraria);
+
             return res.json({ message: 'Se ha asignado la carga horaria', newCargaHoraria });
-        } else {
-            return res.json({ message: 'Error al asignar la caraga horaria' });
+
+        } catch (error) {
+            console.error('Error en createCargaHorariaV2:', error);
+            return res.status(500).json({ message: 'Error interno del servidor' });
         }
     },
+
+    asignarCargaHorariaPorParalelo: async (id_cargaHoraria, cargaHoraria) => {
+        const promises = cargaHoraria.map(async ({ listaIdParalelo, materiasIds }) => {
+            const cargaHorariaPorParalelo = {
+                id_materia: materiasIds,
+                idCargaParelo: listaIdParalelo,
+                id_cargaHoraria,
+            };
+            return await CargaHorariaPorParalelo.create(cargaHorariaPorParalelo);
+        });
+
+        await Promise.all(promises);
+    },
+
     /**
      * 
      * @param {*} req 
@@ -617,196 +633,108 @@ let controller = {
     * @param {*} res 
     * @returns 
     */
-    updateCalicaciones: async (req, res) => {
-        //tipo de califiacion: cualitativa:0 || cuantitativamente: 1
+    updateCalificaciones: async (req, res) => {
         const { lista_externalsMateria_calificacion, tipo_asignacionNota } = req.body;
         const info_anioLectivo = await AnioLectivo.findOne({ where: { estadoAniolectivo: '0' } });
 
-        for (let i = 0; i < lista_externalsMateria_calificacion.length; i++) {
-
-            if (info_anioLectivo.tipoCalificacion == 0) {
-
-                const { externalId,
-                    firstParcialPQ,
-                    secondParcialPQ,
-                    testPQ,
-
-                    firstParcialSQ,
-                    secondParcialSQ,
-                    testSQ,
-
-                    notaFinal,
-                    aprobado,
-
-                    supletorio,
-                    remedial,
-                    gracia
-                } = lista_externalsMateria_calificacion[i];
-
-                if (tipo_asignacionNota == 0) {
-
-                    const dataCalificacionQ = {
-                        firstParcialPQ: firstParcialPQ,
-                        secondParcialPQ: secondParcialPQ,
-                        testPQ: testPQ,
-
-                        firstParcialSQ: firstParcialSQ,
-                        secondParcialSQ: secondParcialSQ,
-                        testSQ: testSQ,
-
-                        notaFinal: notaFinal,
-
-                        aprobado: aprobado
-                    };
-
-                    await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } });
-
-                } else {
-
-                    //primer quimestre
-                    var _subTotalPQ = (firstParcialPQ * 0.8 + secondParcialPQ * 0.8) / 2;
-                    _subTotalPQ = Number(_subTotalPQ.toFixed(2));
-                    var _testPQ = testPQ * 0.2;
-                    _testPQ = Number(_testPQ.toFixed(2));
-                    var _totalPQ = _subTotalPQ + _testPQ;
-
-                    //segundo quimestre
-                    var _subTota2PQ = (firstParcialSQ * 0.8 + secondParcialSQ * 0.8) / 2;
-                    _subTota2PQ = Number(_subTota2PQ.toFixed(2));
-                    var _testSQ = testSQ * 0.2;
-                    _testSQ = Number(_testSQ.toFixed(2));
-                    var _totalSQ = _subTota2PQ + _testSQ;
-
-                    var _notaFinal = (_totalPQ + _totalSQ) / 2;
-
-                    if (_notaFinal >= 7) {
-
-                        const dataCalificacionQ = {
-                            firstParcialPQ: firstParcialPQ,
-                            secondParcialPQ: secondParcialPQ,
-                            subTotalPQ: _subTotalPQ,
-                            testPQ: _testPQ,
-                            totalPQ: _totalPQ,
-
-                            firstParcialSQ: firstParcialSQ,
-                            secondParcialSQ: secondParcialSQ,
-                            subTota2PQ: _subTota2PQ,
-                            testSQ: _testSQ,
-                            totalSQ: _totalSQ,
-
-                            notaFinal: _notaFinal,
-
-                            aprobado: 0
-                        };
-
-                        await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-
-                    } else {
-
-                        if (supletorio >= 7 || remedial >= 7 || gracia >= 7) {
-
-                            const dataCalificacionQ = {
-                                firstParcialPQ: firstParcialPQ,
-                                secondParcialPQ: secondParcialPQ,
-                                subTotalPQ: _subTotalPQ,
-                                testPQ: _testPQ,
-                                totalPQ: _totalPQ,
-
-                                firstParcialSQ: firstParcialSQ,
-                                secondParcialSQ: secondParcialSQ,
-                                subTota2PQ: _subTota2PQ,
-                                testSQ: _testSQ,
-                                totalSQ: _totalSQ,
-
-                                notaFinal: _notaFinal,
-
-                                aprobado: 0
-                            };
-
-                            await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                        } else {
-                            const dataCalificacionQ = {
-                                firstParcialPQ: firstParcialPQ,
-                                secondParcialPQ: secondParcialPQ,
-                                subTotalPQ: _subTotalPQ,
-                                testPQ: _testPQ,
-                                totalPQ: _totalPQ,
-
-                                firstParcialSQ: firstParcialSQ,
-                                secondParcialSQ: secondParcialSQ,
-                                subTota2PQ: _subTota2PQ,
-                                testSQ: _testSQ,
-                                totalSQ: _totalSQ,
-
-                                notaFinal: _notaFinal,
-
-                                aprobado: 1
-                            };
-
-                            await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } })
-                        }
-
-                    }
-                }
-
-            } else {
-
-                const {
-                    externalId,
-
-                    totalPrimerTriCuantity,
-                    totalPrimerTriQuality,
-
-                    totalSegundoTriCuantity,
-                    totalSegundoTriQuality,
-
-                    totalTercerTriCuantity,
-                    totalTercerTriQuality,
-
-                    proyectoFinalQuality,
-                    proyectoFinalCuantity,
-
-                    evaluacionNivelQuality,
-                    evaluacionNivelCuantity,
-
-                    total_Final,
-                    comportamiento,
-
-                    aprobado,
-                    supletorio
-                } = lista_externalsMateria_calificacion[i];
-
-                const dataCalificacionT = {
-                    totalPrimerTriCuantity: totalPrimerTriCuantity,
-                    totalPrimerTriQuality: totalPrimerTriQuality,
-
-                    totalSegundoTriCuantity: totalSegundoTriCuantity,
-                    totalSegundoTriQuality: totalSegundoTriQuality,
-
-                    totalTercerTriCuantity: totalTercerTriCuantity,
-                    totalTercerTriQuality: totalTercerTriQuality,
-
-                    proyectoFinalQuality: proyectoFinalQuality,
-                    proyectoFinalCuantity: proyectoFinalCuantity,
-
-                    evaluacionNivelQuality: evaluacionNivelQuality,
-                    evaluacionNivelCuantity: evaluacionNivelCuantity,
-
-                    total_Final: total_Final,
-                    comportamiento: comportamiento,
-                    aprobado: aprobado,
-                    supletorio: supletorio
-                }
-                await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } })
-
-                return res.json({ message: 'Se han actualizado las calificaciones exitosamente' });
-            }
-
+        if (!info_anioLectivo) {
+            return res.json({ message: 'No se encontró el año lectivo.' });
         }
 
+        for (let calificacion of lista_externalsMateria_calificacion) {
+            const { externalId, supletorio, remedial, gracia } = calificacion;
+
+            if (info_anioLectivo.tipoCalificacion == 0) {
+                await controller.actualizarCalificacionCualitativa(calificacion, tipo_asignacionNota);
+            } else {
+                await controller.actualizarCalificacionCuantitativa(calificacion);
+            }
+        }
 
         return res.json({ message: 'Se han actualizado las calificaciones exitosamente' });
+    },
 
+    actualizarCalificacionCualitativa: async (calificacion, tipo_asignacionNota) => {
+        const { externalId, firstParcialPQ, secondParcialPQ, testPQ, firstParcialSQ, secondParcialSQ, testSQ, notaFinal, aprobado } = calificacion;
+
+        if (tipo_asignacionNota == 0) {
+            const dataCalificacionQ = {
+                firstParcialPQ,
+                secondParcialPQ,
+                testPQ,
+                firstParcialSQ,
+                secondParcialSQ,
+                testSQ,
+                notaFinal,
+                aprobado
+            };
+
+            await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } });
+            return;
+        }
+
+        // Cálculo para la asignación de notas
+        const _subTotalPQ = controller.calcularSubtotal(firstParcialPQ, secondParcialPQ);
+        const _testPQ = controller.calcularTest(testPQ);
+        const _totalPQ = _subTotalPQ + _testPQ;
+
+        const _subTota2PQ = controller.calcularSubtotal(firstParcialSQ, secondParcialSQ);
+        const _testSQ = controller.calcularTest(testSQ);
+        const _totalSQ = _subTota2PQ + _testSQ;
+
+        const _notaFinal = (_totalPQ + _totalSQ) / 2;
+
+        let dataCalificacionQ = {
+            firstParcialPQ,
+            secondParcialPQ,
+            subTotalPQ: _subTotalPQ,
+            testPQ: _testPQ,
+            totalPQ: _totalPQ,
+            firstParcialSQ,
+            secondParcialSQ,
+            subTota2PQ: _subTota2PQ,
+            testSQ: _testSQ,
+            totalSQ: _totalSQ,
+            notaFinal: _notaFinal,
+            aprobado: (_notaFinal >= 7) ? 0 : 1
+        };
+
+        if (_notaFinal < 7 && (supletorio >= 7 || remedial >= 7 || gracia >= 7)) {
+            dataCalificacionQ.aprobado = 0;
+        }
+
+        await CalificacionQ.update(dataCalificacionQ, { where: { external_id: externalId } });
+    },
+
+    actualizarCalificacionCuantitativa: async (calificacion) => {
+        const { externalId, totalPrimerTriCuantity, totalPrimerTriQuality, totalSegundoTriCuantity, totalSegundoTriQuality, totalTercerTriCuantity, totalTercerTriQuality, proyectoFinalQuality, proyectoFinalCuantity, evaluacionNivelQuality, evaluacionNivelCuantity, total_Final, comportamiento, aprobado, supletorio } = calificacion;
+
+        const dataCalificacionT = {
+            totalPrimerTriCuantity,
+            totalPrimerTriQuality,
+            totalSegundoTriCuantity,
+            totalSegundoTriQuality,
+            totalTercerTriCuantity,
+            totalTercerTriQuality,
+            proyectoFinalQuality,
+            proyectoFinalCuantity,
+            evaluacionNivelQuality,
+            evaluacionNivelCuantity,
+            total_Final,
+            comportamiento,
+            aprobado,
+            supletorio
+        };
+
+        await CalificacionT.update(dataCalificacionT, { where: { external_id: externalId } });
+    },
+
+    calcularSubtotal: (primerParcial, segundoParcial) => {
+        return Number(((primerParcial * 0.8 + segundoParcial * 0.8) / 2).toFixed(2));
+    },
+
+    calcularTest: (test) => {
+        return Number((test * 0.2).toFixed(2));
     },
 
     /**

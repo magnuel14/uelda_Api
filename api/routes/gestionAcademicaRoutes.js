@@ -1,7 +1,7 @@
 const express = require('express');
 const { tryCatch } = require('../../utils/tryCatch');
 const router = express.Router();
-const gestionAcademicaController = require('../controllers/gestionAcademicaController.js');
+const gestionAcademicaController = require('../controllers/gestionAcademicaController');
 
 //gestion de año lectivo
 router.get('/get-allAniosLectivos', tryCatch(gestionAcademicaController.getAllAniosLectivos));

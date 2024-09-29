@@ -26,7 +26,7 @@ pdfGenerator.matriculaReport = async (inforPerson, infoMatricula, infoParalelo, 
   });
 
   let options = {
-    format: "A4",
+    format: "A5",
     orientation: "landscape",
     header: {
       height: "3mm",

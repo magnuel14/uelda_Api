@@ -5,7 +5,12 @@ var path = require("path");
 var Sequelize = require("sequelize");
 var env = process.env.NODE_ENV;
 var config = require('../../database/database.js')[env];
-var sequelize = new Sequelize(config);
+// Configuración de Sequelize con los datos de conexión
+const sequelize = new Sequelize('ueldaTest', 'uelda', '1412', {
+    host: 'localhost',
+    dialect: 'postgres',
+    port: 5432,
+});
 var db = {};
 fs
     .readdirSync(__dirname)

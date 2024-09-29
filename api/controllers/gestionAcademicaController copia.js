@@ -82,8 +82,9 @@ let controller = {
    * @param {*} res
    * @returns
    */
+  // Controlador principal
   matricularEstudiantes: async (req, res) => {
-    let {
+    const {
       lista_externalid_estudiantes,
       id_paralelo,
       periodo_academicos_Programados_inicial,
@@ -92,275 +93,216 @@ let controller = {
       periodo_academicos_Programados_media,
     } = req.body;
 
-    console.log(lista_externalid_estudiantes);
-    const info_AnioLectivo = await AnioLectivo.findOne({
-      where: { estadoAniolectivo: 0 },
+    // Recuperar datos de Año Lectivo y Paralelo
+    const info_AnioLectivo = await controller.obtenerAnioLectivoActivo();
+    const infoParalelo = await controller.obtenerParalelo(id_paralelo);
+    if (!infoParalelo) return res.json({ message: "Paralelo no encontrado" });
+
+    // Recuperar información del curso
+    const infoCurso = await controller.obtenerCursoConMaterias(infoParalelo.id_curso);
+    if (!infoCurso) return res.json({ message: "Curso no encontrado" });
+
+    // Matricular estudiantes
+    const resultado = await controller.procesarMatriculaEstudiantes(lista_externalid_estudiantes, infoCurso, info_AnioLectivo, id_paralelo, {
+      periodo_academicos_Programados_inicial,
+      periodo_academicos_Programados_preparatoria,
+      periodo_academicos_Programados_elemental,
+      periodo_academicos_Programados_media,
     });
-    const infoParalelo = await Paralelo.findOne({
-      where: { id: id_paralelo },
-    });
 
-    const infoCurso = await Curso.findOne({
-      include: [Materia],
-      where: { id: infoParalelo.id_curso },
-    });
+    return res.json({ message: resultado ? "Se matriculó el o los estudiante/s." : "Ocurrió un problema al matricular al estudiante." });
+  },
 
-    for (let i = 0; i < lista_externalid_estudiantes.length; i++) {
-      const { external_id } = lista_externalid_estudiantes[i];
+  // Función para obtener el Año Lectivo activo
+  obtenerAnioLectivoActivo: async () => {
+    return await AnioLectivo.findOne({ where: { estadoAniolectivo: 0 } });
+  },
 
-      console.log(external_id);
-      const infoEstudiante = await Persona.findOne({
-        where: { external_id: external_id },
-      });
+  // Función para obtener Paralelo
+  obtenerParalelo: async (id_paralelo) => {
+    return await Paralelo.findOne({ where: { id: id_paralelo } });
+  },
 
-      if (infoEstudiante.estadoAc !== "0" || infoEstudiante.estadoAc === null) {
-        const data_newMatriculaEstudiante = {
-          id_paralelo: id_paralelo,
-          id_persona: infoEstudiante.id,
-          id_anioLectivo_actual: info_AnioLectivo.id,
-        };
-        const dataEstadoAcademico = {
-          estadoAc: "0",
-        };
+  // Función para obtener Curso con Materias
+  obtenerCursoConMaterias: async (id_curso) => {
+    return await Curso.findOne({ include: [Materia], where: { id: id_curso } });
+  },
 
-        await Persona.update(dataEstadoAcademico, {
-          where: { id: infoEstudiante.id },
-        });
+  // Función para procesar la matrícula de varios estudiantes
+  procesarMatriculaEstudiantes: async (lista_estudiantes, infoCurso, infoAnioLectivo, id_paralelo, periodos) => {
+    for (let { external_id } of lista_estudiantes) {
+      const infoEstudiante = await controller.obtenerEstudiantePorExternalId(external_id);
+      if (!infoEstudiante || !controller.puedeMatricular(infoEstudiante)) continue;
 
-        const newMatricula_estudiante = await Matricula.create(
-          data_newMatriculaEstudiante
-        );
+      const matricula = await controller.matricularYActualizarEstudiante(infoEstudiante, infoCurso, infoAnioLectivo, id_paralelo, periodos);
+      if (!matricula) return false;
+    }
+    return true;
+  },
 
-        if (newMatricula_estudiante) {
-          if (infoCurso.nivelAcademico == "Inicial 3 años") {
-            const asistenciaXDia = {
-              horasClase_programadas: periodo_academicos_Programados_inicial,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_matricula: newMatricula_estudiante.id,
-            };
-            await AsistenciaXDia.create(asistenciaXDia);
-          }
-          if (infoCurso.nivelAcademico == "Inicial 4 años") {
-            const asistenciaXDia = {
-              horasClase_programadas: periodo_academicos_Programados_inicial,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_matricula: newMatricula_estudiante.id,
-            };
-            await AsistenciaXDia.create(asistenciaXDia);
-          }
-          if (infoCurso.nivelAcademico == "Básica Preparatoria") {
-            const asistenciaXDia = {
-              horasClase_programadas:
-                periodo_academicos_Programados_preparatoria,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_matricula: newMatricula_estudiante.id,
-            };
-            await AsistenciaXDia.create(asistenciaXDia);
+  // Función para obtener un estudiante por su externalId
+  obtenerEstudiantePorExternalId: async (externalId) => {
+    return await Persona.findOne({ where: { external_id: externalId } });
+  },
 
-            const info_materia_EF = await Materia.findOne({
-              where: {
-                nombre: "Educación Física",
-                id_curso: infoCurso.id,
-              },
-            });
-            const asistenciasXMateria_EF = {
-              horasClase_programadas: info_materia_EF.horasClase_programadas,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_materia: info_materia_EF.id,
-              id_matricula: newMatricula_estudiante.id,
-            };
+  // Función para verificar si un estudiante puede ser matriculado
+  puedeMatricular: (infoEstudiante) => {
+    return !(infoEstudiante.estadoAc === "0" || infoEstudiante.estadoAc === null);
+  },
 
-            await AsistenciaXMate.create(asistenciasXMateria_EF);
-          }
-          if (infoCurso.nivelAcademico == "Básica Elemental") {
-            const asistenciaXDia = {
-              horasClase_programadas: periodo_academicos_Programados_elemental,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_matricula: newMatricula_estudiante.id,
-            };
-            await AsistenciaXDia.create(asistenciaXDia);
+  // Función para matricular y actualizar un estudiante
+  matricularYActualizarEstudiante: async (infoEstudiante, infoCurso, infoAnioLectivo, id_paralelo, periodos) => {
+    const data_newMatriculaEstudiante = {
+      id_paralelo: id_paralelo,
+      id_persona: infoEstudiante.id,
+      id_anioLectivo_actual: infoAnioLectivo.id,
+    };
 
-            const info_materia_EF = await Materia.findOne({
-              where: {
-                nombre: "Educación Física",
-                id_curso: infoCurso.id,
-              },
-            });
-            const asistenciasXMateria_EF = {
-              horasClase_programadas: info_materia_EF.horasClase_programadas,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_materia: info_materia_EF.id,
-              id_matricula: newMatricula_estudiante.id,
-            };
+    await actualizarEstadoAcademico(infoEstudiante.id);
 
-            await AsistenciaXMate.create(asistenciasXMateria_EF);
+    const newMatricula_estudiante = await Matricula.create(data_newMatriculaEstudiante);
+    if (!newMatricula_estudiante) return null;
 
-            const info_materia_EN = await Materia.findOne({
-              where: {
-                nombre: "Inglés",
-                id_curso: infoCurso.id,
-              },
-            });
-            const asistenciasXMateria_EN = {
-              horasClase_programadas: info_materia_EN.horasClase_programadas,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_materia: info_materia_EN.id,
-              id_matricula: newMatricula_estudiante.id,
-            };
+    await controller.crearAsistencia(infoCurso, newMatricula_estudiante, periodos);
+    await controller.crearCalificaciones(infoCurso, newMatricula_estudiante);
 
-            await AsistenciaXMate.create(asistenciasXMateria_EN);
-          }
-          if (infoCurso.nivelAcademico == "Básica Media") {
-            const asistenciaXDia = {
-              horasClase_programadas: periodo_academicos_Programados_media,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_matricula: newMatricula_estudiante.id,
-            };
-            await AsistenciaXDia.create(asistenciaXDia);
+    return newMatricula_estudiante;
+  },
 
-            const info_materia_EF = await Materia.findOne({
-              where: {
-                nombre: "Educación Física",
-                id_curso: infoCurso.id,
-              },
-            });
-            const asistenciasXMateria_EF = {
-              horasClase_programadas: info_materia_EF.horasClase_programadas,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_materia: info_materia_EF.id,
-              id_matricula: newMatricula_estudiante.id,
-            };
+  // Función para actualizar el estado académico del estudiante
+  actualizarEstadoAcademico: async (id_estudiante) => {
+    const dataEstadoAcademico = { estadoAc: "0" };
+    await Persona.update(dataEstadoAcademico, { where: { id: id_estudiante } });
+  },
 
-            await AsistenciaXMate.create(asistenciasXMateria_EF);
+  // Función para crear la asistencia del estudiante
+  crearAsistencia: async (infoCurso, matricula, periodos) => {
+    const nivelAcademico = infoCurso.nivelAcademico;
+    const asistenciaData = {
+      horasClase_dictadas: "0",
+      horasClase_asistidas: "0",
+      id_matricula: matricula.id,
+    };
 
-            const info_materia_EN = await Materia.findOne({
-              where: {
-                nombre: "Inglés",
-                id_curso: infoCurso.id,
-              },
-            });
-            const asistenciasXMateria_EN = {
-              horasClase_programadas: info_materia_EN.horasClase_programadas,
-              horasClase_dictadas: "0",
-              horasClase_asistidas: "0",
-              id_materia: info_materia_EN.id,
-              id_matricula: newMatricula_estudiante.id,
-            };
+    asistenciaData.horasClase_programadas = controller.obtenerHorasProgramadasPorNivel(nivelAcademico, periodos);
 
-            await AsistenciaXMate.create(asistenciasXMateria_EN);
-          } else if (
-            infoCurso.nivelAcademico == "Básica Superior" ||
-            infoCurso.nivelAcademico == "Bachillerato"
-          ) {
-            for (let i = 0; i < infoCurso.materia.length; i++) {
-              const id_materia = infoCurso.materia[i].id;
-              const infoMateria = await Materia.findOne({
-                where: { id: id_materia },
-              });
+    await AsistenciaXDia.create(asistenciaData);
+    await controller.crearAsistenciaPorNivel(nivelAcademico, infoCurso, matricula);
+  },
 
-              const asistenciasXMateria = {
-                horasClase_programadas: infoMateria.horasClase_programadas,
-                horasClase_dictadas: "0",
-                horasClase_asistidas: "0",
-                id_materia: id_materia,
-                id_matricula: newMatricula_estudiante.id,
-              };
+  // Función para determinar las horas programadas según el nivel académico
+  obtenerHorasProgramadasPorNivel: (nivelAcademico, periodos) => {
+    if (["Inicial 3 años", "Inicial 4 años"].includes(nivelAcademico)) {
+      return periodos.periodo_academicos_Programados_inicial;
+    } else if (nivelAcademico === "Básica Preparatoria") {
+      return periodos.periodo_academicos_Programados_preparatoria;
+    } else if (nivelAcademico === "Básica Elemental") {
+      return periodos.periodo_academicos_Programados_elemental;
+    } else if (nivelAcademico === "Básica Media") {
+      return periodos.periodo_academicos_Programados_media;
+    }
+    return "0"; // Valor por defecto
+  },
 
-              await AsistenciaXMate.create(asistenciasXMateria);
-            }
-          }
-          for (let i = 0; i < infoCurso.materia.length; i++) {
-            const { tipoCalificacion } = infoCurso.materia[i];
-            const id_materia = infoCurso.materia[i].id;
-            if (tipoCalificacion == 0) {
-
-              const dataCalificacionQ = {
-                firstParcialPQ: 0,
-                secondParcialPQ: 0,
-                subTotalPQ: 0,
-                testPQ: 0,
-                totalPQ: 0,
-                firstParcialSQ: 0,
-                secondParcialSQ: 0,
-                subTota2PQ: 0,
-                testSQ: 0,
-                totalSQ: 0,
-                notaFinal: 0,
-                aprobado: 1,
-                id_materia: id_materia,
-                id_matricula: newMatricula_estudiante.id,
-              };
-              await CalificacionQ.create(dataCalificacionQ);
-            } else {
-              if (
-                (infoCurso.nivelAcademico == "Bachillerato" &&
-                  infoCurso.gradoAcademico == 3) ||
-                infoCurso.gradoAcademico == 10 ||
-                infoCurso.gradoAcademico == 7
-              ) {
-
-                const dataCalificacionT = {
-
-                  totalPrimerTriCuantity: 0,
-                  totalPrimerTriQuality: 0,
-                  totalSegundoTriCuantity: 0,
-                  totalSegundoTriQuality: 0,
-                  totalTercerTriCuantity: 0,
-                  totalTercerTriQuality: 0,
-                  proyectoFinalQuality: 0,
-                  proyectoFinalCuantity: 0,
-
-                  evaluacionNivelQuality: 0,
-                  evaluacionNivelCuantity: 0,
-
-                  total_Final: 0,
-                  comportamiento: '',
-
-                  aprobado: 1,
-                  id_materia: id_materia,
-                  id_matricula: newMatricula_estudiante.id,
-                };
-                await CalificacionT.create(dataCalificacionT);
-              } else {
-                const dataCalificacionT = {
-                  totalPrimerTriCuantity: 0,
-                  totalPrimerTriQuality: 0,
-                  totalSegundoTriCuantity: 0,
-                  totalSegundoTriQuality: 0,
-                  totalTercerTriCuantity: 0,
-                  totalTercerTriQuality: 0,
-                  proyectoFinalQuality: 0,
-                  proyectoFinalCuantity: 0,
-
-                  evaluacionNivelQuality: '-1',
-                  evaluacionNivelCuantity: '-1',
-
-                  total_Final: 0,
-                  comportamiento: '',
-                  aprobado: 1,
-                  id_materia: id_materia,
-                  id_matricula: newMatricula_estudiante.id,
-                };
-                await CalificacionT.create(dataCalificacionT);
-              }
-            }
-          }
-        } else {
-          return res.json({ message: "Ocurrio un problema" });
-        }
+  // Función para crear la asistencia según el nivel académico
+  crearAsistenciaPorNivel: async (nivelAcademico, infoCurso, matricula) => {
+    if (["Básica Superior", "Bachillerato"].includes(nivelAcademico)) {
+      for (let materia of infoCurso.materia) {
+        await controller.crearAsistenciaMateria(infoCurso, matricula, materia.nombre);
+      }
+    } else {
+      if (nivelAcademico === "Básica Preparatoria" || nivelAcademico === "Básica Elemental" || nivelAcademico === "Básica Media") {
+        await controller.crearAsistenciaMateria(infoCurso, matricula, "Educación Física");
+      }
+      if (nivelAcademico === "Básica Elemental" || nivelAcademico === "Básica Media") {
+        await controller.crearAsistenciaMateria(infoCurso, matricula, "Inglés");
       }
     }
-    return res.json({ message: "Se matriculo el o los estudiante/s" });
   },
+
+  // Función para crear asistencia para una materia específica
+  crearAsistenciaMateria: async (infoCurso, matricula, nombreMateria) => {
+    const materia = await controller.obtenerMateriaPorNombreYCursos(infoCurso.id, nombreMateria);
+    if (!materia) return;
+
+    const asistenciaXMateria = {
+      horasClase_programadas: materia.horasClase_programadas,
+      horasClase_dictadas: "0",
+      horasClase_asistidas: "0",
+      id_materia: materia.id,
+      id_matricula: matricula.id,
+    };
+
+    await AsistenciaXMate.create(asistenciaXMateria);
+  },
+
+  // Función para obtener una materia por nombre y curso
+  obtenerMateriaPorNombreYCursos: async (id_curso, nombreMateria) => {
+    return await Materia.findOne({ where: { nombre: nombreMateria, id_curso: id_curso } });
+  },
+
+  // Función para crear las calificaciones del estudiante
+  crearCalificaciones: async (infoCurso, matricula) => {
+    for (let materia of infoCurso.materia) {
+      if (materia.tipoCalificacion === 0) {
+        await controller.crearCalificacionesQuimestrales(materia, matricula);
+      } else {
+        await controller.crearCalificacionesTrimestrales(materia, infoCurso, matricula);
+      }
+    }
+  },
+
+  // Función para crear calificaciones quimestrales
+  crearCalificacionesQuimestrales: async (materia, matricula) => {
+    const dataCalificacionQ = {
+      firstParcialPQ: 0,
+      secondParcialPQ: 0,
+      subTotalPQ: 0,
+      testPQ: 0,
+      totalPQ: 0,
+      firstParcialSQ: 0,
+      secondParcialSQ: 0,
+      subTota2PQ: 0,
+      testSQ: 0,
+      totalSQ: 0,
+      notaFinal: 0,
+      aprobado: 1,
+      id_materia: materia.id,
+      id_matricula: matricula.id,
+    };
+    await CalificacionQ.create(dataCalificacionQ);
+  },
+
+  // Función para crear calificaciones trimestrales
+  crearCalificacionesTrimestrales: async (materia, infoCurso, matricula) => {
+    const esBachilleratoFinal = esNivelFinal(infoCurso);
+
+    const dataCalificacionT = {
+      totalPrimerTriCuantity: 0,
+      totalPrimerTriQuality: 0,
+      totalSegundoTriCuantity: 0,
+      totalSegundoTriQuality: 0,
+      totalTercerTriCuantity: 0,
+      totalTercerTriQuality: 0,
+      proyectoFinalQuality: 0,
+      proyectoFinalCuantity: 0,
+      evaluacionNivelQuality: esBachilleratoFinal ? "0" : "-1",
+      evaluacionNivelCuantity: esBachilleratoFinal ? "0" : "-1",
+      total_Final: 0,
+      comportamiento: "",
+      aprobado: 1,
+      id_materia: materia.id,
+      id_matricula: matricula.id,
+    };
+    await CalificacionT.create(dataCalificacionT);
+  },
+
+  // Función para determinar si es nivel final de Bachillerato
+  esNivelFinal: (infoCurso) => {
+    return (infoCurso.nivelAcademico === "Bachillerato" && infoCurso.gradoAcademico === 3) ||
+      [10, 7].includes(infoCurso.gradoAcademico);
+  },
+
   /**
    *
    * @param {*} req
@@ -4603,7 +4545,6 @@ let controller = {
         contadorEstadoAnioLectivo++;
       }
     }
-
     if (contadorEstadoAnioLectivo == 0) {
       const newAnioLectivo = await AnioLectivo.create(anioLectivoData);
       //crear cursos
@@ -5163,7 +5104,7 @@ let controller = {
           }
         }
 
-        return res.json({
+        return res.status(201).json({
           message:
             "Se ha generado el año lectivo y la oferta académica exitosamente",
           newAnioLectivo,
@@ -5400,101 +5341,72 @@ let controller = {
         "Se han promovido a los estudiantes que cumplen con los requisitos",
     });
   },
-
-  // Función principal que genera y envía el PDF de la matrícula
   matriculaPDF: async (req, res) => {
     const { external_id } = req.body;
-    // Obteniendo la información de la persona
-    const inforPerson = await controller.getPersonaByExternalId(external_id);
-    console.log(inforPerson);
-    if (!inforPerson) return controller.sendError(res, 'Persona no encontrada');
-    // Obteniendo información relacionada con la matrícula
-    const infoMatricula = await controller.getMatriculaByPersonaId(inforPerson.id);
-    if (!infoMatricula) return controller.sendError(res, 'Matrícula no encontrada');
-    const infoParalelo = await controller.getParaleloById(infoMatricula.id_paralelo);
-    const infoCurso = await controller.getCursoById(infoParalelo.id_curso);
-    const anioLectivo = await controller.getAnioLectivoActual();
-    // Obteniendo información del rector y secretaria
-    const infoSecretaria = await controller.getPersonaByRol(4); // Rol de secretaria
-    const infoRector = await controller.getPersonaByRol(1); // Rol de rector
-    // Generación del PDF
-    await pdfGenerator.matriculaReport(
-      inforPerson, infoMatricula, infoParalelo, infoCurso, anioLectivo, infoSecretaria, infoRector
-    );
-    // Envío del archivo generado
-    const filePath = "reporte.pdf";
-    const docName = "reporte";
-    if (fs.existsSync(filePath)) {
-      return controller.sendFile(res, filePath, docName);
-    } else {
-      return controller.sendError(res, 'No se encontró el archivo');
-    }
-  },
-
-  // Funciones auxiliares modularizadas
-  getPersonaByExternalId: async (externalId) => {
-    return await Persona.findOne({
+    const inforPerson = await Persona.findOne({
       attributes: ["id", "nombre", "apellido", "numeroId"],
-      where: { external_id: externalId },
-    });
-  },
 
-  getMatriculaByPersonaId: async (personaId) => {
-    return await Matricula.findOne({
-      where: { id_persona: personaId },
+      where: { external_id: external_id },
     });
-  },
 
-  getParaleloById: async (paraleloId) => {
-    return await Paralelo.findOne({
-      where: { id: paraleloId },
+    const infoMatricula = await Matricula.findOne({
+      where: { id_persona: inforPerson.id },
     });
-  },
-
-  getCursoById: async (cursoId) => {
-    return await Curso.findOne({
-      where: { id: cursoId },
+    const infoParalelo = await Paralelo.findOne({
+      where: { id: infoMatricula.id_paralelo },
     });
-  },
+    const infoCurso = await Curso.findOne({
+      where: { id: infoParalelo.id_curso },
+    });
 
-  getAnioLectivoActual: async () => {
-    return await AnioLectivo.findOne({
+    const anioLectivo = await AnioLectivo.findOne({
       where: { estadoAniolectivo: 0 },
     });
-  },
 
-  getPersonaByRol: async (rolId) => {
-    return await Persona.findOne({
+    const infoSecretaria = await Persona.findOne({
       attributes: ["id", "nombre", "apellido", "numeroId"],
-      where: { id_rol: rolId },
+      where: { id_rol: 4 },
     });
-  },
-
-  sendFile: (res, filePath, docName) => {
-    res.download(filePath, docName + ".pdf", (err) => {
-      if (err) {
-        console.log("Error sending file:", err);
-      } else {
-        console.log("Se envió el archivo");
-        // Borra el archivo después de la descarga
-        fs.unlink(filePath, (unlinkErr) => {
-          if (unlinkErr) {
-            console.log("Error deleting file:", unlinkErr);
-          } else {
-            console.log("File deleted successfully");
-          }
-        });
-      }
+    const infoRector = await Persona.findOne({
+      attributes: ["id", "nombre", "apellido", "numeroId"],
+      where: { id_rol: 1 },
     });
+    await pdfGenerator.matriculaReport(
+      inforPerson,
+      infoMatricula,
+      infoParalelo,
+      infoCurso,
+      anioLectivo,
+      infoSecretaria,
+      infoRector
+    );
+    let filePath = "reporte.pdf";
+    let docName = "reporte.pdf";
+    if (fs.existsSync(filePath)) {
+      // Send the file as a response
+      res.download(filePath, docName + ".pdf", (err) => {
+        if (err) {
+          console.log("Error sending file:", err);
+        } else {
+          console.log("Se envió el archivo");
+          // Delete the file after the download is completed
+          fs.unlink(filePath, (unlinkErr) => {
+            if (unlinkErr) {
+              console.log("Error deleting file:", unlinkErr);
+              return;
+            } else {
+              console.log("File deleted successfully");
+            }
+          });
+        }
+      });
+    } else {
+      return res.status(200).send({
+        status: "error",
+        data: "No se encontro el archivo",
+      });
+    }
   },
-
-  sendError: (res, message) => {
-    return res.status(200).send({
-      status: "error",
-      data: message,
-    });
-  },
-
 
   getAllEstudiantesNoMatriculados: async (req, res) => {
     try {
@@ -5520,7 +5432,7 @@ let controller = {
       const estudiantesNoMatriculados = allEstudiantes.filter(
         (estudiante) => !matriculadosIds.includes(estudiante.id)
       );
-
+console.log(estudiantesNoMatriculados);
       return res.json({
         estudiantes_no_matriculados: estudiantesNoMatriculados,
       });
@@ -5540,6 +5452,8 @@ let controller = {
         attributes: ["id"],
       });
 
+      console.log('el año' , info_anioLectivo.id);
+
       const allMatriculas = await Matricula.findAll({
         where: { id_anioLectivo_actual: info_anioLectivo.id },
         include: [
@@ -5557,6 +5471,7 @@ let controller = {
           },
         ],
       });
+      console.log(allMatriculas);
 
       return res.json({ all_matriculas: allMatriculas });
     } catch (error) {

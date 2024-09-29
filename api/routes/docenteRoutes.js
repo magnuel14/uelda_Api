@@ -17,7 +17,7 @@ router.get('/getCargaHorariaByExternalID', (docenteController.getCargaHorariaByE
 
 
 //califiaciones
-router.post('/update_Calicaciones', tryCatch(docenteController.updateCalicaciones));
+router.post('/update_Calicaciones', tryCatch(docenteController.updateCalificaciones));
 
 //asistencias
 router.post('/update_Asistencias', tryCatch(docenteController.updateAsistencias));
