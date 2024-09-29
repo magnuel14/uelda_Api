@@ -39,6 +39,7 @@
     "pdf-lib": "^1.17.1",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",
+    "phantomjs-prebuilt": "^2.1.16",
     "sequelize": "^6.30.0"
   },
   "devDependencies": {
