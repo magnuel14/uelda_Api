@@ -91,7 +91,6 @@ let controller = {
         await controller.createInfoMedica(persona.id);
         await controller.createPerfilProfesional(persona.id);
         await controller.createTituloProfesional(persona.id);
-        //await mailing.sendNewUserEmail({ nombre, apellido, correoPersonal, id_rol });
 
         return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
     },

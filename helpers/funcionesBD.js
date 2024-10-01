@@ -1,31 +1,27 @@
 'use strict';
 const models = require('../api/models');
+
 let funcionesBd = {
-    sincronizarBd: () => {
+    // Sincronizar la base de datos
+    sincronizarBd: async () => {
         try {
-            // base de datos 
-            models.sequelize.sync({ force: true }).then(() => {
-                console.log('Base de Datos sincronizada');
-            }).catch(err => {
-                console.log(err, "No se sincronizada a la BD");
-            });
+            await models.sequelize.sync({ force: true });
+            console.log('Base de Datos sincronizada');
         } catch (error) {
-            console.error('Unable to connect to the server ', error);
+            console.error('Error al sincronizar la BD:', error);
         }
     },
-    coneccionBd: () => {
+
+    // Conectar a la base de datos
+    coneccionBd: async () => {
         try {
-            // base de datos 
-            models.sequelize.authenticate().then(() => {
-                // Obtener el nombre de la base de datos
-                const dbName = models.sequelize.getDatabaseName();
-                console.log('Base de Datos conectada:', dbName);
-            }).catch(err => {
-                console.log(err, "No se conecto a la BD");
-            });
+            await models.sequelize.authenticate();
+            const dbName = models.sequelize.getDatabaseName(); // Obtener el nombre de la base de datos
+            console.log('Base de Datos conectada:', dbName);
         } catch (error) {
-            console.error('Unable to connect to the server ', error);
+            console.error('Error de conexión a la BD:', error);
         }
-    },
+    }
 }
+
 module.exports = funcionesBd;

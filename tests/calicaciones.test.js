@@ -2,10 +2,25 @@
 const request = require('supertest');
 const app = require('../app');
 
+let token;
+
+beforeAll(async () => {
+  const response = await request(app)
+    .post('/uelda/user/signin')
+    .send({
+      correo: 'manuelvicente912@gmail.com',
+      clave: '1234',
+      checkedT: '0',
+    });
+
+  token = response.body.token;
+});
+
 describe('Prueba para la edicioón de una calificacion', () => {
   it('Editar una calificacion', async () => {
     await request(app)
       .post('/uelda/docente/update_Calicaciones')
+      .set('Authorization', `Bearer ${token}`)
       .send({
         lista_externalsMateria_calificacion: [
           {
@@ -13,9 +28,9 @@ describe('Prueba para la edicioón de una calificacion', () => {
 
             totalPrimerTriCuantity: 10,
             totalPrimerTriQuality: 0,
-            totalSegundoTriCuantity: 0,
+            totalSegundoTriCuantity: 9,
             totalSegundoTriQuality: 0,
-            totalTercerTriCuantity: 0,
+            totalTercerTriCuantity: 7,
             totalTercerTriQuality: 0,
             proyectoFinalQuality: 0,
             proyectoFinalCuantity: 0,

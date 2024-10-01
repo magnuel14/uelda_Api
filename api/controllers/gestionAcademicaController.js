@@ -425,7 +425,7 @@ let controller = {
           }
         }
 
-        if (infoMatricula.asistenciaXDia) {
+        if (infoMatricula.asistenciaXDia.length != 0) {
           await AsistenciaXDia.destroy({
             where: {
               id: infoMatricula.asistenciaXDia[0].dataValues.id,
@@ -5191,33 +5191,33 @@ let controller = {
       modalidad,
       tipoCalificacion,
     } = req.body;
-    const info_AnioLectivo = await AnioLectivo.findOne({
-      where: { externalId: external_id },
+    //const info_AnioLectivo = await AnioLectivo.findOne({
+    //where: { external_id: external_id },
+    //});
+    //const info_matricula = await Matricula.findAll({
+    //where: { id_anioLectivo_actual: info_AnioLectivo.id },
+    //});
+    //if (!info_matricula) {
+    const dataAnioLectivo = {
+      jornada: jornada,
+      periodo: periodo,
+      fechaFin: fechaFin,
+      modalidad: modalidad,
+    };
+    const updateAnioLectivo = await AnioLectivo.update(dataAnioLectivo, {
+      where: { external_id: external_id },
     });
-    const info_matricula = await Matricula.findAll({
-      where: { id_anioLectivo_actual: info_AnioLectivo.id },
+    return res.json({
+      message: "Se ha actulizado el Año lectivo corecctemente",
     });
-    if (!info_matricula) {
-      const dataAnioLectivo = {
-        jornada: jornada,
-        periodo: periodo,
-        fechaFin: fechaFin,
-        modalidad: modalidad,
-        tipoCalificacion: tipoCalificacion,
-      };
-      const updateAnioLectivo = await AnioLectivo.update(dataAnioLectivo, {
-        where: { external_id: external_id },
-      });
-      return res.json({
-        message: "Se ha actulizado el Año lectivo corecctemente",
-        updateAnioLectivo,
-      });
-    } else {
-      return res.json({
-        message:
-          "No se puede actualizar el tipo de califiacion del año lectivo, debido que ya existen estudiantes matriculados",
-      });
-    }
+    /**
+  } else {
+    return res.json({
+      message:
+        "No se puede actualizar el tipo de califiacion del año lectivo, debido que ya existen estudiantes matriculados",
+    });
+  }
+     */
   },
   /**updateEstadoAnioLectivo: Funcion para actualizar el estado lectivo
    * @param {*} req
