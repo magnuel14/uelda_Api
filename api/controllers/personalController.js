@@ -134,7 +134,7 @@ let controller = {
                 }
                 await TituloProfesional.create(datatituloPro);
 
-                await mailing.sendNewUserEmail(personaData);
+                //await mailing.sendNewUserEmail(personaData);
 
                 return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
 
@@ -156,7 +156,7 @@ let controller = {
      */
     updatePersona: async (req, res) => {
         const {
-            externalId,
+            external_id,
             nombre, apellido, nacionalidad, cuidadNaci, provincia,
             fechaNaci, edad, correoPersonal, correroInstitucional, celular, telefono,
             estadoCivil, etnia, tipoGenero, nCarFamilia, nCarEdu, parroquia, barrio, refeCasa,
@@ -166,7 +166,7 @@ let controller = {
         const dataCuenta = {
             correo: correoPersonal,
         };
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
+        const infoPersona = await Persona.findOne({ where: { external_id: external_id } });
         if (infoPersona) {
 
             const infoCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
@@ -190,14 +190,14 @@ let controller = {
 
                         if (infoCuenta.id == searchCuentaByEmail.id) {
                             await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                            await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                            await Persona.update(udatepersonaData, { where: { external_id: external_id } });
                             return res.json({ message: 'Se ha actualizado la información de usuario' });
                         } else {
                             return res.json({ message: 'Este correo esta ligado a otro usuario' });
                         }
                     } else if (!searchCuentaByEmail) {
                         await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                        await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                        await Persona.update(udatepersonaData, { where: { external_id: external_id } });
                         return res.json({ message: 'Se ha actualizado la información de usuario' });
                     }
                 } else {
@@ -229,14 +229,14 @@ let controller = {
                                     await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
 
                                     await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                    await Persona.update(udatepersonaData, { where: { external_id: external_id } });
                                     return res.json({ message: 'Se ha actualizado la información de usuario' });
                                 } else {
                                     return res.json({ message: 'Este correo esta ligado a otro usuario' });
                                 }
                             } else if (!searchCuentaByEmail) {
                                 await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                await Persona.update(udatepersonaData, { where: { external_id: external_id } });
                                 return res.json({ message: 'Se ha actualizado la información de usuario' });
                             }
                         }
@@ -261,14 +261,14 @@ let controller = {
                                 if (infoCuenta.id == searchCuentaByEmail.id) {
                                     await fs.unlink(req.files.url_documentos_identificacion.tempFilePath);
                                     await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                    await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                    await Persona.update(udatepersonaData, { where: { external_id: external_id } });
                                     return res.json({ message: 'Se ha actualizado la información de usuario' });
                                 } else {
                                     return res.json({ message: 'Este correo esta ligado a otro usuario' });
                                 }
                             } else if (!searchCuentaByEmail) {
                                 await Cuenta.update(dataCuenta, { where: { id: infoCuenta.id } });
-                                await Persona.update(udatepersonaData, { where: { external_id: externalId } });
+                                await Persona.update(udatepersonaData, { where: { external_id: external_id } });
                                 return res.json({ message: 'Se ha actualizado la información de usuario' });
                             }
                         }
