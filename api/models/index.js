@@ -5,24 +5,8 @@ var path = require("path");
 var Sequelize = require("sequelize");
 var env = process.env.NODE_ENV;
 var config = require('../../database/database.js')[env];
-//var sequelize = new Sequelize(config);
-/**
- * DATABASE_HOST = localhost
-DATABASE_DIALECT = postgres
-DATABASE_PORT = 5432
-DATABASE_USER = uelda
-DATABASE_PASS = 1412
-DATABASE_NAME = ueldaTest
- */
+var sequelize = new Sequelize(config);
 
-var sequelize = new Sequelize({
-    host: 'localhost',
-    dialect: 'postgres',
-    port: 5432,
-    username: 'uelda',
-    password: '1412',
-    database: 'ueldaTest'
-  });
 
 var db = {};
 fs
