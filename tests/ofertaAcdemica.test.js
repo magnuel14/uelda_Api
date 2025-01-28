@@ -1,0 +1,225 @@
+/* eslint-disable no-undef */
+const request = require('supertest');
+const app = require('../app');
+
+let token;
+const externalId = '54af2435-96e7-4b40-a13d-7f7b8d4d0f04';
+
+beforeAll(async () => {
+  const response = await request(app)
+    .post('/uelda/user/signin')
+    .send({
+      correo: 'manuelvicente912@gmail.com',
+      clave: '1234',
+      checkedT: '0',
+    });
+
+  token = response.body.token;
+});
+
+describe('Prueba para la creación de un año lectivo', () => {
+  it('Crear un nuevo año lectivo', async () => {
+    await request(app)
+      .post('/uelda/gestion_academica/create_AnioLectivo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        jornada: 'Matutina',
+        periodo: 'Agosto 2023 - Junio 2024',
+        fechaInicio: '01/09/2023',
+        fechaFin: '30/06/2024',
+        modalidad: 'Presencial',
+        boolInicial: true,
+        boolBasica: true,
+        boolBachillerato: true,
+        tipoCalificacion: 1,
+        bool1I: true,
+        num_paralelo1I: 1,
+        bool2I: true,
+        num_paralelo2I: 2,
+        bool1B: true,
+        num_paralelo1B: 3,
+        bool2B: true,
+        num_paralelo2B: 3,
+        bool3B: true,
+        num_paralelo3B: 3,
+        bool4B: true,
+        num_paralelo4B: 3,
+        bool5B: true,
+        num_paralelo5B: 3,
+        bool6B: true,
+        num_paralelo6B: 3,
+        bool7B: true,
+        num_paralelo7B: 3,
+        bool8B: true,
+        num_paralelo8B: 3,
+        bool9B: true,
+        num_paralelo9B: 3,
+        bool10B: true,
+        num_paralelo10B: 3,
+        bool1S: true,
+        num_paralelo1S: 3,
+        bool2S: true,
+        num_paralelo2S: 3,
+        bool3S: true,
+        num_paralelo3S: 3,
+        inicial: [
+          { area: 'Desarrollo Personal y Social', nombre: 'Identidad y autonomía', horasClase_programadas: '108' },
+          { area: 'Desarrollo Personal y Social', nombre: 'Convivencia', horasClase_programadas: '108' },
+          { area: 'Descubrimiento del Medio Natural y Cultural', nombre: 'Relaciones con el Medio Natural y Cultural', horasClase_programadas: '72' },
+          { area: 'Descubrimiento del Medio Natural y Cultural', nombre: 'Relaciones Lógico / Matemáticas', horasClase_programadas: '180' },
+          { area: 'Expresión y Comunicación', nombre: 'Comprensión y Expresión del Lenguaje', horasClase_programadas: '180' },
+          { area: 'Expresión y Comunicación', nombre: 'Expresión Artística', horasClase_programadas: '72' },
+          { area: 'Expresión y Comunicación', nombre: 'Exploración Corporal y Motricidad', horasClase_programadas: '180' },
+        ],
+        preparatoria: [
+          { area: 'Currículo Integrador por ámbitos de aprendizaje', nombre: 'Identidad', horasClase_programadas: '108' },
+          { area: 'Currículo Integrador por ámbitos de aprendizaje', nombre: 'Convivencia', horasClase_programadas: '108' },
+          { area: 'Currículo Integrador por ámbitos de aprendizaje', nombre: 'Descubrimiento del medio natural', horasClase_programadas: '144' },
+          { area: 'Currículo Integrador por ámbitos de aprendizaje', nombre: 'Relaciones lógico-matemáticas', horasClase_programadas: '216' },
+          { area: 'Currículo Integrador por ámbitos de aprendizaje', nombre: 'Comprensión y expresión oral y escrita', horasClase_programadas: '216' },
+          { area: 'Currículo Integrador por ámbitos de aprendizaje', nombre: 'Expresión corporal', horasClase_programadas: '108' },
+          { area: 'Educación Cultural y Artística', nombre: 'Educación Cultural y Artística', horasClase_programadas: '72' },
+          { area: 'Educación Física', nombre: 'Educación Física', horasClase_programadas: '108' },
+        ],
+        elemental: [
+          { area: 'Lengua y Literatura', nombre: 'Lengua y Literatura', horasClase_programadas: '288' },
+          { area: 'Matemática', nombre: 'Matemática', horasClase_programadas: '252' },
+          { area: 'Ciencias Sociales', nombre: 'Estudios Sociales', horasClase_programadas: '72' },
+          { area: 'Ciencias Naturales', nombre: 'Ciencias Naturales', horasClase_programadas: '108' },
+          { area: 'Educación Cultural y Artística', nombre: 'Educación Cultural y Artística', horasClase_programadas: '72' },
+          { area: 'Educación Física', nombre: 'Educación Física', horasClase_programadas: '108' },
+          { area: 'Lengua Extranjera', nombre: 'Inglés', horasClase_programadas: '108' },
+          { area: 'Acompañamiento integral en el aula', nombre: 'Acompañamiento integral en el aula', horasClase_programadas: '36' },
+          { area: 'Animación a la lectura', nombre: 'Animación a la lectura', horasClase_programadas: '36' },
+        ],
+        media: [
+          { area: 'Lengua y Literatura', nombre: 'Lengua y Literatura', horasClase_programadas: '252' },
+          { area: 'Matemática', nombre: 'Matemática', horasClase_programadas: '216' },
+          { area: 'Ciencias Sociales', nombre: 'Estudios Sociales', horasClase_programadas: '108' },
+          { area: 'Ciencias Naturales', nombre: 'Ciencias Naturales', horasClase_programadas: '144' },
+          { area: 'Educación Cultural y Artística', nombre: 'Educación Cultural y Artística', horasClase_programadas: '72' },
+          { area: 'Educación Física', nombre: 'Educación Física', horasClase_programadas: '108' },
+          { area: 'Lengua Extranjera', nombre: 'Inglés', horasClase_programadas: '108' },
+          { area: 'Acompañamiento integral en el aula', nombre: 'Acompañamiento integral en el aula', horasClase_programadas: '36' },
+          { area: 'Animación a la lectura', nombre: 'Animación a la lectura', horasClase_programadas: '36' },
+        ],
+        superior: [
+          { area: 'Lengua y Literatura', nombre: 'Lengua y Literatura', horasClase_programadas: '216' },
+          { area: 'Matemática', nombre: 'Matemática', horasClase_programadas: '216' },
+          { area: 'Ciencias Sociales', nombre: 'Estudios Sociales', horasClase_programadas: '144' },
+          { area: 'Ciencias Naturales', nombre: 'Ciencias Naturales', horasClase_programadas: '144' },
+          { area: 'Educación Cultural y Artística', nombre: 'Educación Cultural y Artística', horasClase_programadas: '72' },
+          { area: 'Educación Física', nombre: 'Educación Física', horasClase_programadas: '72' },
+          { area: 'Lengua Extranjera', nombre: 'Inglés', horasClase_programadas: '108' },
+          { area: 'Acompañamiento integral en el aula', nombre: 'Acompañamiento integral en el aula', horasClase_programadas: '36' },
+          { area: 'Animación a la lectura', nombre: 'Animación a la lectura', horasClase_programadas: '36' },
+          { area: 'Orientación vocacional y profesional', nombre: 'Orientación vocacional y profesional', horasClase_programadas: '36' },
+        ],
+        bachillerato: [
+          { area: 'Matemática', nombre: 'Matemática', horasClase_programadas: '180' },
+          { area: 'Ciencias Naturales', nombre: 'Física', horasClase_programadas: '108' },
+          { area: 'Ciencias Naturales', nombre: 'Química', horasClase_programadas: '108' },
+          { area: 'Ciencias Naturales', nombre: 'Biología', horasClase_programadas: '108' },
+          { area: 'Ciencias Sociales', nombre: 'Historia', horasClase_programadas: '72' },
+          { area: 'Ciencias Sociales', nombre: 'Educación para la Ciudadanía', horasClase_programadas: '72' },
+          { area: 'Ciencias Sociales', nombre: 'Filosofía', horasClase_programadas: '72' },
+          { area: 'Lengua y Literatura', nombre: 'Lengua y Literatura', horasClase_programadas: '180' },
+          { area: 'Lengua Extranjera', nombre: 'Inglés', horasClase_programadas: '108' },
+          { area: 'Educación Cultural y Artística', nombre: 'Educación Cultural y Artística', horasClase_programadas: '72' },
+          { area: 'Educación Física', nombre: 'Educación Física', horasClase_programadas: '72' },
+          { area: 'Orientación vocacional y profesional', nombre: 'Orientación vocacional y profesional', horasClase_programadas: '72' },
+        ],
+      })
+      .expect(200)
+      .catch((error) => {
+        console.log(error.response.body);
+      });
+  });
+});
+
+describe('Prueba para la actualización de un año lectivo', () => {
+  it('Actualizar un año lectivo', async () => {
+    await request(app)
+      .post('/uelda/gestion_academica/update_AnioLectivo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        external_id: externalId,
+        jornada: 'Matutinas',
+        periodo: 'septiembre 2023 - junio 2024 ',
+        fechaFin: '25/06/2025',
+        modalidad: 'Presencial',
+      })
+      .expect(200);
+  });
+});
+
+describe('Prueba para la actualización del estado de un año lectivo', () => {
+  it('Actualizar el estado de un año lectivo', async () => {
+    await request(app)
+      .post('/uelda/gestion_academica/update_EstadoAnioLectivo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        external_id: externalId,
+        estadoAniolectivo: '1',
+      })
+      .expect(200);
+  });
+});
+
+describe('Prueba para la actualización de un año lectivo', () => {
+  it('Actualizar un año lectivo', async () => {
+    await request(app)
+      .post('/uelda/gestion_academica/update_AnioLectivo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        external_id: externalId,
+        jornada: 'Matutinas',
+        periodo: 'septiembre 2023 - junio 2024 ',
+        fechaFin: '25/06/2025',
+        modalidad: 'Presencial',
+      })
+      .expect(200);
+  });
+});
+
+describe('Prueba para la actualización del estado de un año lectivo', () => {
+  it('Actualizar el estado de un año lectivo', async () => {
+    await request(app)
+      .post('/uelda/gestion_academica/update_EstadoAnioLectivo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        external_id: externalId,
+        estadoAniolectivo: '1',
+      })
+      .expect(200);
+  });
+});
+
+describe('Prueba para la actualización de un año lectivo', () => {
+  it('Actualizar un año lectivo', async () => {
+    await request(app)
+      .post('/uelda/gestion_academica/update_AnioLectivo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        external_id: externalId,
+        jornada: 'Matutinas',
+        periodo: 'septiembre 2023 - junio 2024 ',
+        fechaFin: '25/06/2025',
+        modalidad: 'Presencial',
+      })
+      .expect(200);
+  });
+});
+
+describe('Prueba para la actualización del estado de un año lectivo', () => {
+  it('Actualizar el estado de un año lectivo', async () => {
+    await request(app)
+      .post('/uelda/gestion_academica/update_EstadoAnioLectivo')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        external_id: externalId,
+        estadoAniolectivo: '1',
+      })
+      .expect(200);
+  });
+});
