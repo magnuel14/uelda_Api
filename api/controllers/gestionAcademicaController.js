@@ -104,10 +104,9 @@ let controller = {
     });
 
     for (let i = 0; i < lista_externalid_estudiantes.length; i++) {
-      const { externalId } = lista_externalid_estudiantes[i];
-
+      const { external_id } = lista_externalid_estudiantes[i];
       const infoEstudiante = await Persona.findOne({
-        where: { external_id: externalId },
+        where: { external_id: external_id },
       });
 
       if (infoEstudiante.estadoAc !== "0" || infoEstudiante.estadoAc === null) {
