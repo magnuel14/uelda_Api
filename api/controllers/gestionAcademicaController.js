@@ -97,6 +97,8 @@ let controller = {
       where: { estadoAniolectivo: 0 },
     });
     console.log(info_AnioLectivo)
+    console.log(id_paralelo)
+
 
     const infoParalelo = await Paralelo.findOne({
       where: { id: id_paralelo },
