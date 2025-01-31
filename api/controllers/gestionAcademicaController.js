@@ -83,6 +83,8 @@ let controller = {
    * @returns
    */
   matricularEstudiantes: async (req, res) => {
+
+    console.log(req.body);
     let {
       lista_externalid_estudiantes,
       id_paralelo,
@@ -94,14 +96,18 @@ let controller = {
     const info_AnioLectivo = await AnioLectivo.findOne({
       where: { estadoAniolectivo: 0 },
     });
+    console.log(info_AnioLectivo)
+
     const infoParalelo = await Paralelo.findOne({
       where: { id: id_paralelo },
     });
+    console.log(infoParalelo)
 
     const infoCurso = await Curso.findOne({
       include: [Materia],
       where: { id: infoParalelo.id_curso },
     });
+    console.log(infoCurso)
 
     for (let i = 0; i < lista_externalid_estudiantes.length; i++) {
       const { external_id } = lista_externalid_estudiantes[i];
