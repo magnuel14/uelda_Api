@@ -84,7 +84,6 @@ let controller = {
    */
   matricularEstudiantes: async (req, res) => {
 
-    console.log(req.body);
     let {
       lista_externalid_estudiantes,
       id_paralelo,
@@ -93,23 +92,26 @@ let controller = {
       periodo_academicos_Programados_elemental,
       periodo_academicos_Programados_media,
     } = req.body;
+
+    console.log('1',req.body);
+
     const info_AnioLectivo = await AnioLectivo.findOne({
       where: { estadoAniolectivo: 0 },
     });
-    console.log(info_AnioLectivo)
-    console.log(id_paralelo)
+    console.log('2',info_AnioLectivo)
+    console.log('3',id_paralelo)
 
 
     const infoParalelo = await Paralelo.findOne({
       where: { id: id_paralelo },
     });
-    console.log(infoParalelo)
+    console.log('4',infoParalelo)
 
     const infoCurso = await Curso.findOne({
       include: [Materia],
       where: { id: infoParalelo.id_curso },
     });
-    console.log(infoCurso)
+    console.log('5',infoCurso)
 
     for (let i = 0; i < lista_externalid_estudiantes.length; i++) {
       const { external_id } = lista_externalid_estudiantes[i];
