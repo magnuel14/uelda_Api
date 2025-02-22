@@ -1,53 +1,58 @@
-module.exports = function (sequelize, DataTypes) {
-    var Paralelo = require('../models/paralelo')(sequelize, DataTypes);
-    var Persona = require('../models/persona')(sequelize, DataTypes);
-    var Matricula = sequelize.define('matricula', {
-        id: {
+module.exports = (sequelize, DataTypes) => {
+    const Paralelo = require('../models/paralelo')(sequelize, DataTypes);
+    const User = require('../models/user')(sequelize, DataTypes);
+
+    const Matricula = sequelize.define('matricula', {
+        idMatricula: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //curso al que va matricularse
-        cursoMatricula: {
+        // Curso al que va a matricularse
+        courseEnrollment: {
             type: DataTypes.STRING(50)
         },
-        //solo para estudiantes nuevos
-        //plantel de donde proviene
-        plantelAnterior: {
+        // Solo para estudiantes nuevos
+        // Plantel de donde proviene
+        previousInstitution: {
             type: DataTypes.STRING(50)
         },
-        //id del año lectivo actual
-        id_anioLectivo_actual: {
+        // ID del año lectivo actual
+        currentAcademicYearId: {
             type: DataTypes.INTEGER
         },
-        external_id: {
+        externalId: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,
-        createdAt: 'fecha_registro',
-        updatedAt: 'fecha_modificacion'
+        createdAt: 'fechaRegistro',
+        updatedAt: 'fechaModificacion'
     });
+
     Matricula.belongsTo(Paralelo, {
-        foreignKey: 'id_paralelo'
+        foreignKey: 'idParalelo'
     });
-    Matricula.belongsTo(Persona, {
-        foreignKey: 'id_persona'
+
+    Matricula.belongsTo(User, {
+        foreignKey: 'idUser'
     });
+
     Matricula.associate = function (models) {
-        models.matricula.hasMany(models.calificacionT, {
-            foreignKey: 'id_matricula'
+        models.matricula.hasMany(models.calificacionQuimestre, {
+            foreignKey: 'idMatricula'
         });
-        models.matricula.hasMany(models.calificacionQ, {
-            foreignKey: 'id_matricula'
+        models.matricula.hasMany(models.calificacionTrimestre, {
+            foreignKey: 'idMatricula'
         });
-        models.matricula.hasMany(models.asistenciaXMate, {
-            foreignKey: 'id_matricula'
+        models.matricula.hasMany(models.subjectAttendance, {
+            foreignKey: 'idMatricula'
         });
-        models.matricula.hasMany(models.asistenciaXDia, {
-            foreignKey: 'id_matricula'
+        models.matricula.hasMany(models.dailyAttendance, {
+            foreignKey: 'idMatricula'
         });
     };
+
     return Matricula;
 };

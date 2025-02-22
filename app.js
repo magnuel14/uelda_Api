@@ -57,13 +57,13 @@ cron.schedule('0 0 * * *', () => {
  * models.sequelize.sync({force: true}).then(() => {
  */
 // sincronizacion de los modelos de la bd
-// funcionesBD.sincronizarBd();
+ funcionesBD.sincronizarBd();
 
 // insertar rol para usuarios
 // require('./api/controllers/dataRol/insert_rol');
 
 // Middleware para verificar la conexión a la base de datos
-funcionesBD.coneccionBd();
+//funcionesBD.coneccionBd();
 
 // routes
 app.use('/uelda/user', require('./api/routes/userRoutes'));

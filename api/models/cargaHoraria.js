@@ -1,39 +1,50 @@
-module.exports = function (sequelize, DataTypes) {
-    var Persona = require('./persona')(sequelize, DataTypes);
-    var CargaHoraria = sequelize.define('cargaHoraria', {
-        id: {
+module.exports = (sequelize, DataTypes) => {
+    const User = require('./user')(sequelize, DataTypes);
+    
+    const CargaHoraria = sequelize.define('cargaHoraria', {
+        idCargaHoraria: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //id del paralelo donde es tutor el docente
-        id_paralelo_tutor: {
+        // ID del paralelo donde es tutor el docente
+        idParaleloTutor: {
             type: DataTypes.INTEGER
         },
-        //horas carga horaria
-        horas_asignadas: {
+        // Horas asignadas en la carga horaria
+        horasAsignadas: {
             type: DataTypes.STRING(50)
         },
-        //id del año lectivo actual
-        id_anioLectivo_actual: {
-            type:DataTypes.INTEGER
+        // ID del año lectivo actual
+        idAnioLectivoActual: {
+            type: DataTypes.INTEGER
         },
-        external_id: {
+        externalId: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,
-        createdAt: 'fecha_registro',
-        updatedAt: 'fecha_modificacion'
+        createdAt: 'registrationDate',
+        updatedAt: 'modificationDate'
     });
-    CargaHoraria.belongsTo(Persona, {
-        foreignKey: 'id_persona'
+    
+    CargaHoraria.belongsTo(User, {
+        foreignKey: 'idUsuario'
     });
+    
     CargaHoraria.associate = function (models) {
         models.cargaHoraria.hasMany(models.cargaHorariaPorParalelo, {
-            foreignKey: 'id_cargaHoraria'
+            foreignKey: 'idCargaHoraria'
         });
     };
+    
     return CargaHoraria;
 };
+
+// Carga Horaria
+/**
+ * Relación entre la carga horaria y el usuario (docente o administrativo)
+ * Horas asignadas a un paralelo específico
+ * Relación con el año lectivo actual
+ */

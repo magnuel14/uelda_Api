@@ -1,29 +1,39 @@
-module.exports = function (sequelize, DataTypes) {
-    var CargaHoraria = require('./cargaHoraria')(sequelize, DataTypes);
-    var CargaHorariaPorParalelo = sequelize.define('cargaHorariaPorParalelo', {
-        id: {
+module.exports = (sequelize, DataTypes) => {
+    const CargaHoraria = require('./cargaHoraria')(sequelize, DataTypes);
+    
+    const CargaHorariaPorParalelo = sequelize.define('cargaHorariaPorParalelo', {
+        idCargaHorariaPorParalelo: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        //id de la materia a cargo del docente
-        id_materia: {
-            type: DataTypes.STRING(250)
+        // ID de la materia a cargo del docente
+        idSubject: {
+            type: DataTypes.INTEGER
         },
-        idCargaParelo: {
-            type: DataTypes.STRING(250)
+        // ID de la carga horaria relacionada con el paralelo
+        idCargaParalelo: {
+            type: DataTypes.INTEGER
         },
-        external_id: {
+        externalId: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,
-        createdAt: 'fecha_registro',
-        updatedAt: 'fecha_modificacion'
+        createdAt: 'registrationDate',
+        updatedAt: 'modificationDate'
     });
+    
     CargaHorariaPorParalelo.belongsTo(CargaHoraria, {
-        foreignKey: 'id_cargaHoraria'
+        foreignKey: 'idCargaHoraria'
     });
+    
     return CargaHorariaPorParalelo;
 };
+
+// Carga Horaria por Paralelo
+/**
+ * Relación entre la carga horaria y el paralelo asignado
+ * Relación con la materia asignada al docente
+ */

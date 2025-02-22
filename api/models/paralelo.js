@@ -1,30 +1,33 @@
-module.exports = function (sequelize, DataTypes) {
-    var Curso = require('./curso')(sequelize, DataTypes);
-    var Paralelo = sequelize.define('paralelo', {
-        id: {
+module.exports = (sequelize, DataTypes) => {
+    const Course = require('./course')(sequelize, DataTypes);
+    const Paralelo = sequelize.define('paralelo', {
+        idParalelo: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        titulo: {
+        title: {
             type: DataTypes.STRING(50)
         },
-        external_id: {
+        externalId: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
         }
     }, {
         freezeTableName: true,
-        createdAt: 'fecha_registro',
-        updatedAt: 'fecha_modificacion'
+        createdAt: 'registrationDate',
+        updatedAt: 'modificationDate'
     });
-    Paralelo.belongsTo(Curso, {
-        foreignKey: 'id_curso'
+    
+    Paralelo.belongsTo(Course, {
+        foreignKey: 'idCourse'
     });
+    
     Paralelo.associate = function (models) {
         models.paralelo.hasMany(models.matricula, {
-            foreignKey: 'id_paralelo'
+            foreignKey: 'idParalelo'
         });
     };
+    
     return Paralelo;
 };
