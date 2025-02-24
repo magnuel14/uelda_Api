@@ -1,25 +1,25 @@
 module.exports = (sequelize, DataTypes) => {
     const ProfessionalProfile = require('./professionalProfile')(sequelize, DataTypes);
+    
     const ProfessionalTitle = sequelize.define('professionalTitle', {
         idProfessionalTitle: {
             autoIncrement: true,
             primaryKey: true,
             type: DataTypes.INTEGER
         },
-        educationLevel: {
-            type: DataTypes.STRING(50)
+        // Nombre del título profesional obtenido
+        titleName: {
+            type: DataTypes.STRING(150),
+            allowNull: false
         },
-        undergraduateDegree: {
-            type: DataTypes.STRING(100)
+        // Tipo de título: Pregrado = 0 , Postgrado = 1, Magíster = 2, Doctorado = 3
+        titleType: {
+            type: DataTypes.INTEGER
         },
-        undergraduateSpecialty: {
-            type: DataTypes.STRING(100)
-        },
-        postgraduateDegree: {
-            type: DataTypes.STRING(100)
-        },
-        postgraduateSpecialty: {
-            type: DataTypes.STRING(100)
+        // Año de obtención del título
+        yearOfAchievement: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
         externalId: {
             type: DataTypes.UUID,
@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: 'modificationDate'
     });
     
+    // Relación con el perfil profesional
     ProfessionalTitle.belongsTo(ProfessionalProfile, {
         foreignKey: 'idProfessionalProfile'
     });

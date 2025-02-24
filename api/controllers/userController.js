@@ -7,158 +7,178 @@ const fs = require('fs-extra');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const Persona = models.persona;
-const Cuenta = models.cuenta;
-const Rol = models.rol;
+// Asignación de modelos con nombres actualizados
+const User = models.user;
+const AccountUser = models.accountUser;
+const UserRole = models.userRole;
 
-/**
- * Controller object that contains various methods for handling user-related operations.
- *
- * @typedef {Object} Controller
- * @property {Function} getUsers - Retrieves a list of users.
- * @property {Function} singnin - Handles user sign-in.
- * @property {Function} updateCuenta - Updates user account information.
- * @property {Function} updateEstadoCuenta - Updates the status of a user account.
- * @property {Function} verifyToken - Verifies the authenticity of a token.
- */
 let controller = {
+
     getUsers: async (req, res) => {
-        /**
-         * Retrieves a list of users.
-         *
-         * @returns {Promise<Array<Object>>} The list of users.
-         */
-        const users = await Persona.findAll({
-            attributes: ['id', 'nombre', 'apellido'] 
+        const users = await User.findAll({
+            attributes: ['idUser', 'firstNameUser', 'lastNameUser']
         });
 
         return res.json(users);
     },
 
-    singnin: async (req, res) => {
-        const { correo, clave, checkedT } = req.body;
-        const userCuenta = await Cuenta.findOne({ where: { correo } });
+    getAllUserRole: async (req, res) => {
+        const roles = await UserRole.findAll();
 
-        if (!userCuenta) {
+        return res.json(roles)
+    },
+
+    getUserByExternalId: async (req, res) => {
+        const { externalId } = req.params;
+        const user = await User.findOne({ where: { externalId } });
+        return res.json(user);
+    },
+
+    signin: async (req, res) => {
+        const { email, password, checkExpiresSession } = req.body;
+        console.log(email, password, checkExpiresSession)
+        const userAccount = await AccountUser.findOne({ where: { email } });
+
+        if (!userAccount) {
             return res.json({ message: 'No existe una cuenta ligada a ese correo', flag: 1 });
         }
 
-        if (userCuenta.estado !== 0) {
+        if (userAccount.status !== 0) {
             return res.json({ message: 'La cuenta está inactiva, comuníquese con la UELDA', flag: 1 });
         }
 
-        const passwordValide = await bcrypt.compare(clave, userCuenta.clave);
+        const isPasswordValid = await bcrypt.compare(password, userAccount.password);
 
-        if (!passwordValide) {
+        if (!isPasswordValid) {
             return res.json({ message: 'Contraseña equivocada', flag: 1 });
         }
 
-        const persona = await Persona.findOne({ where: { id: userCuenta.id_persona } });
-        const rol = await Rol.findOne({ where: { id: persona.id_rol } });
-        const expiresIn = checkedT ? '30d' : '8h';
-        const token = jwt.sign({ id: userCuenta.id }, process.env.Secret_key, { expiresIn });
+        const user = await User.findOne({ where: { idUser: userAccount.idUser } });
+        const role = await UserRole.findOne({ where: { idUserRole: user.idUserRole } });
+        const expiresIn = checkExpiresSession ? '30d' : '8h';
+        const token = jwt.sign({ id: userAccount.id }, process.env.Secret_key, { expiresIn });
 
-        return res.json({ token, persona, rol });
+        return res.json({ token, user, role });
     },
 
-    updateCuenta: async (req, res) => {
-        const { externalId, clave } = req.body;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
+    updateAccount: async (req, res) => {
+        try {
+            const { externalId, password } = req.body;
+            const userInfo = await User.findOne({ where: { externalId } });
 
-        if (!req.files) {
-            var salt = bcrypt.genSaltSync(10);
-            let password = bcrypt.hashSync(clave, salt);
-            const dataCuenta = {
-                clave: password,
-            };
-            if (!updateDataCuenta) {
-                return res.json({ message: 'Ocurrio un error' });
+            if (!userInfo) {
+                return res.status(404).json({ message: 'Usuario no encontrado' });
             }
-            await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-            return res.json({ message: 'Se ha actualizado su contraseña' });
-        }
 
-        if (infoPersona.public_id != null) {
-            await cloudinaryC.deleteFile(infoPersona.public_id);
-        }
+            const userAccount = await AccountUser.findOne({ where: { idUser: userInfo.idUser } });
 
-        if (req.files?.foto) {
-            const result = await cloudinaryC.uploadImage(req.files.foto.tempFilePath);
-            const dataFoto = {
-                foto: result.secure_url,
-                public_id: result.public_id
-            };
+            if (!userAccount) {
+                return res.status(404).json({ message: 'Cuenta no encontrada' });
+            }
 
-            if (clave != 'null') {
-                var salt = bcrypt.genSaltSync(10);
-                let password = bcrypt.hashSync(clave, salt);
-                const dataCuenta = {
-                    clave: password,
+            // Si solo se actualiza la contraseña y no hay archivos
+            if (!req.files) {
+                await controller.updatePassword(userAccount.idAccountUser, password);
+                return res.json({ message: 'Se ha actualizado su contraseña' });
+            }
+
+            // Si el usuario tiene una foto anterior, eliminarla
+            if (userInfo.publicId) {
+                await cloudinaryC.deleteFile(userInfo.publicId);
+            }
+
+            // Si hay una nueva foto, subirla
+            if (req.files?.photo) {
+                const result = await cloudinaryC.uploadImage(req.files.photo.tempFilePath);
+                const photoData = {
+                    photo: result.secure_url,
+                    publicIdPhoto: result.public_id
                 };
-                await fs.unlink(req.files.foto.tempFilePath);
-                if (!updateDataCuenta) {
-                    return res.json({ message: 'Ocurrio un error' });
+
+                await fs.unlink(req.files.photo.tempFilePath);
+                await User.update(photoData, { where: { idUser: userInfo.idUser } });
+
+                // Si también hay una nueva contraseña
+                if (password !== 'null') {
+                    await controller.updatePassword(userAccount.idAccountUser, password);
+                    return res.json({ message: 'Se ha actualizado su información de usuario', photoData });
                 }
-                await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-                await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                return res.json({ message: 'Se ha actualizado su información de usuario', dataFoto });
-            } else {
-                await Persona.update(dataFoto, { where: { id: infoPersona.id } });
-                return res.json({ message: 'Se ha actualizado su foto de usuario', dataFoto });
+
+                return res.json({ message: 'Se ha actualizado su foto de usuario', photoData });
             }
+
+            return res.status(400).json({ message: 'No se recibieron cambios válidos' });
+
+        } catch (error) {
+            console.error('Error en updateAccount:', error);
+            return res.status(500).json({ message: 'Error interno del servidor' });
         }
     },
 
-    updateEstadoCuenta: async (req, res) => {
-        const { externalId, estado } = req.body;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        const updateDataCuenta = await Cuenta.findOne({ where: { id_persona: infoPersona.id } });
-
-        if (!updateDataCuenta) {
-            return res.json({ message: 'Ocurrió un error' });
-        }
-
-        const dataCuenta = {
-            estado: estado
-        };
-
-        await Cuenta.update(dataCuenta, { where: { id: updateDataCuenta.id } });
-
-        return res.json({
-            message: 'Se ha actualizado el estado de la cuenta de:',
-            apellido: infoPersona.apellido,
-            nombre: infoPersona.nombre
-        });
+    updatePassword: async (idAccountUser, newPassword) => {
+        const hashedPassword = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
+        await AccountUser.update({ password: hashedPassword }, { where: { idAccountUser: idAccountUser } });
     },
-    
+
+    updateAccountStatus: async (req, res) => {
+        try {
+            const { externalId, status } = req.body;
+
+            // Buscar usuario por externalId
+            const userInfo = await User.findOne({ where: { externalId } });
+
+            if (!userInfo) {
+                return res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+
+            // Buscar cuenta del usuario
+            const userAccount = await AccountUser.findOne({ where: { idUser: userInfo.idUser } });
+
+            if (!userAccount) {
+                return res.status(404).json({ message: 'Cuenta de usuario no encontrada' });
+            }
+
+            // Actualizar estado de la cuenta
+            await AccountUser.update({ status }, { where: { idAccountUser: userAccount.idAccountUser } });
+
+            return res.json({
+                message: 'Se ha actualizado el estado de la cuenta',
+                user: {
+                    lastName: userInfo.lastNameUser,
+                    firstName: userInfo.firstNameUser
+                }
+            });
+
+        } catch (error) {
+            console.error('Error en updateAccountStatus:', error);
+            return res.status(500).json({ message: 'Error interno del servidor' });
+        }
+    },
+
     verifyToken: async (req, res, next) => {
         try {
-            if (!req.headers.authorization) {
-                return res.status(401).send('Unauthorized Request');
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                return res.status(401).json({ message: 'Unauthorized Request' });
             }
 
-            const token = req.headers.authorization.split(' ')[1];
-            if (token === 'null') {
-                return res.status(401).send('Unauthorized Request');
+            const token = authHeader.split(' ')[1];
+            if (!token || token === 'null') {
+                return res.status(401).json({ message: 'Unauthorized Request' });
             }
 
-            const payload = await jwt.verify(token, process.env.Secret_key);
+            const payload = jwt.verify(token, process.env.Secret_key);
             if (!payload) {
-                return res.status(401).send('Unauthorized Request');
+                return res.status(401).json({ message: 'Unauthorized Request' });
             }
 
             req.userId = payload.id;
             next();
         } catch (error) {
-            return res.status(401).send('Unauthorized Request');
+            return res.status(401).json({ message: 'Unauthorized Request' });
         }
     },
 
-    getUserByExternalId: async (req, res) => {
-        const { externalId } = req.params;
-        const user = await Persona.findOne({ where: { external_id: externalId } });
-        return res.json(user);
-    }
-}
+};
+
 module.exports = controller;

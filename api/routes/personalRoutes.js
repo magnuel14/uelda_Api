@@ -5,9 +5,10 @@ const personalController = require('../controllers/personalController');
 
 //persona
 router.get('/getPersonal',  tryCatch(personalController.getPersonal));
-router.get('/getPersonByEx/:externalId',  tryCatch(personalController.getPersonByEx));
+router.get('/getPersonByEx/:externalId',  tryCatch(personalController.getUserByExternalId));
+
 router.post('/update_infoPersona',  tryCatch(personalController.updatePersona));
-router.post('/registrar_persona', tryCatch(personalController.createPerson));
+router.post('/createPerson', tryCatch(personalController.createPerson));
 router.post('/registrar_Listapersonal',  tryCatch(personalController.registrarPersonal));
 //id_rol
 router.post('/update_rolPersona',  tryCatch(personalController.updatePersonalRol));

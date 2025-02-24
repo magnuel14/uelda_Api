@@ -10,150 +10,171 @@ dotenv.config();
 const mailing = require('../../helpers/emailTemplates');
 
 const cedulaValidator = require('../../helpers/cedulaHelper');
+const getCurrentDate = require('../../helpers/getCurrentDate');
 
-const Persona = models.persona;
-const Cuenta = models.cuenta;
-const InfoMedica = models.infoMedica;
-const PerfilProfesional = models.perfilProfesional;
-const TituloProfesional = models.tituloProfesional;
+const User = models.user;
+const UserRole = models.userRole;
+const AccountUser = models.accountUser;
+const MedicalInfo = models.medicalInfo;
+const ProfessionalProfile = models.professionalProfile;
+const ProfessionalTitle = models.professionalTitle;
 
 
 let controller = {
     /** Implementado try cath*/
-    /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     * @returns 
-     */
+   
     getPersonal: async (req, res) => {
-        const personal = await Persona.findAll(
+        const personal = await User.findAll(
             {
-                include: [Cuenta],
+                include: [AccountUser],
                 where: {
                     [Op.or]: [
-                        { id_rol: 1 },
-                        { id_rol: 2 },
-                        { id_rol: 3 },
-                        { id_rol: 4 },
-                        { id_rol: 5 }
+                        { idUserRole: 1 },
+                        { idUserRole: 2 },
+                        { idUserRole: 3 },
+                        { idUserRole: 4 },
+                        { idUserRole: 5 }
                     ]
                 }
             });
-        res.json(personal);
-    },
-    /**
-    * 
-    * @param {*} req 
-    * @param {*} res 
-    * @returns 
-    */
-    getPersonByEx: async (req, res) => {
-        const { externalId } = req.params;
-        const infoPersona = await Persona.findOne({ where: { external_id: externalId } });
-        return res.json({ infoPersona });
-    },
-    /**
-     * createPerson: Funcion para crear un nuevo usuario.
-     * @param {*} req 
-     * @param {*} res 
-     * Recibe una lista de información personal, de indole familiar y dirección de su domicilio
-     * Se genera las credenciales para la tabla cuenta, con el correro personal y numero de identificación, al ser esta
-     * la clave, será encriptada.
-     * Ademas generá informacion por defecto para la tabla infoMedica y perfilProfesional
-     * Antes de registrar esta información, se comprueba si la cedula es ecuatoriana y si ya existe una persona con ese numero 
-     * de identificación
-     * En la tabla perfilProfesional, solo se registrará la informacion cuando el usuario no tenga 
-     * el rol estudiante
-     * @returns La información de la persona y su cuenta.
-     */
-    createPerson: async (req, res) => {
-        const {
-            nombre, apellido, tipoDocId, numeroId,
-            correoPersonal, id_rol
-        } = req.body
-        const numeroIdString = numeroId + '';
 
-        const cedulaValida = cedulaValidator.validator(numeroIdString);
-        if (cedulaValida.flag == 3) {
-            const searchPersona = await Persona.findOne({
+        return res.json(personal);
+    },
+   
+    getUserByExternalId: async (req, res) => {
+        const { externalId } = req.params;
+        const infoUser = await User.findOne({ where: { externalId: externalId } });
+        return res.json(infoUser);
+    },
+
+    getNameOfRole: async (idUserRole) => {
+        const nameRole = await UserRole.findOne({
+            where: { idUserRole: idUserRole },
+            attributes: ['name']
+        });
+        return nameRole.name;
+    },
+   
+    createPerson: async (req, res) => {
+        try {
+            const { firstNameUser, lastNameUser, documentTypeUser, documentDniNumberUser, personalEmailUser, idUserRole } = req.body;
+
+            // Convertir documento a string
+            const documentNumberString = String(documentDniNumberUser);
+
+            // Validar número de cédula
+            const cedulaValidation = cedulaValidator.validator(documentNumberString);
+            if (cedulaValidation.flag !== 3) {
+                return res.json({ message: cedulaValidation.message, flag: 1 });
+            }
+
+            // Buscar si ya existe el usuario por DNI o correo
+            const existingUser = await User.findOne({
                 where: {
-                    [Op.or]: [{ numeroId: numeroIdString }, { correoPersonal: correoPersonal }]
+                    [Op.or]: [
+                        { documentDniNumberUser: documentNumberString },
+                        { personalEmailUser: personalEmailUser }
+                    ]
                 }
             });
-            if (!searchPersona) {
-                const personaData = {
-                    nombre: nombre, apellido: apellido,
-                    tipoDocId: tipoDocId, numeroId: numeroIdString,
-                    id_rol: id_rol,
-                    correoPersonal: correoPersonal,
-                }
-                const persona = await Persona.create(personaData);
-                const newPersona = await Persona.findOne({ where: { numeroId: numeroIdString } });
-                var salt = bcrypt.genSaltSync(10);
-                let password = bcrypt.hashSync(numeroIdString, salt);
-                const dataCuenta = {
-                    correo: correoPersonal,
-                    clave: password,
-                    estado: 0,
-                    id_persona: newPersona.id,
-                };
-                const newPersonaCuenta = await Cuenta.create(dataCuenta);
-                if (!newPersonaCuenta) return res.json({
-                    message: 'Su cuenta no se puedo crear, revise bien si informacion.',
-                    flag: 1
-                })
-                const dataInfoMed = {
-                    id_persona: newPersona.id,
-                    discapacidad: "1",
-                    tipoDiscapacidad: "N/A",
-                    porcentajeDiscapacidad: "N/A",
-                    nCarnetDiscapacidad: "N/A",
-                    enfermedadCatastrofica: "1",
-                    tipoEnfermedadCatastrofica: "N/A"
-                };
-                await InfoMedica.create(dataInfoMed);
-                const dataPerfilProfe = {
-                    id_persona: newPersona.id,
-                    fechaInMag: 'dia/mes/año',
-                    tiempoMagisterio: 'N/A',
-                    fechaInULEDA: 'dia/mes/año',
-                    tiempoUelda: 'N/A',
-                    categoria: 'N/A',
-                    aniosCategoria: 'N/A',
-                }
-                await PerfilProfesional.create(dataPerfilProfe);
-                const infoPerfilPro = await PerfilProfesional.findOne({ where: { id_persona: newPersona.id } });
-                const datatituloPro = {
-                    id_perfilProfesional: infoPerfilPro.id,
-                    nivelEducacion: 'N/A',
-                    tercerNivel: 'N/A',
-                    tercerEspecialidad: 'N/A',
-                    cuartoNivel: 'N/A',
-                    cuartoEspecialidad: 'N/A'
-                }
-                await TituloProfesional.create(datatituloPro);
 
-                //await mailing.sendNewUserEmail(personaData);
-
-                return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
-
-            } else {
-                return res.json({ message: 'Ya existe un usuario con ese numero de DNI o correo personal', flag: 1 });
+            if (existingUser) {
+                return res.json({ message: 'Ya existe un usuario con ese número de DNI o correo personal', flag: 1 });
             }
-        } else {
-            return res.json({ message: cedulaValida.message, flag: 1 });
+
+            // Crear usuario
+            const newUser = await controller.createUser(firstNameUser, lastNameUser, documentTypeUser, documentNumberString, personalEmailUser, idUserRole);
+
+            // Crear cuenta de usuario
+            await controller.createAccountUser(newUser.idUser, personalEmailUser, documentNumberString);
+
+            // Crear información médica por defecto
+            await controller.createMedicalInfo(newUser.idUser);
+
+            // Crear perfil profesional por defecto
+            await controller.createProfessionalProfile(newUser.idUser);
+
+            const nameRole = await controller.getNameOfRole(idUserRole);
+            return res.json({ message: 'Ha generado un nuevo usuario', user: { firstNameUser, lastNameUser, nameRole }, flag: 0 });
+
+        } catch (error) {
+            console.error("Error en createPerson:", error);
+            return res.status(500).json({ message: 'Error interno del servidor', flag: 1 });
         }
     },
-    /**
-     * updatePersona: Esta función sirve para editar la información de la persona 
-     * @param {*} req 
-     * @param {*} res 
-     * Recibe la lista de atributos de su modelo descritos en Persona.
-     * Se carga el id de Perosna el cual se usa en la condicion "where" (sql)
-     * Y la udatepersonaData que es la informacin nueva para la Persona
-     * @returns Un mensaje de comprobación de estado de la tarea
-     */
+
+    createUser: async (firstNameUser, lastNameUser, documentTypeUser, documentDniNumberUser, personalEmailUser, idUserRole) => {
+        return await User.create({
+            firstNameUser,
+            lastNameUser,
+            documentTypeUser,
+            documentDniNumberUser,
+            idUserRole,
+            personalEmailUser
+        });
+    },
+
+    createAccountUser: async (idUser, email, password) => {
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(password, salt);
+        const statusDefaultCount = 0;
+
+        return await AccountUser.create({
+            email: email,
+            password: hashedPassword,
+            status: statusDefaultCount,
+            idUser: idUser
+        });
+    },
+
+    createMedicalInfo: async (idUser) => {
+        return await MedicalInfo.create({
+            idUser: idUser,
+            disability: 1,
+            disabilityType: "N/A",
+            disabilityPercentage: "N/A",
+            disabilityCardNumber: "N/A",
+            catastrophicIllness: 1,
+            catastrophicIllnessType: "N/A"
+        });
+    },
+
+    createProfessionalProfile: async (idUser) => {
+        return await ProfessionalProfile.create({
+            idUser: idUser,
+            entryDateMinistry: getCurrentDate.getCurrentDate(),
+            ministryTime: 'N/A',
+            entryDateUELDA: getCurrentDate.getCurrentDate(),
+            UELDATime: 'N/A',
+            category: 'N/A',
+            categoryYears: 'N/A'
+        });
+    },
+
+    createProfessionalTitle: async (req, res) => {
+        try {
+            const { idProfessionalProfile, titleName, titleType, yearOfAchievement } = req.body;
+
+            // Validación de datos requeridos
+            if (!idProfessionalProfile || !titleName || titleType === undefined || !yearOfAchievement) {
+                return res.status(400).json({ message: "All fields are required", success: false });
+            }
+
+            // Creación del título profesional
+            const newTitle = await ProfessionalTitle.create({
+                idProfessionalProfile,
+                titleName,
+                titleType,
+                yearOfAchievement
+            });
+
+            return res.status(201).json({ message: "Professional title added successfully", success: true, data: newTitle });
+        } catch (error) {
+            console.error("Error creating professional title:", error);
+            return res.status(500).json({ message: "Internal server error", success: false });
+        }
+    },
+  
     updatePersona: async (req, res) => {
         const {
             external_id,

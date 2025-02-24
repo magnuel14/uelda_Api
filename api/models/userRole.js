@@ -18,10 +18,12 @@ module.exports = function (sequelize, DataTypes) {
         status: {
             type: DataTypes.INTEGER,
         },
+        // 0 por defecto indica admin
         createdBy: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        // 0 por defecto indica admin
         updatedBy: {
             type: DataTypes.INTEGER,
             allowNull: true

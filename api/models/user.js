@@ -135,7 +135,7 @@ module.exports = function (sequelize, DataTypes) {
     updatedAt: 'modificationDate',
   });
   User.belongsTo(UserRole, {
-    foreignKey: 'idRoleUser',
+    foreignKey: 'idUserRole',
   });
   User.associate = function (models) {
     models.user.hasOne(models.accountUser, {
