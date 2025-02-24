@@ -7,14 +7,6 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    idUser: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'user',
-        key: 'idUser',
-      },
-    },
     //dirección de domicilio
     //parroquia
     parish: {

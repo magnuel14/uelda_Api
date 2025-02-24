@@ -52,7 +52,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(50),
     },
     /**
-     * 'casado'= 0
+     *  'casado'= 0
         'union libre'= 1
         'viudo'= 2
         'divorciado'= 3
