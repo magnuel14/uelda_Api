@@ -79,7 +79,7 @@ let controller = {
             // Si solo se actualiza la contraseña y no hay archivos
             if (!req.files) {
                 await controller.updatePassword(userAccount.idAccountUser, password);
-                return res.json({ message: 'Se ha actualizado su contraseña' });
+                return res.json({ message: 'Se ha actualizado su contraseña', flagResponse: 1 });
             }
 
             // Si el usuario tiene una foto anterior, eliminarla
@@ -101,10 +101,10 @@ let controller = {
                 // Si también hay una nueva contraseña
                 if (password !== 'null') {
                     await controller.updatePassword(userAccount.idAccountUser, password);
-                    return res.json({ message: 'Se ha actualizado su información de usuario', photoData });
+                    return res.json({ message: 'Se ha actualizado su foto y contraseña', photoData, flagResponse: 2 });
                 }
 
-                return res.json({ message: 'Se ha actualizado su foto de usuario', photoData });
+                return res.json({ message: 'Se ha actualizado su foto de usuario', photoData, flagResponse: 2 });
             }
 
             return res.status(400).json({ message: 'No se recibieron cambios válidos' });
