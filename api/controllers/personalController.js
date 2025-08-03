@@ -134,7 +134,7 @@ let controller = {
                 }
                 await TituloProfesional.create(datatituloPro);
 
-                //await mailing.sendNewUserEmail(personaData);
+                await mailing.sendNewUserEmail(personaData);
 
                 return res.json({ message: 'Ha generado un nuevo usuario', persona, flag: 0 });
 
@@ -524,6 +524,8 @@ let controller = {
                         cuartoEspecialidad: 'N/A'
                     }
                     const newtituloProfesional = await TituloProfesional.create(datatituloPro);
+                    
+                    //await mailing.sendNewUserEmail(personaData);
                     console.log({ message: 'Ha generado un nuevo usuario', persona, newPersonaCuenta, newInfoMedica, newperfilProfesional, newtituloProfesional });
 
                 } else {
